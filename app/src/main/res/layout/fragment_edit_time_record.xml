@@ -1,0 +1,103 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/timeRecordsInPeriodDetailsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignWithParentIfMissing="false"
+        android:layout_centerHorizontal="true"
+        android:text="Details"
+        android:textAlignment="center"
+        android:textSize="@dimen/FragmentTitle" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/timeRecordsInPeriodDetailsTitle">
+
+        <TableRow android:minHeight="40dp"
+            android:paddingStart="?android:attr/listPreferredItemPaddingStart">
+
+            <TextView
+                android:id="@+id/fromLabelTextView"
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                android:text="@string/timerecord_start_label"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:gravity="center_vertical"
+                android:layout_marginRight="30dp" />
+
+            <TextView
+                android:id="@+id/fromDateValueTextView"
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                android:text="xx dd-MM"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/fromTimeValueTextView"
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                android:text="xx:xx:xx"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </TableRow>
+
+        <TableRow android:layout_height="1px" android:background="#BDBDBD">
+            <TextView android:layout_height="1px"
+                android:layout_width="fill_parent" android:text="">
+            </TextView>
+        </TableRow>
+
+        <TableRow
+            android:minHeight="?android:attr/listPreferredItemHeightSmall"
+            android:paddingStart="?android:attr/listPreferredItemPaddingStart">
+
+            <TextView
+                android:id="@+id/toLabelTextView"
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                android:text="@string/timerecord_to_label"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <TextView
+                android:id="@+id/toDateValueTextView"
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                android:text="xx dd-MM"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/toTimeValueTextView"
+                android:text="xx:xx:xx"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </TableRow>
+
+        <TableRow android:layout_height="1px" android:background="#BDBDBD">
+            <TextView android:layout_height="1px"
+                android:layout_width="fill_parent" android:text="">
+            </TextView>
+        </TableRow>
+
+        <TableRow android:minHeight="40dp"
+            android:paddingStart="?android:attr/listPreferredItemPaddingStart">
+
+            <TextView
+                android:id="@+id/breakLabelTextView"
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                android:text="@string/timerecord_break_label"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/breakValueTextView"
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                android:text="xx minutes"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </TableRow>
+
+    </TableLayout>
+</RelativeLayout>

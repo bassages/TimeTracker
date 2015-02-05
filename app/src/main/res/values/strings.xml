@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Time Tracker</string>
+
+    <string name="action_week_overview">Week totals</string>
+    <string name="action_month_overview">Month totals</string>
+
+    <string name="timerecord_start_label">From:</string>
+    <string name="timerecord_to_label">To:</string>
+    <string name="timerecord_break_label">Break:</string>
+
+</resources>

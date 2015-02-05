@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="timetracker.wiegman.nl.timetracker.WeeksOverviewFragment">
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="XXXX"
+        android:layout_gravity="center_horizontal|top"
+        android:id="@+id/yearTextView"
+        android:gravity="center_horizontal"
+        android:textSize="@dimen/FragmentTitle"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="233dp"
+        android:id="@+id/periodListView"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_below="@+id/yearTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:footerDividersEnabled="false"
+        android:headerDividersEnabled="true" />
+
+</RelativeLayout>
