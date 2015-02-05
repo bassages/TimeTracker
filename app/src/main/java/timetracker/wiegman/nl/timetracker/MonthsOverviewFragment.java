@@ -12,7 +12,7 @@ import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
 
 public class MonthsOverviewFragment extends AbstractPeriodsInYearOverviewFragment {
 
-    private final String LOG_TAG = this.getClass().getName();
+    private final String LOG_TAG = this.getClass().getSimpleName();
 
     /**
      * Use this factory method to create a new instance of
@@ -55,16 +55,14 @@ public class MonthsOverviewFragment extends AbstractPeriodsInYearOverviewFragmen
 
         Calendar dayInMonth = TimeAndDurationService.getFirstDayOfYear(year);
         while (dayInMonth.get(Calendar.YEAR) == year) {
-            PeriodOverviewItem periodOverviewItem = new PeriodOverviewItem();
-
+            long billableDurationInWeek = TimeAndDurationService.getBillableDurationInMonthOfDay(dayInMonth);
             int month = dayInMonth.get(Calendar.MONTH);
             boolean isCurrentPeriod = month==currentMonth && year==currentYear;
 
+            PeriodOverviewItem periodOverviewItem = new PeriodOverviewItem();
             periodOverviewItem.setPeriodId(month);
             periodOverviewItem.setPeriodName(new SimpleDateFormat("MMM").format(dayInMonth.getTime()));
             periodOverviewItem.setCurrentPeriod(isCurrentPeriod);
-
-            long billableDurationInWeek = TimeAndDurationService.getBillableDurationInMonthOfDay(dayInMonth);
             periodOverviewItem.setBillableDuration(billableDurationInWeek);
 
             periodOverviewItems.add(periodOverviewItem);

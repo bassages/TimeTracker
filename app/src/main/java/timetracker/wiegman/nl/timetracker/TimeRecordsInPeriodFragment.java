@@ -163,7 +163,7 @@ public class TimeRecordsInPeriodFragment extends Fragment {
 
             View row = View.inflate(getActivity(), R.layout.time_records_in_period_item, null);
 
-            TextView dayColumn = (TextView) row.findViewById(R.id.dayColumn);
+            TextView dayColumn = (TextView) row.findViewById(R.id.dayOfWeekColumn);
             SimpleDateFormat dayInWeekFormat = new SimpleDateFormat("EEE");
             String formattedDay = dayInWeekFormat.format(timeRecord.getCheckIn().getTime());
             dayColumn.setText(formattedDay);

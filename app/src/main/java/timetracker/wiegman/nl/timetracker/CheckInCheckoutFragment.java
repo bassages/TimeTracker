@@ -19,7 +19,7 @@ import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
 
 public class CheckInCheckoutFragment extends Fragment {
 
-    private final String LOG_TAG = this.getClass().getName();
+    private final String LOG_TAG = this.getClass().getSimpleName();
 
     private TextView todaysTotalTextView;
     private TextView thisWeeksTotalTextView;
@@ -61,6 +61,7 @@ public class CheckInCheckoutFragment extends Fragment {
         pausePlayImageView.setOnClickListener(new CheckInCheckOutButtonOnClickListener());
         setPausePlayImage();
 
+        todaysTotalTextView.setOnClickListener(new ShowTodaysDetails());
         thisWeeksTotalTextView.setOnClickListener(new ShowThisWeeksTimeRecords());
 
         new CheckedInTimeUpdater().run();
@@ -88,6 +89,15 @@ public class CheckInCheckoutFragment extends Fragment {
             fragmentTransaction.replace(R.id.fragment_container, fragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
+        }
+    }
+
+    private class ShowTodaysDetails implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            Calendar day = Calendar.getInstance();
+            DayDetailsHelper dayDetailsHelper = new DayDetailsHelper(getActivity());
+            dayDetailsHelper.showDetailsOrTimeRecordsOfDay(day);
         }
     }
 
