@@ -26,8 +26,10 @@ import timetracker.wiegman.nl.timetracker.util.PeriodicRunnableExecutor;
 import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
 
 /**
- * Shows a list of timerecords within a given period.
- * The timerecords can be deleted or edited (which is actually processed in EditTimeRecordFragemnt)
+ * Shows a list of days within a given period.
+ * For each dat the billable duration is shown.
+ *
+ * The timerecords on a day can be deleted or edited (which is actually processed in EditTimeRecordFragemnt)
  */
 public class DaysInPeriodFragment extends Fragment {
     private final String LOG_TAG = this.getClass().getSimpleName();
@@ -300,8 +302,10 @@ public class DaysInPeriodFragment extends Fragment {
         public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long timestamp) {
             Calendar day = Calendar.getInstance();
             day.setTimeInMillis(timestamp);
+
             Calendar startOfDay = TimeAndDurationService.getStartOfDay(day);
             Calendar endOfDay = TimeAndDurationService.getEndOfDay(day);
+
             DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = new DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener() {
                 @Override
                 public void recordDeleted() {
@@ -309,7 +313,7 @@ public class DaysInPeriodFragment extends Fragment {
                 }
             };
             DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), startOfDay, endOfDay, timeRecordsDeletedListener);
-            deleteTimeRecordsInPeriod.deleteAfterConfirmedByUser();
+            deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
             return true;
         }
     }
