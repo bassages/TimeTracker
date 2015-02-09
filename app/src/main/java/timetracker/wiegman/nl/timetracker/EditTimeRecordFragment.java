@@ -2,14 +2,12 @@ package timetracker.wiegman.nl.timetracker;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -75,25 +73,27 @@ public class EditTimeRecordFragment extends Fragment {
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
         TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
+        Calendar checkIn = timeRecord.getCheckIn();
+        Calendar checkOut = timeRecord.getCheckOut();
 
         TextView fromDateTextView = (TextView) rootView.findViewById(R.id.fromDateValueTextView);
-        String formattedFromDate = dateFormat.format(timeRecord.getCheckIn().getTime());
+        String formattedFromDate = dateFormat.format(checkIn.getTime());
         fromDateTextView.setText(formattedFromDate);
 
         TextView fromTimeTextView = (TextView) rootView.findViewById(R.id.fromTimeValueTextView);
-        String formattedFromTime = timeFormat.format(timeRecord.getCheckIn().getTime());
+        String formattedFromTime = timeFormat.format(checkIn.getTime());
         fromTimeTextView.setText(formattedFromTime);
-        EditTimeClickListener fromTimeClickListener = new EditTimeClickListener(CalendarField.From, timeRecord.getCheckIn().get(Calendar.HOUR_OF_DAY), timeRecord.getCheckIn().get(Calendar.MINUTE));
+        EditTimeClickListener fromTimeClickListener = new EditTimeClickListener(CalendarField.From, checkIn.get(Calendar.HOUR_OF_DAY), checkIn.get(Calendar.MINUTE), checkIn.get(Calendar.SECOND));
         fromTimeTextView.setOnClickListener(fromTimeClickListener);
 
         TextView toDateTextView = (TextView) rootView.findViewById(R.id.toDateValueTextView);
-        String formattedToDate = dateFormat.format(timeRecord.getCheckOut().getTime());
+        String formattedToDate = dateFormat.format(checkOut.getTime());
         toDateTextView.setText(formattedToDate);
 
         TextView toTimeTextView = (TextView) rootView.findViewById(R.id.toTimeValueTextView);
-        String formattedToTime = timeFormat.format(timeRecord.getCheckOut().getTime());
+        String formattedToTime = timeFormat.format(checkOut.getTime());
         toTimeTextView.setText(formattedToTime);
-        EditTimeClickListener toTimeClickListener = new EditTimeClickListener(CalendarField.To, timeRecord.getCheckOut().get(Calendar.HOUR_OF_DAY), timeRecord.getCheckOut().get(Calendar.MINUTE));
+        EditTimeClickListener toTimeClickListener = new EditTimeClickListener(CalendarField.To, checkOut.get(Calendar.HOUR_OF_DAY), checkOut.get(Calendar.MINUTE), checkOut.get(Calendar.SECOND));
         toTimeTextView.setOnClickListener(toTimeClickListener);
 
         TextView breakTextView = (TextView) rootView.findViewById(R.id.breakValueTextView);
@@ -115,22 +115,24 @@ public class EditTimeRecordFragment extends Fragment {
         private final CalendarField calendarField;
         private final int hourOfDay;
         private final int minutes;
+        private final int seconds;
 
-        public EditTimeClickListener(CalendarField calendarField, int hourOfDay, int minutes) {
+        public EditTimeClickListener(CalendarField calendarField, int hourOfDay, int minutes, int seconds) {
             this.calendarField = calendarField;
             this.hourOfDay = hourOfDay;
             this.minutes = minutes;
+            this.seconds = seconds;
         }
 
         @Override
         public void onClick(View view) {
-            TimePickerDialog.OnTimeSetListener timeSetListener = new TimeSetListener(calendarField);
-            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), timeSetListener, hourOfDay, minutes, true);
+            TimePickerWithSecondsDialog.OnTimeSetListener timeSetListener = new TimeSetListener(calendarField);
+            TimePickerWithSecondsDialog timePickerDialog = new TimePickerWithSecondsDialog(getActivity(), timeSetListener, hourOfDay, minutes, seconds, true);
             timePickerDialog.show();
         }
     }
 
-    private class TimeSetListener implements TimePickerDialog.OnTimeSetListener {
+    private class TimeSetListener implements TimePickerWithSecondsDialog.OnTimeSetListener {
         private final CalendarField calendarField;
 
         public TimeSetListener(CalendarField calendarField) {
@@ -138,7 +140,7 @@ public class EditTimeRecordFragment extends Fragment {
         }
 
         @Override
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        public void onTimeSet(timetracker.wiegman.nl.timetracker.TimePicker view, int hourOfDay, int minute, int seconds) {
             TimeRecord timeRecord = CheckIn.findById(TimeRecord.class, timeRecordId);
 
             Calendar calendar = Calendar.getInstance();
@@ -149,6 +151,7 @@ public class EditTimeRecordFragment extends Fragment {
             }
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             calendar.set(Calendar.MINUTE, minute);
+            calendar.set(Calendar.SECOND, seconds);
             timeRecord.save();
 
             refresh();

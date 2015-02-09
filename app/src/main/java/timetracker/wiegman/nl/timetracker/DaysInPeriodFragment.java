@@ -29,7 +29,7 @@ import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
  * Shows a list of days within a given period.
  * For each dat the billable duration is shown.
  *
- * The timerecords on a day can be deleted or edited (which is actually processed in EditTimeRecordFragemnt)
+ * The timerecords on a day can be deleted or edited.
  */
 public class DaysInPeriodFragment extends Fragment {
     private final String LOG_TAG = this.getClass().getSimpleName();

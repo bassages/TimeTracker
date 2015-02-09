@@ -38,10 +38,10 @@ public class MonthsOverviewFragment extends AbstractPeriodsInYearOverviewFragmen
     }
 
     @Override
-    protected Period getPeriod(int periodId, int year) {
+    protected Period getPeriod(long month, int year) {
         Calendar date = Calendar.getInstance();
         date.clear();
-        date.set(Calendar.MONTH, periodId);
+        date.set(Calendar.MONTH, (int)month);
         date.set(Calendar.YEAR, year);
         return TimeAndDurationService.getMonth(date);
     }

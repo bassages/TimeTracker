@@ -47,7 +47,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
     protected abstract List<PeriodOverviewItem> getOverviewItems(int year);
 
-    protected abstract Period getPeriod(int periodId, int year);
+    protected abstract Period getPeriod(long periodId, int year);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,16 +62,18 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_period_overview, container, false);
 
         periodsListView = (ListView) rootView.findViewById(R.id.periodListView);
-        periodsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                showTimeRecordsInPeriod((int) id, year);
-            }
-        });
+        periodsListView.setOnItemClickListener(new PeriodItemClickListener());
+        periodsListView.setOnItemLongClickListener(new PeriodItemLongClickListener());
 
         yearTextView = (TextView) rootView.findViewById(R.id.yearTextView);
         yearTextView.setText(Integer.toString(year));
 
+        refreshData();
+
+        return rootView;
+    }
+
+    private void refreshData() {
         List<PeriodOverviewItem> periodOverviewItems = getOverviewItems(year);
 
         listViewAdapter = new TimeRecordsInPeriodAdapter(periodOverviewItems);
@@ -81,7 +83,6 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
         if (positionOfCurrentItem != null) {
             periodsListView.setSelection(positionOfCurrentItem);
         }
-        return rootView;
     }
 
     @Override
@@ -125,6 +126,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
             checkedInTimeUpdaterExecutor = null;
         }
     }
+
     private class CheckedInTimeUpdater implements Runnable {
         @Override
         public void run() {
@@ -257,6 +259,29 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
         public void setCurrentPeriod(boolean isCurrentPeriod) {
             this.isCurrentPeriod = isCurrentPeriod;
+        }
+    }
+
+    private class PeriodItemClickListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            showTimeRecordsInPeriod((int) id, year);
+        }
+    }
+
+    private class PeriodItemLongClickListener implements AdapterView.OnItemLongClickListener {
+        public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long periodId) {
+            Period period = getPeriod(periodId, year);
+
+            DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = new DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener() {
+                @Override
+                public void recordDeleted() {
+                    refreshData();
+                }
+            };
+            DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), period.getFrom(), period.getTo(), timeRecordsDeletedListener);
+            deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
+            return true;
         }
     }
 }

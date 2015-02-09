@@ -66,7 +66,7 @@ public class DayDetailsHelper {
             }
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd-MM-yyyy HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE dd-MM-yyyy HH:mm:ss");
         builder.setMessage("You checked in at " + sdf.format(checkIn.getTimestamp().getTime()))
                 .setNeutralButton("OK", dialogClickListener)
                 .setNegativeButton("Checkout", dialogClickListener)

@@ -37,10 +37,10 @@ public class WeeksOverviewFragment extends AbstractPeriodsInYearOverviewFragment
     }
 
     @Override
-    protected Period getPeriod(int periodId, int year) {
+    protected Period getPeriod(long weekNumber, int year) {
         Calendar date = Calendar.getInstance();
         date.clear();
-        date.set(Calendar.WEEK_OF_YEAR, periodId);
+        date.set(Calendar.WEEK_OF_YEAR, (int)weekNumber);
         date.set(Calendar.YEAR, year);
         return TimeAndDurationService.getWeek(date);
     }

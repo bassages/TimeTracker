@@ -127,10 +127,10 @@ public class TimeAndDurationService {
         result.setTitle(Formatting.getWeekOverViewTitle(dayInWeek));
 
         Calendar monday = DateUtils.iterator(dayInWeek, DateUtils.RANGE_WEEK_MONDAY).next();
-        Calendar startOfMonday = DateUtils.truncate(monday, Calendar.DAY_OF_MONTH);
-        result.setFrom(startOfMonday);
+        monday = getStartOfDay(monday);
+        result.setFrom(monday);
 
-        Calendar endOfSunday = (Calendar) startOfMonday.clone();
+        Calendar endOfSunday = (Calendar) monday.clone();
         endOfSunday.add(Calendar.WEEK_OF_YEAR, 1);
         endOfSunday.add(Calendar.MILLISECOND, -1);
 

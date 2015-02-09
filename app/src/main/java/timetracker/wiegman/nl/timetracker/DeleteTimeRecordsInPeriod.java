@@ -37,18 +37,13 @@ public class DeleteTimeRecordsInPeriod {
 
     public void handleUserRequestToDeleteRecordsInPeriod() {
 
-        List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(from.getTimeInMillis(), to.getTimeInMillis());
+        long fromTimeInMillis = from.getTimeInMillis();
+        long toTimeInMillis = to.getTimeInMillis();
+
+        List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(fromTimeInMillis, toTimeInMillis);
+
         if (timeRecordsInPeriod.size() == 0) {
-                String message = "";
-                if (DateUtils.isSameDay(from, to)) {
-                    message = "There are no records to delete on the selected day";
-                } else {
-                    message = "There are no records to delete in the selected period";
-                }
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                builder.setMessage(message)
-                        .setNeutralButton("OK", new DismissOnClickListener())
-                        .show();
+            nothingToDelete();
         } else {
             DialogInterface.OnClickListener dialogClickListener = new DeleteConfirmationDialogOnClickListener();
 
@@ -56,9 +51,26 @@ public class DeleteTimeRecordsInPeriod {
             String message = getDeleteConfirmationMessage();
             builder.setMessage(message)
                     .setPositiveButton("Yes", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener)
+                    .setNegativeButton("No", new DismissOnClickListener())
                     .show();
         }
+    }
+
+    private void nothingToDelete() {
+        String message = "";
+        if (DateUtils.isSameDay(from, to)) {
+            message = "There are no records to delete on the selected day";
+        } else {
+            message = "There are no records to delete in the selected period";
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setMessage(message)
+                .setNeutralButton("OK", new DismissOnClickListener())
+                .show();
+    }
+
+    private boolean isBetween(long timeInMillis, long fromTimeInMillis, long toTimeInMillis) {
+        return timeInMillis <= fromTimeInMillis && timeInMillis <= toTimeInMillis;
     }
 
     private String getDeleteConfirmationMessage() {
@@ -89,8 +101,7 @@ public class DeleteTimeRecordsInPeriod {
                         timeRecordsDeletedListener.recordDeleted();
                     }
                     break;
-                case DialogInterface.BUTTON_NEGATIVE:
-                    dialog.dismiss();
+                default:
                     break;
             }
         }

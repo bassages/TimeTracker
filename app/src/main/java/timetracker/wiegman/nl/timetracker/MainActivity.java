@@ -36,6 +36,9 @@ public class MainActivity extends Activity {
         CheckIn.deleteAll(CheckIn.class);
         TimeRecord.deleteAll(TimeRecord.class);
 
+        // 7-2015
+        saveTimeRecord("09-02-2015 06:58:37", "09-02-2015 15:51:26", 30);
+
         // 6-2015
         saveTimeRecord("06-02-2015 07:03:54", "06-02-2015 15:06:45", 30);
         saveTimeRecord("05-02-2015 07:01:08", "05-02-2015 15:54:13", 30);
