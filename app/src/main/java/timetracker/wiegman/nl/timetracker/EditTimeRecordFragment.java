@@ -1,18 +1,24 @@
 package timetracker.wiegman.nl.timetracker;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import timetracker.wiegman.nl.timetracker.domain.CheckIn;
@@ -22,18 +28,19 @@ import static android.view.View.OnClickListener;
 
 /**
  * Shows the details of the given TimeRecord.
- * Each details can be edited.
+ * Each detail can be edited.
  */
-// TODO: https://github.com/IvanKovac/TimePickerWithSeconds for timepicker with possibility to set seconds
 public class EditTimeRecordFragment extends Fragment {
-
-    private final String LOG_TAG = this.getClass().getName();
+    private final String LOG_TAG = this.getClass().getSimpleName();
 
     private static final String ARG_PARAM_TIMERECORD_ID = "timeRecordId";
 
     private long timeRecordId;
 
     private View rootView;
+
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd-MM-yyyy");
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
     /**
      * Use this factory method to create a new instance of
@@ -69,66 +76,102 @@ public class EditTimeRecordFragment extends Fragment {
     }
 
     private void refresh() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd-MM");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-
         TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
+
         Calendar checkIn = timeRecord.getCheckIn();
+        refreshFromDate(dateFormat, checkIn);
+        refreshFromTime(timeFormat, checkIn);
+
         Calendar checkOut = timeRecord.getCheckOut();
+        refreshToDate(dateFormat, checkOut);
+        refreshToTime(timeFormat, checkOut);
 
-        TextView fromDateTextView = (TextView) rootView.findViewById(R.id.fromDateValueTextView);
-        String formattedFromDate = dateFormat.format(checkIn.getTime());
-        fromDateTextView.setText(formattedFromDate);
+        refreshBreak(timeRecord);
+    }
 
-        TextView fromTimeTextView = (TextView) rootView.findViewById(R.id.fromTimeValueTextView);
-        String formattedFromTime = timeFormat.format(checkIn.getTime());
-        fromTimeTextView.setText(formattedFromTime);
-        EditTimeClickListener fromTimeClickListener = new EditTimeClickListener(CalendarField.From, checkIn.get(Calendar.HOUR_OF_DAY), checkIn.get(Calendar.MINUTE), checkIn.get(Calendar.SECOND));
-        fromTimeTextView.setOnClickListener(fromTimeClickListener);
-
-        TextView toDateTextView = (TextView) rootView.findViewById(R.id.toDateValueTextView);
-        String formattedToDate = dateFormat.format(checkOut.getTime());
-        toDateTextView.setText(formattedToDate);
-
-        TextView toTimeTextView = (TextView) rootView.findViewById(R.id.toTimeValueTextView);
-        String formattedToTime = timeFormat.format(checkOut.getTime());
-        toTimeTextView.setText(formattedToTime);
-        EditTimeClickListener toTimeClickListener = new EditTimeClickListener(CalendarField.To, checkOut.get(Calendar.HOUR_OF_DAY), checkOut.get(Calendar.MINUTE), checkOut.get(Calendar.SECOND));
-        toTimeTextView.setOnClickListener(toTimeClickListener);
-
+    private void refreshBreak(TimeRecord timeRecord) {
         TextView breakTextView = (TextView) rootView.findViewById(R.id.breakValueTextView);
-        long breakInMinutes = TimeUnit.MILLISECONDS.toMinutes(timeRecord.getBreakInMilliseconds());
+        final long breakInMinutes = TimeUnit.MILLISECONDS.toMinutes(timeRecord.getBreakInMilliseconds());
         breakTextView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                editBreak();
+                editBreak(breakInMinutes);
             }
         });
         breakTextView.setText(breakInMinutes + " minutes");
     }
 
+    private void refreshFromDate(SimpleDateFormat dateFormat, Calendar checkIn) {
+        TextView fromDateTextView = (TextView) rootView.findViewById(R.id.fromDateValueTextView);
+        String formattedFromDate = dateFormat.format(checkIn.getTime());
+        fromDateTextView.setText(formattedFromDate);
+        EditDateClickListener fromDateClickListener = new EditDateClickListener(CalendarField.From, checkIn);
+        fromDateTextView.setOnClickListener(fromDateClickListener);
+    }
+
+    private void refreshFromTime(SimpleDateFormat timeFormat, Calendar checkIn) {
+        TextView fromTimeTextView = (TextView) rootView.findViewById(R.id.fromTimeValueTextView);
+        String formattedFromTime = timeFormat.format(checkIn.getTime());
+        fromTimeTextView.setText(formattedFromTime);
+        EditTimeClickListener fromTimeClickListener = new EditTimeClickListener(CalendarField.From, checkIn);
+        fromTimeTextView.setOnClickListener(fromTimeClickListener);
+    }
+
+    private void refreshToDate(SimpleDateFormat dateFormat, Calendar checkOut) {
+        TextView toDateTextView = (TextView) rootView.findViewById(R.id.toDateValueTextView);
+        String formattedToDate = dateFormat.format(checkOut.getTime());
+        toDateTextView.setText(formattedToDate);
+        EditDateClickListener toDateClickListener = new EditDateClickListener(CalendarField.To, checkOut);
+        toDateTextView.setOnClickListener(toDateClickListener);
+    }
+
+    private void refreshToTime(SimpleDateFormat timeFormat, Calendar checkOut) {
+        TextView toTimeTextView = (TextView) rootView.findViewById(R.id.toTimeValueTextView);
+        String formattedToTime = timeFormat.format(checkOut.getTime());
+        toTimeTextView.setText(formattedToTime);
+        EditTimeClickListener toTimeClickListener = new EditTimeClickListener(CalendarField.To, checkOut);
+        toTimeTextView.setOnClickListener(toTimeClickListener);
+    }
+
     /**
      * Opens a dialog in which a time can be selected.
-     * The TimeRecord is updated with the selected time.
+     * The TimeRecord is updated with the selected time when the user confirms.
      */
     private class EditTimeClickListener implements OnClickListener {
         private final CalendarField calendarField;
-        private final int hourOfDay;
-        private final int minutes;
-        private final int seconds;
+        private final Calendar calendar;
 
-        public EditTimeClickListener(CalendarField calendarField, int hourOfDay, int minutes, int seconds) {
+        public EditTimeClickListener(CalendarField calendarField, Calendar calendar) {
             this.calendarField = calendarField;
-            this.hourOfDay = hourOfDay;
-            this.minutes = minutes;
-            this.seconds = seconds;
+            this.calendar = calendar;
         }
 
         @Override
         public void onClick(View view) {
             TimePickerWithSecondsDialog.OnTimeSetListener timeSetListener = new TimeSetListener(calendarField);
-            TimePickerWithSecondsDialog timePickerDialog = new TimePickerWithSecondsDialog(getActivity(), timeSetListener, hourOfDay, minutes, seconds, true);
+            TimePickerWithSecondsDialog timePickerDialog = new TimePickerWithSecondsDialog(getActivity(), timeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), true);
             timePickerDialog.show();
+        }
+    }
+
+    /**
+     * Opens a dialog in which a date can be selected.
+     * The TimeRecord is updated with the selected date when the user confirms.
+     */
+    private class EditDateClickListener implements OnClickListener {
+        private final CalendarField calendarField;
+        private final Calendar calendar;
+
+        public EditDateClickListener(CalendarField calendarField, Calendar calendar) {
+            this.calendarField = calendarField;
+            this.calendar = calendar;
+        }
+
+        @Override
+        public void onClick(View view) {
+            DateSetListener dateSetListener = new DateSetListener(calendarField);
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+            datePickerDialog.show();
         }
     }
 
@@ -141,7 +184,7 @@ public class EditTimeRecordFragment extends Fragment {
 
         @Override
         public void onTimeSet(timetracker.wiegman.nl.timetracker.TimePicker view, int hourOfDay, int minute, int seconds) {
-            TimeRecord timeRecord = CheckIn.findById(TimeRecord.class, timeRecordId);
+            TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
 
             Calendar calendar = Calendar.getInstance();
             if (CalendarField.From == calendarField) {
@@ -158,45 +201,101 @@ public class EditTimeRecordFragment extends Fragment {
         }
     }
 
+    private class DateSetListener implements DatePickerDialog.OnDateSetListener {
+        private final CalendarField calendarField;
+
+        public DateSetListener(CalendarField calendarField) {
+            this.calendarField = calendarField;
+        }
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
+
+            Calendar calendar = Calendar.getInstance();
+            if (CalendarField.From == calendarField) {
+                calendar = timeRecord.getCheckIn();
+            } else if (CalendarField.To == calendarField) {
+                calendar = timeRecord.getCheckOut();
+            }
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            calendar.set(Calendar.MONTH, monthOfYear);
+            calendar.set(Calendar.YEAR, year);
+            timeRecord.save();
+
+            refresh();
+        }
+    }
+
     public enum CalendarField {
         From,
         To
     }
 
-    private void editBreak() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-        builder.setTitle("Edit break");
+    private void editBreak(long currentBreakInMinutes) {
+        RelativeLayout linearLayout = new RelativeLayout(getActivity());
+        final EditText editText = new EditText(getActivity());
+        editText.setText(Long.toString(currentBreakInMinutes));
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(3);
+        editText.setFilters(filterArray);
+        editText.selectAll();
 
-        Map<String, Long> values = new TreeMap<>();
-        values.put("0 minutes", 0l);
-        values.put("5 minutes", TimeUnit.MINUTES.toMillis(5));
-        values.put("10 minutes", TimeUnit.MINUTES.toMillis(10));
-        values.put("15 minutes", TimeUnit.MINUTES.toMillis(15));
-        values.put("30 minutes", TimeUnit.MINUTES.toMillis(30));
-        values.put("45 minutes", TimeUnit.MINUTES.toMillis(45));
-        values.put("60 minutes", TimeUnit.MINUTES.toMillis(60));
-        values.put("75 minutes", TimeUnit.MINUTES.toMillis(75));
-        values.put("90 minutes", TimeUnit.MINUTES.toMillis(90));
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(50, 50);
+        RelativeLayout.LayoutParams numPickerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        numPickerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
-        String[] strings = values.keySet().toArray(new String[]{});
-        Long[] durations = values.values().toArray(new Long[]{});
+        linearLayout.setLayoutParams(params);
+        linearLayout.addView(editText, numPickerParams);
 
-        builder.setItems(strings, new BreakSelectionListener(durations));
-        builder.show();
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setTitle(R.string.break_in_minutes);
+        alertDialogBuilder.setView(linearLayout);
+
+        Resources res = Resources.getSystem();
+        int idOfPositiveButtonResource = res.getIdentifier("date_time_set", "string", "android");
+        if (idOfPositiveButtonResource == 0) {
+            idOfPositiveButtonResource = android.R.string.ok;
+        }
+        int idOfNegativeButtonResource = res.getIdentifier("cancel", "string", "android");
+        if (idOfNegativeButtonResource == 0) {
+            idOfNegativeButtonResource = android.R.string.cancel;
+        }
+        alertDialogBuilder
+                .setPositiveButton(idOfPositiveButtonResource, new BreakSelectionListener(editText))
+                .setNegativeButton(idOfNegativeButtonResource, new DismissOnClickListener());
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
+            }
+        });
+
+        alertDialog.show();
     }
 
     private class BreakSelectionListener implements DialogInterface.OnClickListener {
-        private final Long[] durations;
+        private final EditText editText;
 
-        public BreakSelectionListener(Long[] durations) {
-            this.durations = durations;
+        public BreakSelectionListener(EditText editText) {
+            this.editText = editText;
         }
 
         @Override
         public void onClick(DialogInterface dialog, int selectedIndex) {
-            dialog.dismiss();
-            Long breakInMillis = durations[selectedIndex];
+            String breakInMinutesInput = editText.getText().toString();
+            long breakInMinutes = 0;
+            if (!breakInMinutesInput.isEmpty()) {
+                breakInMinutes = Long.parseLong(breakInMinutesInput);
+            }
+            long breakInMillis = TimeUnit.MINUTES.toMillis(breakInMinutes);
             TimeRecord.findById(TimeRecord.class, timeRecordId).setBreakInMilliseconds(breakInMillis).save();
+            dialog.dismiss();
             refresh();
         }
     }

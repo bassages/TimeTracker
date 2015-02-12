@@ -9,7 +9,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignWithParentIfMissing="false"
         android:layout_centerHorizontal="true"
-        android:text="Details"
+        android:text="@string/details_title"
         android:textAlignment="center"
         android:textSize="@dimen/FragmentTitle" />
 
@@ -27,18 +27,18 @@
                 android:text="@string/timerecord_start_label"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:gravity="center_vertical"
-                android:layout_marginRight="30dp" />
+                android:layout_marginRight="20dp"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/fromDateValueTextView"
-                android:minHeight="?android:attr/listPreferredItemHeightSmall"
-                android:text="xx dd-MM"
+                android:text="xx dd-MM-yyyy"
                 android:gravity="center_vertical"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginRight="10dp"/>
 
             <TextView
                 android:id="@+id/fromTimeValueTextView"
-                android:minHeight="?android:attr/listPreferredItemHeightSmall"
                 android:text="xx:xx:xx"
                 android:gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -59,12 +59,12 @@
                 android:minHeight="?android:attr/listPreferredItemHeightSmall"
                 android:text="@string/timerecord_to_label"
                 android:gravity="center_vertical"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/toDateValueTextView"
-                android:minHeight="?android:attr/listPreferredItemHeightSmall"
-                android:text="xx dd-MM"
+                android:text="xx dd-MM-yyyy"
                 android:gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -89,11 +89,12 @@
                 android:minHeight="?android:attr/listPreferredItemHeightSmall"
                 android:text="@string/timerecord_break_label"
                 android:gravity="center_vertical"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textStyle="bold"
+                android:layout_marginRight="10dp" />
 
             <TextView
                 android:id="@+id/breakValueTextView"
-                android:minHeight="?android:attr/listPreferredItemHeightSmall"
                 android:text="xx minutes"
                 android:gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceMedium" />

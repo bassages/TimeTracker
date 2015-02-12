@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Today:"
+        android:text="@string/today"
         android:id="@+id/todaysTotalLabelTextView"
         android:layout_centerHorizontal="true" />
 
@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="This week:"
+        android:text="@string/this_week"
         android:id="@+id/thisWeeksTotalLabelTextView"
         android:layout_above="@+id/thisWeeksTotalTextView"
         android:layout_centerHorizontal="true" />

@@ -3,6 +3,7 @@ package timetracker.wiegman.nl.timetracker;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -85,8 +86,18 @@ public class TimePickerWithSecondsDialog extends AlertDialog implements DialogIn
         mCalendar = Calendar.getInstance();
         updateTitle(mInitialHourOfDay, mInitialMinute, mInitialSeconds);
 
-        setButton(DialogInterface.BUTTON_POSITIVE, context.getText(R.string.time_set), this);
-        setButton(DialogInterface.BUTTON_NEGATIVE, context.getText(R.string.cancel), new DismissOnClickListener());
+        Resources res = Resources.getSystem();
+        int idOfPositiveButtonResource = res.getIdentifier("date_time_set", "string", "android");
+        if (idOfPositiveButtonResource == 0) {
+            idOfPositiveButtonResource = android.R.string.ok;
+        }
+        int idOfNegativeButtonResource = res.getIdentifier("cancel", "string", "android");
+        if (idOfNegativeButtonResource == 0) {
+            idOfNegativeButtonResource = android.R.string.cancel;
+        }
+
+        setButton(DialogInterface.BUTTON_POSITIVE, context.getText(idOfPositiveButtonResource), this);
+        setButton(DialogInterface.BUTTON_NEGATIVE, context.getText(idOfNegativeButtonResource), new DismissOnClickListener());
 
         LayoutInflater inflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -100,13 +111,6 @@ public class TimePickerWithSecondsDialog extends AlertDialog implements DialogIn
         mTimePicker.setCurrentSecond(mInitialSeconds);
         mTimePicker.setIs24HourView(mIs24HourView);
         mTimePicker.setOnTimeChangedListener(this);
-    }
-
-    private class DismissOnClickListener implements DialogInterface.OnClickListener {
-        @Override
-        public void onClick(DialogInterface dialogInterface, int which) {
-            dialogInterface.dismiss();
-        }
     }
 
     public void onClick(DialogInterface dialog, int which) {

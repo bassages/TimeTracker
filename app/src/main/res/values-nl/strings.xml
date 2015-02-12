@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Time Tracker</string>
+
+    <string name="action_week_overview">Totalen per week</string>
+    <string name="action_month_overview">Totalen per maand</string>
+
+    <string name="timerecord_start_label">Van:</string>
+    <string name="timerecord_to_label">Tot:</string>
+    <string name="timerecord_break_label">Pauze:</string>
+    <string name="details_title">Details</string>
+
+    <string name="today">Vandaag:</string>
+    <string name="this_week">Deze week:</string>
+
+    <string name="break_in_minutes">Pauze in minuten</string>
+</resources>
