@@ -12,16 +12,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import timetracker.wiegman.nl.timetracker.domain.CheckIn;
 import timetracker.wiegman.nl.timetracker.domain.TimeRecord;
 
 import static android.view.View.OnClickListener;
@@ -33,14 +35,23 @@ import static android.view.View.OnClickListener;
 public class EditTimeRecordFragment extends Fragment {
     private final String LOG_TAG = this.getClass().getSimpleName();
 
+    private static final String INSTANCE_STATE_KEY_FROM = "FROM";
+    private static final String INSTANCE_STATE_KEY_TO = "TO";
+    private static final String INSTANCE_STATE_KEY_BREAK = "BREAK";
+
     private static final String ARG_PARAM_TIMERECORD_ID = "timeRecordId";
 
-    private long timeRecordId;
+    // The id of the timerecord to edit, or null if creating a new one
+    private Long timeRecordId;
 
     private View rootView;
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd-MM-yyyy");
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+    private Calendar from;
+    private Calendar to;
+    private Long breakInMillis;
 
     /**
      * Use this factory method to create a new instance of
@@ -48,10 +59,12 @@ public class EditTimeRecordFragment extends Fragment {
      *
      * @return A new instance of fragment EditTimeRecord.
      */
-    public static EditTimeRecordFragment newInstance(long timeRecordId) {
+    public static EditTimeRecordFragment newInstance(Long timeRecordId) {
         EditTimeRecordFragment fragment = new EditTimeRecordFragment();
         Bundle args = new Bundle();
-        args.putLong(ARG_PARAM_TIMERECORD_ID, timeRecordId);
+        if (timeRecordId != null) {
+            args.putLong(ARG_PARAM_TIMERECORD_ID, timeRecordId);
+        }
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,49 +76,82 @@ public class EditTimeRecordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
-            timeRecordId = getArguments().getLong(ARG_PARAM_TIMERECORD_ID);
+            if (getArguments().containsKey(ARG_PARAM_TIMERECORD_ID)) {
+                timeRecordId = getArguments().getLong(ARG_PARAM_TIMERECORD_ID);
+            } else {
+                timeRecordId = null;
+            }
+        }
+        if (savedInstanceState == null) {
+            setFieldValuesFromTimeRecord();
+        } else {
+            setFieldValuesFromInstanceState(savedInstanceState);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_edit_time_record, container, false);
-        refresh();
+
+        Button cancelButton = (Button) rootView.findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(new CancelButtonOnClickListener());
+
+        Button saveButton = (Button) rootView.findViewById(R.id.saveTimeRecordButton);
+        saveButton.setOnClickListener(new SaveButtonOnClickListener());
+
+        refreshHmiFromFieldValues();
+
         return rootView;
     }
 
-    private void refresh() {
-        TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
-
-        Calendar checkIn = timeRecord.getCheckIn();
-        refreshFromDate(dateFormat, checkIn);
-        refreshFromTime(timeFormat, checkIn);
-
-        Calendar checkOut = timeRecord.getCheckOut();
-        refreshToDate(dateFormat, checkOut);
-        refreshToTime(timeFormat, checkOut);
-
-        refreshBreak(timeRecord);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(INSTANCE_STATE_KEY_FROM, from.getTimeInMillis());
+        outState.putLong(INSTANCE_STATE_KEY_TO, to.getTimeInMillis());
+        outState.putLong(INSTANCE_STATE_KEY_BREAK, breakInMillis);
     }
 
-    private void refreshBreak(TimeRecord timeRecord) {
-        TextView breakTextView = (TextView) rootView.findViewById(R.id.breakValueTextView);
-        final long breakInMinutes = TimeUnit.MILLISECONDS.toMinutes(timeRecord.getBreakInMilliseconds());
-        breakTextView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editBreak(breakInMinutes);
-            }
-        });
-        breakTextView.setText(breakInMinutes + " minutes");
+    private void setFieldValuesFromTimeRecord() {
+        if (timeRecordId != null) {
+            TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
+            from = (Calendar) timeRecord.getCheckIn().clone();
+            to = (Calendar) timeRecord.getCheckOut().clone();
+            breakInMillis = timeRecord.getBreakInMilliseconds();
+        } else {
+            from = Calendar.getInstance();
+            to = Calendar.getInstance();
+            breakInMillis = 0l;
+        }
+    }
+
+    private void setFieldValuesFromInstanceState(Bundle savedInstanceState) {
+        from = Calendar.getInstance();
+        from.setTimeInMillis(savedInstanceState.getLong(INSTANCE_STATE_KEY_FROM));
+
+        to = Calendar.getInstance();
+        to.setTimeInMillis(savedInstanceState.getLong(INSTANCE_STATE_KEY_TO));
+
+        breakInMillis = savedInstanceState.getLong(INSTANCE_STATE_KEY_BREAK);
+    }
+
+    private void refreshHmiFromFieldValues() {
+        refreshFromDate(dateFormat, from);
+        refreshFromTime(timeFormat, from);
+
+        refreshToDate(dateFormat, to);
+        refreshToTime(timeFormat, to);
+
+        refreshBreak(breakInMillis);
     }
 
     private void refreshFromDate(SimpleDateFormat dateFormat, Calendar checkIn) {
         TextView fromDateTextView = (TextView) rootView.findViewById(R.id.fromDateValueTextView);
         String formattedFromDate = dateFormat.format(checkIn.getTime());
         fromDateTextView.setText(formattedFromDate);
-        EditDateClickListener fromDateClickListener = new EditDateClickListener(CalendarField.From, checkIn);
+        EditDateClickListener fromDateClickListener = new EditDateClickListener(checkIn);
         fromDateTextView.setOnClickListener(fromDateClickListener);
     }
 
@@ -113,7 +159,7 @@ public class EditTimeRecordFragment extends Fragment {
         TextView fromTimeTextView = (TextView) rootView.findViewById(R.id.fromTimeValueTextView);
         String formattedFromTime = timeFormat.format(checkIn.getTime());
         fromTimeTextView.setText(formattedFromTime);
-        EditTimeClickListener fromTimeClickListener = new EditTimeClickListener(CalendarField.From, checkIn);
+        EditTimeClickListener fromTimeClickListener = new EditTimeClickListener(checkIn);
         fromTimeTextView.setOnClickListener(fromTimeClickListener);
     }
 
@@ -121,7 +167,7 @@ public class EditTimeRecordFragment extends Fragment {
         TextView toDateTextView = (TextView) rootView.findViewById(R.id.toDateValueTextView);
         String formattedToDate = dateFormat.format(checkOut.getTime());
         toDateTextView.setText(formattedToDate);
-        EditDateClickListener toDateClickListener = new EditDateClickListener(CalendarField.To, checkOut);
+        EditDateClickListener toDateClickListener = new EditDateClickListener(checkOut);
         toDateTextView.setOnClickListener(toDateClickListener);
     }
 
@@ -129,107 +175,87 @@ public class EditTimeRecordFragment extends Fragment {
         TextView toTimeTextView = (TextView) rootView.findViewById(R.id.toTimeValueTextView);
         String formattedToTime = timeFormat.format(checkOut.getTime());
         toTimeTextView.setText(formattedToTime);
-        EditTimeClickListener toTimeClickListener = new EditTimeClickListener(CalendarField.To, checkOut);
+        EditTimeClickListener toTimeClickListener = new EditTimeClickListener(checkOut);
         toTimeTextView.setOnClickListener(toTimeClickListener);
+    }
+
+    private void refreshBreak(Long breakInMillis) {
+        TextView breakTextView = (TextView) rootView.findViewById(R.id.breakValueTextView);
+        long breakInMinutes = TimeUnit.MILLISECONDS.toMinutes(breakInMillis);
+        breakTextView.setOnClickListener(new BreakTextViewOnClickListener(breakInMinutes));
+        String textToSet = getString(R.string.break_minutes, breakInMinutes);
+        breakTextView.setText(textToSet);
     }
 
     /**
      * Opens a dialog in which a time can be selected.
-     * The TimeRecord is updated with the selected time when the user confirms.
+     * The calendar is updated with the selected time when the user confirms.
      */
     private class EditTimeClickListener implements OnClickListener {
-        private final CalendarField calendarField;
-        private final Calendar calendar;
+        private final Calendar calendarToEdit;
 
-        public EditTimeClickListener(CalendarField calendarField, Calendar calendar) {
-            this.calendarField = calendarField;
-            this.calendar = calendar;
+        public EditTimeClickListener(Calendar calendarToEdit) {
+            this.calendarToEdit = calendarToEdit;
         }
 
         @Override
         public void onClick(View view) {
-            TimePickerWithSecondsDialog.OnTimeSetListener timeSetListener = new TimeSetListener(calendarField);
-            TimePickerWithSecondsDialog timePickerDialog = new TimePickerWithSecondsDialog(getActivity(), timeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), true);
+            TimePickerWithSecondsDialog.OnTimeSetListener timeSetListener = new TimeSetListener(calendarToEdit);
+            TimePickerWithSecondsDialog timePickerDialog = new TimePickerWithSecondsDialog(getActivity(), timeSetListener, calendarToEdit.get(Calendar.HOUR_OF_DAY), calendarToEdit.get(Calendar.MINUTE), calendarToEdit.get(Calendar.SECOND), true);
             timePickerDialog.show();
+        }
+    }
+
+    private class TimeSetListener implements TimePickerWithSecondsDialog.OnTimeSetListener {
+        private final Calendar calendarToEdit;
+
+        public TimeSetListener(Calendar calendarToEdit) {
+            this.calendarToEdit = calendarToEdit;
+        }
+        @Override
+        public void onTimeSet(timetracker.wiegman.nl.timetracker.TimePicker view, int hourOfDay, int minute, int seconds) {
+            calendarToEdit.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendarToEdit.set(Calendar.MINUTE, minute);
+            calendarToEdit.set(Calendar.SECOND, seconds);
+
+            refreshHmiFromFieldValues();
         }
     }
 
     /**
      * Opens a dialog in which a date can be selected.
-     * The TimeRecord is updated with the selected date when the user confirms.
+     * The calendar is updated with the selected date when the user confirms.
      */
     private class EditDateClickListener implements OnClickListener {
-        private final CalendarField calendarField;
-        private final Calendar calendar;
+        private final Calendar calendarToEdit;
 
-        public EditDateClickListener(CalendarField calendarField, Calendar calendar) {
-            this.calendarField = calendarField;
-            this.calendar = calendar;
+        public EditDateClickListener(Calendar calendarToEdit) {
+            this.calendarToEdit = calendarToEdit;
         }
 
         @Override
         public void onClick(View view) {
-            DateSetListener dateSetListener = new DateSetListener(calendarField);
-            DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+            DateSetListener dateSetListener = new DateSetListener(calendarToEdit);
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), dateSetListener, calendarToEdit.get(Calendar.YEAR), calendarToEdit.get(Calendar.MONTH), calendarToEdit.get(Calendar.DAY_OF_MONTH));
             datePickerDialog.show();
         }
     }
 
-    private class TimeSetListener implements TimePickerWithSecondsDialog.OnTimeSetListener {
-        private final CalendarField calendarField;
-
-        public TimeSetListener(CalendarField calendarField) {
-            this.calendarField = calendarField;
-        }
-
-        @Override
-        public void onTimeSet(timetracker.wiegman.nl.timetracker.TimePicker view, int hourOfDay, int minute, int seconds) {
-            TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
-
-            Calendar calendar = Calendar.getInstance();
-            if (CalendarField.From == calendarField) {
-                calendar = timeRecord.getCheckIn();
-            } else if (CalendarField.To == calendarField) {
-                calendar = timeRecord.getCheckOut();
-            }
-            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            calendar.set(Calendar.MINUTE, minute);
-            calendar.set(Calendar.SECOND, seconds);
-            timeRecord.save();
-
-            refresh();
-        }
-    }
-
     private class DateSetListener implements DatePickerDialog.OnDateSetListener {
-        private final CalendarField calendarField;
+        private final Calendar calendarToEdit;
 
-        public DateSetListener(CalendarField calendarField) {
-            this.calendarField = calendarField;
+        public DateSetListener(Calendar calendarToEdit) {
+            this.calendarToEdit = calendarToEdit;
         }
 
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
+            calendarToEdit.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            calendarToEdit.set(Calendar.MONTH, monthOfYear);
+            calendarToEdit.set(Calendar.YEAR, year);
 
-            Calendar calendar = Calendar.getInstance();
-            if (CalendarField.From == calendarField) {
-                calendar = timeRecord.getCheckIn();
-            } else if (CalendarField.To == calendarField) {
-                calendar = timeRecord.getCheckOut();
-            }
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            calendar.set(Calendar.MONTH, monthOfYear);
-            calendar.set(Calendar.YEAR, year);
-            timeRecord.save();
-
-            refresh();
+            refreshHmiFromFieldValues();
         }
-    }
-
-    public enum CalendarField {
-        From,
-        To
     }
 
     private void editBreak(long currentBreakInMinutes) {
@@ -275,8 +301,11 @@ public class EditTimeRecordFragment extends Fragment {
                 }
             }
         });
-
         alertDialog.show();
+    }
+
+    private void closeFragment() {
+        getFragmentManager().popBackStack();
     }
 
     private class BreakSelectionListener implements DialogInterface.OnClickListener {
@@ -293,10 +322,76 @@ public class EditTimeRecordFragment extends Fragment {
             if (!breakInMinutesInput.isEmpty()) {
                 breakInMinutes = Long.parseLong(breakInMinutesInput);
             }
-            long breakInMillis = TimeUnit.MINUTES.toMillis(breakInMinutes);
-            TimeRecord.findById(TimeRecord.class, timeRecordId).setBreakInMilliseconds(breakInMillis).save();
+            breakInMillis = TimeUnit.MINUTES.toMillis(breakInMinutes);
+
             dialog.dismiss();
-            refresh();
+
+            refreshHmiFromFieldValues();
+        }
+    }
+
+    private class SaveButtonOnClickListener implements OnClickListener {
+        @Override
+        public void onClick(View view) {
+            if (validationOk()) {
+                TimeRecord timeRecord;
+                if (EditTimeRecordFragment.this.timeRecordId != null) {
+                    timeRecord = TimeRecord.findById(TimeRecord.class, EditTimeRecordFragment.this.timeRecordId);
+                } else {
+                    timeRecord = new TimeRecord();
+                }
+                timeRecord.setCheckIn(from);
+                timeRecord.setCheckOut(to);
+                timeRecord.setBreakInMilliseconds(breakInMillis);
+                timeRecord.save();
+
+                closeFragment();
+            }
+        }
+    }
+
+    private boolean validationOk() {
+        boolean result = true;
+
+        long fromTimeInMillis = from.getTimeInMillis();
+        long toTimeInMillis = to.getTimeInMillis();
+
+        if (fromTimeInMillis >= toTimeInMillis) {
+            result = false;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.to_date_must_be_later_than_from_date)
+                    .setNeutralButton(android.R.string.ok, new DismissOnClickListener())
+                    .show();
+        } else if (((toTimeInMillis - fromTimeInMillis) - breakInMillis) <= 0) {
+            result = false;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.break_bigger_than_billable_duration)
+                    .setNeutralButton(android.R.string.ok, new DismissOnClickListener())
+                    .show();
+        }
+
+        return result;
+    }
+
+    private class CancelButtonOnClickListener implements OnClickListener {
+        @Override
+        public void onClick(View view) {
+            closeFragment();
+        }
+    }
+
+    private class BreakTextViewOnClickListener implements OnClickListener {
+        private final long breakInMinutes;
+
+        public BreakTextViewOnClickListener(long breakInMinutes) {
+            this.breakInMinutes = breakInMinutes;
+        }
+
+        @Override
+        public void onClick(View view) {
+            editBreak(breakInMinutes);
         }
     }
 }

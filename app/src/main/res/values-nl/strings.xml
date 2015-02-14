@@ -5,7 +5,7 @@
     <string name="action_week_overview">Totalen per week</string>
     <string name="action_month_overview">Totalen per maand</string>
 
-    <string name="timerecord_start_label">Van:</string>
+    <string name="timerecord_from_label">Van:</string>
     <string name="timerecord_to_label">Tot:</string>
     <string name="timerecord_break_label">Pauze:</string>
     <string name="details_title">Details</string>
@@ -19,13 +19,20 @@
     <string name="no_records_to_delete_in_period">Er is niets te verwijderen in de geselecteerde periode</string>
 
     <string name="confirm">Bevestigen a.u.b.</string>
-    <string name="delete_all_on_day">Alles verwijderen op %1$s?</string>
+    <string name="delete_all_on_day">Alles verwijderen van %1$s?</string>
     <string name="delete_all_in_period">Alles verwijderen van\n%1$s\ntot en met\n%2$s?</string>
 
     <string name="checkout">Uitklokken</string>
     <string name="checked_in_at">U ben ingeklokt om %1$s</string>
 
-    <string name="no_details_available_because_no_checkin">Geen details beschikbaar omdat u niet heeft geklokt op de geselecteerde dag</string>
+    <string name="no_details_available_because_no_checkin">Er zijn geen details beschikbaar omdat u niet heeft geklokt op de geselecteerde dag</string>
 
     <string name="delete_this_row">Geselecteerde rij verwijderen?</string>
+
+    <string name="save">Opslaan</string>
+
+    <string name="break_minutes">%1$d minuten</string>
+
+    <string name="to_date_must_be_later_than_from_date">\&quot;Tot\&quot; moet later zijn dan \&quot;van\&quot;</string>
+    <string name="break_bigger_than_billable_duration">De pauze mag niet (langer dan/gelijk aan) de tijdsduur zijn</string>
 </resources>

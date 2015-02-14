@@ -5,7 +5,7 @@
     <string name="action_week_overview">Week totals</string>
     <string name="action_month_overview">Month totals</string>
 
-    <string name="timerecord_start_label">From:</string>
+    <string name="timerecord_from_label">From:</string>
     <string name="timerecord_to_label">To:</string>
     <string name="timerecord_break_label">Break:</string>
 
@@ -25,7 +25,14 @@
     <string name="checkout">Checkout</string>
     <string name="checked_in_at">You checked in at %1$s</string>
 
-    <string name="no_details_available_because_no_checkin">No details available because you have not checked in on the selected date</string>
+    <string name="no_details_available_because_no_checkin">There are no details available because you have not checked in on the selected date</string>
 
     <string name="delete_this_row">Delete selected row?</string>
+
+    <string name="save">Save</string>
+
+    <string name="break_minutes">%1$d minutes</string>
+
+    <string name="to_date_must_be_later_than_from_date">\&quot;To\&quot; must be bigger than \&quot;from\&quot;</string>
+    <string name="break_bigger_than_billable_duration">The break may not be longer or equal than the selected period</string>
 </resources>

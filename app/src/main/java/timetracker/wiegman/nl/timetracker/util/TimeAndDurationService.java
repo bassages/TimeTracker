@@ -111,8 +111,12 @@ public class TimeAndDurationService {
 
     public static void checkOut() {
         CheckIn checkIn = TimeAndDurationService.getCheckIn();
+
         Calendar checkInTimestamp = checkIn.getTimestamp();
+        checkInTimestamp.set(Calendar.MILLISECOND, 0);
+
         Calendar checkOutTimestamp = Calendar.getInstance();
+        checkOutTimestamp.set(Calendar.MILLISECOND, 0);
 
         TimeRecord timeRecord = new TimeRecord();
         timeRecord.setCheckIn(checkInTimestamp).setCheckOut(checkOutTimestamp);
