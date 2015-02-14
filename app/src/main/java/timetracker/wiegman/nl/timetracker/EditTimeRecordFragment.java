@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,9 +23,11 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import timetracker.wiegman.nl.timetracker.domain.TimeRecord;
+import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
 
 import static android.view.View.OnClickListener;
 
@@ -94,6 +97,14 @@ public class EditTimeRecordFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_edit_time_record, container, false);
+
+        Button deleteButton = (Button) rootView.findViewById(R.id.deleteButton);
+        if (timeRecordId == null) {
+            LinearLayout buttonHolder = (LinearLayout) rootView.findViewById(R.id.timeRecordDetailsButtonHolder);
+            buttonHolder.removeView(deleteButton);
+        } else {
+            deleteButton.setOnClickListener(new DeleteButtonOnClickListener());
+        }
 
         Button cancelButton = (Button) rootView.findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(new CancelButtonOnClickListener());
@@ -393,5 +404,36 @@ public class EditTimeRecordFragment extends Fragment {
         public void onClick(View view) {
             editBreak(breakInMinutes);
         }
+    }
+
+    private class DeleteButtonOnClickListener implements OnClickListener {
+        @Override
+        public void onClick(View view) {
+            DialogInterface.OnClickListener dialogClickListener = new DeleteConfirmationDialogOnClickListener();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.confirm_delete)
+                    .setTitle(R.string.confirm)
+                    .setPositiveButton(android.R.string.yes, dialogClickListener)
+                    .setNegativeButton(android.R.string.no, new DismissOnClickListener())
+                    .show();
+        }
+    }
+
+    private class DeleteConfirmationDialogOnClickListener implements DialogInterface.OnClickListener {
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
+                    timeRecord.delete();
+                    dialog.dismiss();
+                    closeFragment();
+                    break;
+                default:
+                    dialog.dismiss();
+                    break;
+            }
+        }
+
     }
 }

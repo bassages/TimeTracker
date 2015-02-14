@@ -142,6 +142,18 @@
         android:layout_alignParentStart="true">
 
         <Button
+            android:id="@+id/deleteButton"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/delete" />
+
+        <View android:layout_height="fill_parent"
+            android:layout_width="1dp"
+            android:background="?android:attr/dividerVertical"/>
+
+        <Button
             android:id="@+id/saveTimeRecordButton"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="fill_parent"

@@ -35,4 +35,8 @@
 
     <string name="to_date_must_be_later_than_from_date">\&quot;Tot\&quot; moet later zijn dan \&quot;van\&quot;</string>
     <string name="break_bigger_than_billable_duration">De pauze mag niet (langer dan/gelijk aan) de tijdsduur zijn</string>
+
+    <string name="delete">Verwijder</string>
+
+    <string name="confirm_delete">Weet u zeker dat u deze gegevens wilt verwijderen?</string>
 </resources>

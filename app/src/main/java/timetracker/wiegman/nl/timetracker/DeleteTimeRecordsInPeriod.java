@@ -94,11 +94,13 @@ public class DeleteTimeRecordsInPeriod {
                     for (TimeRecord recordToDelete : timeRecordsOnDay) {
                         recordToDelete.delete();
                     }
+                    dialog.dismiss();
                     if (timeRecordsDeletedListener != null) {
                         timeRecordsDeletedListener.recordDeleted();
                     }
                     break;
                 default:
+                    dialog.dismiss();
                     break;
             }
         }
