@@ -67,9 +67,10 @@ public class DayDetailsHelper {
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE dd-MM-yyyy HH:mm:ss");
-        builder.setMessage("You checked in at " + sdf.format(checkIn.getTimestamp().getTime()))
-                .setNeutralButton("OK", dialogClickListener)
-                .setNegativeButton("Checkout", dialogClickListener)
+        String message = activity.getString(R.string.checked_in_at, sdf.format(checkIn.getTimestamp().getTime()));
+        builder.setMessage(message)
+                .setNeutralButton(android.R.string.ok, dialogClickListener)
+                .setNegativeButton(R.string.checkout, dialogClickListener)
                 .show();
     }
 
@@ -84,8 +85,8 @@ public class DayDetailsHelper {
             }
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setMessage("No details available because you have not checked in on the selected date")
-                .setPositiveButton("OK", dialogClickListener)
+        builder.setMessage(R.string.no_details_available_because_no_checkin)
+                .setPositiveButton(android.R.string.ok, dialogClickListener)
                 .show();
     }
 

@@ -14,4 +14,18 @@
     <string name="this_week">Deze week:</string>
 
     <string name="break_in_minutes">Pauze in minuten</string>
+
+    <string name="no_records_to_delete_on_day">Er is niets te verwijderen op de geselecteerde dag</string>
+    <string name="no_records_to_delete_in_period">Er is niets te verwijderen in de geselecteerde periode</string>
+
+    <string name="confirm">Bevestigen a.u.b.</string>
+    <string name="delete_all_on_day">Alles verwijderen op %1$s?</string>
+    <string name="delete_all_in_period">Alles verwijderen van\n%1$s\ntot en met\n%2$s?</string>
+
+    <string name="checkout">Uitklokken</string>
+    <string name="checked_in_at">U ben ingeklokt om %1$s</string>
+
+    <string name="no_details_available_because_no_checkin">Geen details beschikbaar omdat u niet heeft geklokt op de geselecteerde dag</string>
+
+    <string name="delete_this_row">Geselecteerde rij verwijderen?</string>
 </resources>

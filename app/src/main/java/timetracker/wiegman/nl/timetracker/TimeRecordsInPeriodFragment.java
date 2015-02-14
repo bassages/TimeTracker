@@ -112,9 +112,10 @@ public class TimeRecordsInPeriodFragment extends Fragment {
             }
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Delete this record?")
-                .setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener)
+        builder.setMessage(R.string.delete_this_row)
+                .setTitle(R.string.confirm)
+                .setPositiveButton(android.R.string.yes, dialogClickListener)
+                .setNegativeButton(android.R.string.no, dialogClickListener)
                 .show();
     }
 

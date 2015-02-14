@@ -14,4 +14,18 @@
     <string name="this_week">This week:</string>
 
     <string name="break_in_minutes">Break in minutes</string>
+
+    <string name="no_records_to_delete_on_day">There is nothing to delete on the selected day</string>
+    <string name="no_records_to_delete_in_period">There is nothing to delete in the selected period</string>
+
+    <string name="confirm">Please confirm</string>
+    <string name="delete_all_on_day">Delete all on %1$s?</string>
+    <string name="delete_all_in_period">Delete all from\n%1$s\nto\n%2$s?</string>
+
+    <string name="checkout">Checkout</string>
+    <string name="checked_in_at">You checked in at %1$s</string>
+
+    <string name="no_details_available_because_no_checkin">No details available because you have not checked in on the selected date</string>
+
+    <string name="delete_this_row">Delete selected row?</string>
 </resources>

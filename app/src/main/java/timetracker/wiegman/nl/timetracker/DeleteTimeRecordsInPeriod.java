@@ -50,37 +50,34 @@ public class DeleteTimeRecordsInPeriod {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             String message = getDeleteConfirmationMessage();
             builder.setMessage(message)
-                    .setPositiveButton("Yes", dialogClickListener)
-                    .setNegativeButton("No", new DismissOnClickListener())
+                    .setTitle(R.string.confirm)
+                    .setPositiveButton(android.R.string.yes, dialogClickListener)
+                    .setNegativeButton(android.R.string.no, new DismissOnClickListener())
                     .show();
         }
     }
 
     private void nothingToDelete() {
-        String message = "";
+        int message;
         if (DateUtils.isSameDay(from, to)) {
-            message = "There are no records to delete on the selected day";
+            message = R.string.no_records_to_delete_on_day;
         } else {
-            message = "There are no records to delete in the selected period";
+            message = R.string.no_records_to_delete_in_period;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setMessage(message)
-                .setNeutralButton("OK", new DismissOnClickListener())
+                .setNeutralButton(android.R.string.ok, new DismissOnClickListener())
                 .show();
-    }
-
-    private boolean isBetween(long timeInMillis, long fromTimeInMillis, long toTimeInMillis) {
-        return timeInMillis <= fromTimeInMillis && timeInMillis <= toTimeInMillis;
     }
 
     private String getDeleteConfirmationMessage() {
         String message;
         if (DateUtils.isSameDay(from, to)) {
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE dd-MM-yyyy");
-            message = "Delete all records on " + sdf.format(from.getTime()) + "?";
+            message = activity.getString(R.string.delete_all_on_day, sdf.format(from.getTime()));
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE dd-MM-yyyy HH:mm:ss");
-            message = "Delete all records between " + sdf.format(from.getTime()) + " and " + sdf.format(to.getTime()) + "?";
+            message = activity.getString(R.string.delete_all_in_period, sdf.format(from.getTime()), sdf.format(to.getTime()));
         }
         return message;
     }
@@ -104,14 +101,6 @@ public class DeleteTimeRecordsInPeriod {
                 default:
                     break;
             }
-        }
-    }
-
-    private class DismissOnClickListener implements DialogInterface.OnClickListener {
-
-        @Override
-        public void onClick(DialogInterface dialogInterface, int which) {
-            dialogInterface.dismiss();
         }
     }
 }
