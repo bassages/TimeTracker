@@ -41,6 +41,7 @@ public class EditTimeRecordFragment extends Fragment {
     private static final String INSTANCE_STATE_KEY_FROM = "FROM";
     private static final String INSTANCE_STATE_KEY_TO = "TO";
     private static final String INSTANCE_STATE_KEY_BREAK = "BREAK";
+    private static final String INSTANCE_STATE_KEY_NOTE = "NOTE";
 
     private static final String ARG_PARAM_TIMERECORD_ID = "timeRecordId";
 
@@ -55,6 +56,7 @@ public class EditTimeRecordFragment extends Fragment {
     private Calendar from;
     private Calendar to;
     private Long breakInMillis;
+    private String note;
 
     /**
      * Use this factory method to create a new instance of
@@ -123,6 +125,7 @@ public class EditTimeRecordFragment extends Fragment {
         outState.putLong(INSTANCE_STATE_KEY_FROM, from.getTimeInMillis());
         outState.putLong(INSTANCE_STATE_KEY_TO, to.getTimeInMillis());
         outState.putLong(INSTANCE_STATE_KEY_BREAK, breakInMillis);
+        outState.putString(INSTANCE_STATE_KEY_NOTE, note);
     }
 
     private void setFieldValuesFromTimeRecord() {
@@ -131,10 +134,12 @@ public class EditTimeRecordFragment extends Fragment {
             from = (Calendar) timeRecord.getCheckIn().clone();
             to = (Calendar) timeRecord.getCheckOut().clone();
             breakInMillis = timeRecord.getBreakInMilliseconds();
+            note = timeRecord.getNote();
         } else {
             from = Calendar.getInstance();
             to = Calendar.getInstance();
             breakInMillis = 0l;
+            note = "";
         }
     }
 
@@ -146,6 +151,7 @@ public class EditTimeRecordFragment extends Fragment {
         to.setTimeInMillis(savedInstanceState.getLong(INSTANCE_STATE_KEY_TO));
 
         breakInMillis = savedInstanceState.getLong(INSTANCE_STATE_KEY_BREAK);
+        note = savedInstanceState.getString(INSTANCE_STATE_KEY_NOTE);
     }
 
     private void refreshHmiFromFieldValues() {
@@ -156,6 +162,13 @@ public class EditTimeRecordFragment extends Fragment {
         refreshToTime(timeFormat, to);
 
         refreshBreak(breakInMillis);
+        refreshNote(note);
+    }
+
+    private void refreshNote(String note) {
+        TextView noteTextView = (TextView) rootView.findViewById(R.id.noteValueTextView);
+        noteTextView.setText(note);
+        noteTextView.setOnClickListener(new NoteTextViewOnClickListener());
     }
 
     private void refreshFromDate(SimpleDateFormat dateFormat, Calendar checkIn) {
@@ -196,6 +209,60 @@ public class EditTimeRecordFragment extends Fragment {
         breakTextView.setOnClickListener(new BreakTextViewOnClickListener(breakInMinutes));
         String textToSet = getString(R.string.break_minutes, breakInMinutes);
         breakTextView.setText(textToSet);
+    }
+
+    private class NoteTextViewOnClickListener implements OnClickListener {
+        @Override
+        public void onClick(View view) {
+            RelativeLayout linearLayout = new RelativeLayout(getActivity());
+            EditText editText = new EditText(getActivity());
+            editText.setText(note);
+
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(50, 50);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+            linearLayout.setLayoutParams(params);
+            linearLayout.addView(editText, layoutParams);
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+            alertDialogBuilder.setTitle(R.string.note);
+            alertDialogBuilder.setView(linearLayout);
+
+            alertDialogBuilder
+                    .setPositiveButton(getOkButtonTextResource(), new NoteSetListener(editText))
+                    .setNegativeButton(getCancelButtonTextResource(), new DismissOnClickListener());
+            final AlertDialog alertDialog = alertDialogBuilder.create();
+
+            editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                    }
+                }
+            });
+            alertDialog.show();
+
+        }
+    }
+
+    private int getCancelButtonTextResource() {
+        Resources res = Resources.getSystem();
+        int idOfNegativeButtonResource = res.getIdentifier("cancel", "string", "android");
+        if (idOfNegativeButtonResource == 0) {
+            idOfNegativeButtonResource = android.R.string.cancel;
+        }
+        return idOfNegativeButtonResource;
+    }
+
+    private int getOkButtonTextResource() {
+        Resources res = Resources.getSystem();
+        int idOfPositiveButtonResource = res.getIdentifier("date_time_set", "string", "android");
+        if (idOfPositiveButtonResource == 0) {
+            idOfPositiveButtonResource = android.R.string.ok;
+        }
+        return idOfPositiveButtonResource;
     }
 
     /**
@@ -280,28 +347,19 @@ public class EditTimeRecordFragment extends Fragment {
         editText.selectAll();
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(50, 50);
-        RelativeLayout.LayoutParams numPickerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        numPickerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
         linearLayout.setLayoutParams(params);
-        linearLayout.addView(editText, numPickerParams);
+        linearLayout.addView(editText, layoutParams);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setTitle(R.string.break_in_minutes);
         alertDialogBuilder.setView(linearLayout);
 
-        Resources res = Resources.getSystem();
-        int idOfPositiveButtonResource = res.getIdentifier("date_time_set", "string", "android");
-        if (idOfPositiveButtonResource == 0) {
-            idOfPositiveButtonResource = android.R.string.ok;
-        }
-        int idOfNegativeButtonResource = res.getIdentifier("cancel", "string", "android");
-        if (idOfNegativeButtonResource == 0) {
-            idOfNegativeButtonResource = android.R.string.cancel;
-        }
         alertDialogBuilder
-                .setPositiveButton(idOfPositiveButtonResource, new BreakSelectionListener(editText))
-                .setNegativeButton(idOfNegativeButtonResource, new DismissOnClickListener());
+                .setPositiveButton(getOkButtonTextResource(), new BreakSelectionListener(editText))
+                .setNegativeButton(getCancelButtonTextResource(), new DismissOnClickListener());
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -354,6 +412,7 @@ public class EditTimeRecordFragment extends Fragment {
                 timeRecord.setCheckIn(from);
                 timeRecord.setCheckOut(to);
                 timeRecord.setBreakInMilliseconds(breakInMillis);
+                timeRecord.setNote(note);
                 timeRecord.save();
 
                 closeFragment();
@@ -434,6 +493,20 @@ public class EditTimeRecordFragment extends Fragment {
                     break;
             }
         }
+    }
 
+    private class NoteSetListener implements DialogInterface.OnClickListener {
+        private EditText editText;
+
+        public NoteSetListener(EditText editText) {
+            this.editText = editText;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            note = editText.getText().toString();
+            dialog.dismiss();
+            refreshHmiFromFieldValues();
+        }
     }
 }

@@ -93,6 +93,7 @@ public class DayDetailsHelper {
     private void showEditTimeRecordFragment(List<TimeRecord> timeRecordsOnDay) {
         EditTimeRecordFragment fragment = EditTimeRecordFragment.newInstance(timeRecordsOnDay.get(0).getId());
         FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -108,6 +109,7 @@ public class DayDetailsHelper {
 
         TimeRecordsInPeriodFragment fragment = TimeRecordsInPeriodFragment.newInstance(period);
         FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();

@@ -162,6 +162,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
         DaysInPeriodFragment fragment = DaysInPeriodFragment.newInstance(period);
 
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();

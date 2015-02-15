@@ -14,6 +14,7 @@
     <string name="this_week">Deze week:</string>
 
     <string name="break_in_minutes">Pauze in minuten</string>
+    <string name="note">Notitie</string>
 
     <string name="no_records_to_delete_on_day">Er is niets te verwijderen op de geselecteerde dag</string>
     <string name="no_records_to_delete_in_period">Er is niets te verwijderen in de geselecteerde periode</string>
@@ -39,4 +40,6 @@
     <string name="delete">Verwijder</string>
 
     <string name="confirm_delete">Weet u zeker dat u deze gegevens wilt verwijderen?</string>
+    <string name="timerecord_note_label">Notitie:</string>
+
 </resources>

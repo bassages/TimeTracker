@@ -8,12 +8,14 @@
     <string name="timerecord_from_label">From:</string>
     <string name="timerecord_to_label">To:</string>
     <string name="timerecord_break_label">Break:</string>
+    <string name="timerecord_note_label">Note:</string>
 
     <string name="details_title">Details</string>
     <string name="today">Today:</string>
     <string name="this_week">This week:</string>
 
     <string name="break_in_minutes">Break in minutes</string>
+    <string name="note">Note</string>
 
     <string name="no_records_to_delete_on_day">There is nothing to delete on the selected day</string>
     <string name="no_records_to_delete_in_period">There is nothing to delete in the selected period</string>

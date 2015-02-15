@@ -122,6 +122,7 @@ public class TimeRecordsInPeriodFragment extends Fragment {
     private void editTimeRecord(long timeRecordId) {
         EditTimeRecordFragment fragment = EditTimeRecordFragment.newInstance(timeRecordId);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();

@@ -7,10 +7,18 @@ import java.util.Calendar;
 public class TimeRecord extends SugarRecord<TimeRecord> {
 
     private Calendar checkIn;
-
     private Calendar checkOut;
-
     private Long breakInMilliseconds;
+    private String note;
+
+    public String getNote() {
+        return note;
+    }
+
+    public TimeRecord setNote(String note) {
+        this.note = note;
+        return this;
+    }
 
     public Calendar getCheckIn() {
         return checkIn;
