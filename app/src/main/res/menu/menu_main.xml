@@ -4,4 +4,8 @@
     <item android:id="@+id/action_week" android:title="@string/action_week_overview" android:orderInCategory="100" />
     <item android:id="@+id/action_month" android:title="@string/action_month_overview" android:orderInCategory="200" />
 
+    <item android:id="@+id/action_add"
+        android:title="Add"
+        android:icon="@android:drawable/ic_menu_add"
+        android:showAsAction="always"/>
 </menu>

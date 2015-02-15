@@ -122,9 +122,19 @@ public class MainActivity extends Activity {
             showWeekOverview();
         } else if (id == R.id.action_month) {
             showMonthOverview();
+        } else if (id == R.id.action_add) {
+            showAdd();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showAdd() {
+        EditTimeRecordFragment fragment = EditTimeRecordFragment.newInstance(null);
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     private void showWeekOverview() {
