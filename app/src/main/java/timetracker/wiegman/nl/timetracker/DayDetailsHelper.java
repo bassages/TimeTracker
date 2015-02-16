@@ -3,7 +3,6 @@ package timetracker.wiegman.nl.timetracker;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.DialogInterface;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -14,7 +13,7 @@ import java.util.List;
 
 import timetracker.wiegman.nl.timetracker.domain.CheckIn;
 import timetracker.wiegman.nl.timetracker.domain.TimeRecord;
-import timetracker.wiegman.nl.timetracker.util.Period;
+import timetracker.wiegman.nl.timetracker.util.DayPeriod;
 import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
 
 public class DayDetailsHelper {
@@ -48,7 +47,7 @@ public class DayDetailsHelper {
         } else if (nrOfTimeRecordsOnDay == 1) {
             showEditTimeRecordFragment(timeRecordsOnDay);
         } else {
-            showTimeRecordsOnDayFragment(day, startOfDay, endOfDay);
+            showTimeRecordsOnDayFragment(day);
         }
     }
 
@@ -99,13 +98,8 @@ public class DayDetailsHelper {
         fragmentTransaction.commit();
     }
 
-    private void showTimeRecordsOnDayFragment(Calendar day, Calendar startOfDay, Calendar endOfDay) {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd-MM-yyyy");
-
-        Period period = new Period();
-        period.setFrom(startOfDay);
-        period.setTo(endOfDay);
-        period.setTitle(sdf.format(day.getTime()));
+    private void showTimeRecordsOnDayFragment(Calendar day) {
+        DayPeriod period = new DayPeriod(day);
 
         TimeRecordsInPeriodFragment fragment = TimeRecordsInPeriodFragment.newInstance(period);
         FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();

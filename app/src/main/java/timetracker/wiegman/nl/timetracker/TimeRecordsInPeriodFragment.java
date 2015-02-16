@@ -14,7 +14,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 import timetracker.wiegman.nl.timetracker.domain.TimeRecord;
@@ -29,13 +28,9 @@ import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
 public class TimeRecordsInPeriodFragment extends Fragment {
     private final String LOG_TAG = this.getClass().getName();
 
-    private static final String ARG_PERIOD_TITLE = "periodTitle";
-    private static final String ARG_PERIOD_FROM = "periodFrom";
-    private static final String ARG_PERIOD_TO = "periodTo";
+    private static final String ARG_PERIOD = "period";
 
-    private String periodTitle;
-    private Calendar periodFrom;
-    private Calendar periodTo;
+    private Period period;
 
     private TextView titleTextView;
     private ListView timeRecordsListView;
@@ -49,9 +44,7 @@ public class TimeRecordsInPeriodFragment extends Fragment {
     public static TimeRecordsInPeriodFragment newInstance(Period period) {
         TimeRecordsInPeriodFragment fragment = new TimeRecordsInPeriodFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PERIOD_TITLE, period.getTitle());
-        args.putSerializable(ARG_PERIOD_FROM, period.getFrom());
-        args.putSerializable(ARG_PERIOD_TO, period.getTo());
+        args.putSerializable(ARG_PERIOD, period);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,9 +57,7 @@ public class TimeRecordsInPeriodFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            periodTitle = getArguments().getString(ARG_PERIOD_TITLE);
-            periodFrom = (Calendar) getArguments().getSerializable(ARG_PERIOD_FROM);
-            periodTo = (Calendar) getArguments().getSerializable(ARG_PERIOD_TO);
+            period = (Period) getArguments().getSerializable(ARG_PERIOD);
         }
     }
 
@@ -75,7 +66,7 @@ public class TimeRecordsInPeriodFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
 
         titleTextView = (TextView) rootView.findViewById(R.id.timeRecordDetailsTitle);
-        titleTextView.setText(periodTitle);
+        titleTextView.setText(period.getTitle());
 
         timeRecordsListView = (ListView) rootView.findViewById(R.id.timeRecordsInPeriodListView);
 
@@ -101,12 +92,11 @@ public class TimeRecordsInPeriodFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        // Yes button clicked
                         TimeRecord.findById(TimeRecord.class, timeRecordId).delete();
                         refreshData();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
-                        // No button clicked, do nothing
+                        dialog.dismiss();
                         break;
                 }
             }
@@ -129,7 +119,10 @@ public class TimeRecordsInPeriodFragment extends Fragment {
     }
 
     private void refreshData() {
-        List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(periodFrom.getTimeInMillis(), periodTo.getTimeInMillis());
+        long fromTimeMillis = period.getFrom().getTimeInMillis();
+        long toTimeInMillis = period.getTo().getTimeInMillis();
+
+        List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(fromTimeMillis, toTimeInMillis);
         timeRecordsListView.setAdapter(new TimeRecordsInPeriodAdapter(timeRecordsInPeriod));
     }
 

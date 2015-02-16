@@ -3,11 +3,8 @@ package timetracker.wiegman.nl.timetracker;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,8 +15,9 @@ import timetracker.wiegman.nl.timetracker.domain.CheckIn;
 import timetracker.wiegman.nl.timetracker.domain.TimeRecord;
 
 public class MainActivity extends Activity {
-
     private final String LOG_TAG = this.getClass().getSimpleName();
+
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +36,9 @@ public class MainActivity extends Activity {
     private void restoreBackup() {
         CheckIn.deleteAll(CheckIn.class);
         TimeRecord.deleteAll(TimeRecord.class);
+
+        // 8-2015
+        saveTimeRecord("16-02-2015 07:00:01", "16-02-2015 16:38:25", 30);
 
         // 7-2015
         saveTimeRecord("13-02-2015 07:03:00", "13-02-2015 15:17:02", 30);
@@ -111,6 +112,7 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -129,7 +131,6 @@ public class MainActivity extends Activity {
         } else if (id == R.id.action_add) {
             showAdd();
         }
-
         return super.onOptionsItemSelected(item);
     }
 

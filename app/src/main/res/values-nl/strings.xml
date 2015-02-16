@@ -24,7 +24,7 @@
     <string name="delete_all_in_period">Alles verwijderen van\n%1$s\ntot en met\n%2$s?</string>
 
     <string name="checkout">Uitklokken</string>
-    <string name="checked_in_at">U ben ingeklokt om %1$s</string>
+    <string name="checked_in_at">U ben ingeklokt sinds %1$s</string>
 
     <string name="no_details_available_because_no_checkin">Er zijn geen details beschikbaar omdat u niet heeft geklokt op de geselecteerde dag</string>
 

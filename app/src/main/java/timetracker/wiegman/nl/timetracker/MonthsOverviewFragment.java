@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import timetracker.wiegman.nl.timetracker.util.MonthPeriod;
 import timetracker.wiegman.nl.timetracker.util.Period;
 import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
 
@@ -43,7 +44,8 @@ public class MonthsOverviewFragment extends AbstractPeriodsInYearOverviewFragmen
         date.clear();
         date.set(Calendar.MONTH, (int)month);
         date.set(Calendar.YEAR, year);
-        return TimeAndDurationService.getMonth(date);
+
+        return new MonthPeriod(date);
     }
 
     @Override

@@ -29,18 +29,14 @@ import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
  * Shows a list of days within a given period.
  * For each dat the billable duration is shown.
  *
- * The timerecords on a day can be deleted or edited.
+ * The timerecords on a day can be deleted (long press) or edited (on click).
  */
 public class DaysInPeriodFragment extends Fragment {
     private final String LOG_TAG = this.getClass().getSimpleName();
 
-    private static final String ARG_PERIOD_TITLE = "periodTitle";
-    private static final String ARG_PERIOD_FROM = "periodFrom";
-    private static final String ARG_PERIOD_TO = "periodTo";
+    private static final String ARG_PERIOD = "periodTitle";
 
-    private String periodTitle;
-    private Calendar periodFrom;
-    private Calendar periodTo;
+    private Period period;
 
     private TextView titleTextView;
     private ListView billableDurationOnDayListView;
@@ -58,9 +54,7 @@ public class DaysInPeriodFragment extends Fragment {
     public static DaysInPeriodFragment newInstance(Period period) {
         DaysInPeriodFragment fragment = new DaysInPeriodFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PERIOD_TITLE, period.getTitle());
-        args.putSerializable(ARG_PERIOD_FROM, period.getFrom());
-        args.putSerializable(ARG_PERIOD_TO, period.getTo());
+        args.putSerializable(ARG_PERIOD, period);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,9 +67,7 @@ public class DaysInPeriodFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            periodTitle = getArguments().getString(ARG_PERIOD_TITLE);
-            periodFrom = (Calendar) getArguments().getSerializable(ARG_PERIOD_FROM);
-            periodTo = (Calendar) getArguments().getSerializable(ARG_PERIOD_TO);
+            period = (Period) getArguments().getSerializable(ARG_PERIOD);
         }
     }
 
@@ -84,11 +76,16 @@ public class DaysInPeriodFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
 
         titleTextView = (TextView) rootView.findViewById(R.id.timeRecordDetailsTitle);
-        titleTextView.setText(periodTitle);
 
         billableDurationOnDayListView = (ListView) rootView.findViewById(R.id.timeRecordsInPeriodListView);
         billableDurationOnDayListView.setOnItemClickListener(new BillableDurationOnDayItemClickListener());
         billableDurationOnDayListView.setOnItemLongClickListener(new BillableDurationLongClickListener());
+
+        View previous = rootView.findViewById(R.id.previousImageView);
+        previous.setOnClickListener(new PreviousOnClickListener());
+
+        View next = rootView.findViewById(R.id.nextImageView);
+        next.setOnClickListener(new NextOnClickListener());
 
         refreshData();
 
@@ -148,8 +145,10 @@ public class DaysInPeriodFragment extends Fragment {
                 int index = positionOfCurrentItem - billableDurationOnDayListView.getFirstVisiblePosition();
                 if (index >= 0) {
                     View dayItemView = billableDurationOnDayListView.getChildAt(index);
-                    TextView billableDurationColumnTextView = (TextView) dayItemView.findViewById(R.id.billableDurationColumn);
-                    billableDurationColumnTextView.setText(formattedBillableDuration);
+                    if (dayItemView != null) {
+                        TextView billableDurationColumnTextView = (TextView) dayItemView.findViewById(R.id.billableDurationColumn);
+                        billableDurationColumnTextView.setText(formattedBillableDuration);
+                    }
                 }
             }
         }
@@ -173,10 +172,12 @@ public class DaysInPeriodFragment extends Fragment {
     }
 
     private void refreshData() {
+        titleTextView.setText(period.getTitle());
+
         List<BillableHoursOnDay> days = new ArrayList<>();
 
-        Calendar day = (Calendar) periodFrom.clone();
-        while (day.getTimeInMillis() < periodTo.getTimeInMillis()) {
+        Calendar day = (Calendar) period.getFrom().clone();
+        while (day.getTimeInMillis() < period.getTo().getTimeInMillis()) {
             BillableHoursOnDay billableHoursOnDay = new BillableHoursOnDay();
             billableHoursOnDay.setDay((Calendar)day.clone());
             long billableDurationOnDay = TimeAndDurationService.getBillableDurationOnDay(day);
@@ -315,6 +316,22 @@ public class DaysInPeriodFragment extends Fragment {
             DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), startOfDay, endOfDay, timeRecordsDeletedListener);
             deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
             return true;
+        }
+    }
+
+    private class NextOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            period = period.getNext();
+            refreshData();
+        }
+    }
+
+    private class PreviousOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            // TODO ...
+            refreshData();
         }
     }
 }

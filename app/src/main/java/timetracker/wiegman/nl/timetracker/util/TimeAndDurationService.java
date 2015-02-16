@@ -1,7 +1,5 @@
 package timetracker.wiegman.nl.timetracker.util;
 
-import android.util.Log;
-
 import com.orm.query.Condition;
 import com.orm.query.Select;
 
@@ -17,7 +15,7 @@ import timetracker.wiegman.nl.timetracker.domain.TimeRecord;
 
 public class TimeAndDurationService {
 
-    private static final String LOG_TAG = TimeAndDurationService.class.getName();
+    private static final String LOG_TAG = TimeAndDurationService.class.getSimpleName();
 
     private static final long DEFAULT_BREAKDURATION = TimeUnit.MINUTES.toMillis(30);
 
@@ -126,23 +124,6 @@ public class TimeAndDurationService {
         checkIn.delete();
     }
 
-    public static Period getWeek(Calendar dayInWeek) {
-        Period result = new Period();
-        result.setTitle(Formatting.getWeekOverViewTitle(dayInWeek));
-
-        Calendar monday = DateUtils.iterator(dayInWeek, DateUtils.RANGE_WEEK_MONDAY).next();
-        monday = getStartOfDay(monday);
-        result.setFrom(monday);
-
-        Calendar endOfSunday = (Calendar) monday.clone();
-        endOfSunday.add(Calendar.WEEK_OF_YEAR, 1);
-        endOfSunday.add(Calendar.MILLISECOND, -1);
-
-        result.setTo(endOfSunday);
-
-        return result;
-    }
-
     public static long getBillableDurationInMonthOfDay(Calendar dayInMonth) {
         long monthTotal = 0;
 
@@ -152,8 +133,6 @@ public class TimeAndDurationService {
         end.add(Calendar.MONTH, 1);
         end.add(Calendar.MILLISECOND, -1);
 
-        Log.d(LOG_TAG, "From: " + start.getTime().toString() + " to " + end.getTime().toString());
-
         while (start.getTimeInMillis() < end.getTimeInMillis()) {
             monthTotal += getBillableDurationOnDay(start);
             start.add(Calendar.DAY_OF_MONTH, 1);
@@ -162,23 +141,7 @@ public class TimeAndDurationService {
         return monthTotal;
     }
 
-    public static Period getMonth(Calendar dayInMonth) {
-        Period result = new Period();
-        result.setTitle(Formatting.getMonthOverviewTitle(dayInMonth));
-
-        Calendar start = getStartOfMonth(dayInMonth);
-        result.setFrom(start);
-
-        Calendar end = (Calendar) start.clone();
-        end.add(Calendar.MONTH, 1);
-        end.add(Calendar.MILLISECOND, -1);
-
-        result.setTo(end);
-
-        return result;
-    }
-
-    private static Calendar getStartOfMonth(Calendar dayInMonth) {
+    public static Calendar getStartOfMonth(Calendar dayInMonth) {
         Calendar start = ((Calendar)dayInMonth.clone());
         start = DateUtils.truncate(start, Calendar.MONTH);
         return start;

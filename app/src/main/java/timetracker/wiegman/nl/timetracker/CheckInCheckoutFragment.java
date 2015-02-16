@@ -16,9 +16,9 @@ import timetracker.wiegman.nl.timetracker.util.Formatting;
 import timetracker.wiegman.nl.timetracker.util.Period;
 import timetracker.wiegman.nl.timetracker.util.PeriodicRunnableExecutor;
 import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
+import timetracker.wiegman.nl.timetracker.util.WeekPeriod;
 
 public class CheckInCheckoutFragment extends Fragment {
-
     private final String LOG_TAG = this.getClass().getSimpleName();
 
     private TextView todaysTotalTextView;
@@ -82,7 +82,7 @@ public class CheckInCheckoutFragment extends Fragment {
         public void onClick(View view) {
             Calendar today = Calendar.getInstance();
 
-            Period period = TimeAndDurationService.getWeek(today);
+            Period period = new WeekPeriod(today);
 
             DaysInPeriodFragment fragment = DaysInPeriodFragment.newInstance(period);
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();

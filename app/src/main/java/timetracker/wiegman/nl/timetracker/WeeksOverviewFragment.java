@@ -8,6 +8,7 @@ import java.util.List;
 
 import timetracker.wiegman.nl.timetracker.util.Period;
 import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
+import timetracker.wiegman.nl.timetracker.util.WeekPeriod;
 
 public class WeeksOverviewFragment extends AbstractPeriodsInYearOverviewFragment {
 
@@ -42,7 +43,7 @@ public class WeeksOverviewFragment extends AbstractPeriodsInYearOverviewFragment
         date.clear();
         date.set(Calendar.WEEK_OF_YEAR, (int)weekNumber);
         date.set(Calendar.YEAR, year);
-        return TimeAndDurationService.getWeek(date);
+        return new WeekPeriod(date);
     }
 
     @Override

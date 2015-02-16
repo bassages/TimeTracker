@@ -13,18 +13,18 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.Calendar;
 import java.util.List;
 
 import timetracker.wiegman.nl.timetracker.util.Formatting;
 import timetracker.wiegman.nl.timetracker.util.Period;
 import timetracker.wiegman.nl.timetracker.util.PeriodicRunnableExecutor;
-import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
 
 public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     private final String LOG_TAG = this.getClass().getSimpleName();
 
     protected static final String ARG_YEAR = "year";
+
+    public static final String INSTANCE_STATE_YEAR = "YEAR";
 
     private TextView yearTextView;
     private ListView periodsListView;
@@ -55,25 +55,43 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
         if (getArguments() != null) {
             year = getArguments().getInt(ARG_YEAR);
         }
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(INSTANCE_STATE_YEAR)) {
+                year = savedInstanceState.getInt(INSTANCE_STATE_YEAR);
+            }
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_period_overview, container, false);
 
+        yearTextView = (TextView) rootView.findViewById(R.id.yearTextView);
+
         periodsListView = (ListView) rootView.findViewById(R.id.periodListView);
         periodsListView.setOnItemClickListener(new PeriodItemClickListener());
         periodsListView.setOnItemLongClickListener(new PeriodItemLongClickListener());
 
-        yearTextView = (TextView) rootView.findViewById(R.id.yearTextView);
-        yearTextView.setText(Integer.toString(year));
+        View previous = rootView.findViewById(R.id.previousImageView);
+        previous.setOnClickListener(new PreviousOnClickListener());
+
+        View next = rootView.findViewById(R.id.nextImageView);
+        next.setOnClickListener(new NextOnClickListener());
 
         refreshData();
 
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(INSTANCE_STATE_YEAR, year);
+    }
+
     private void refreshData() {
+        yearTextView.setText(Integer.toString(year));
+
         List<PeriodOverviewItem> periodOverviewItems = getOverviewItems(year);
 
         listViewAdapter = new TimeRecordsInPeriodAdapter(periodOverviewItems);
@@ -88,13 +106,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (isCurrentPeriodInList() && TimeAndDurationService.isCheckedIn()) {
-            activateRecalculateCurrentPeriodUpdater();
-        }
-    }
-
-    private boolean isCurrentPeriodInList() {
-        return Calendar.getInstance().get(Calendar.YEAR) == year;
+        activateRecalculateCurrentPeriodUpdater();
     }
 
     @Override
@@ -127,6 +139,22 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
         }
     }
 
+    private class NextOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            year += 1;
+            refreshData();
+        }
+    }
+
+    private class PreviousOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            year -= 1;
+            refreshData();
+        }
+    }
+
     private class CheckedInTimeUpdater implements Runnable {
         @Override
         public void run() {
@@ -150,8 +178,10 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
                 int index = positionOfCurrentItem - periodsListView.getFirstVisiblePosition();
                 if (index >= 0) {
                     View periodOverviewItem = periodsListView.getChildAt(index);
-                    TextView billableDurationColumnTextView = (TextView) periodOverviewItem.findViewById(R.id.billableDurationColumn);
-                    billableDurationColumnTextView.setText(formattedBillableDuration);
+                    if (periodOverviewItem != null) {
+                        TextView billableDurationColumnTextView = (TextView) periodOverviewItem.findViewById(R.id.billableDurationColumn);
+                        billableDurationColumnTextView.setText(formattedBillableDuration);
+                    }
                 }
             }
         }

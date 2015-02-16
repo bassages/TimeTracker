@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -19,15 +21,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import org.apache.commons.lang3.time.DateUtils;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import timetracker.wiegman.nl.timetracker.domain.TimeRecord;
-import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
 
 import static android.view.View.OnClickListener;
 
@@ -79,8 +77,16 @@ public class EditTimeRecordFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.findItem(R.id.action_add).setVisible(false);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
 
         if (getArguments() != null) {
             if (getArguments().containsKey(ARG_PARAM_TIMERECORD_ID)) {
