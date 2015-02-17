@@ -319,19 +319,20 @@ public class DaysInPeriodFragment extends Fragment {
         }
     }
 
+    private class PreviousOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            period = period.getPrevious();
+            refreshData();
+        }
+    }
+
     private class NextOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
             period = period.getNext();
             refreshData();
         }
-    }
 
-    private class PreviousOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            // TODO ...
-            refreshData();
-        }
     }
 }

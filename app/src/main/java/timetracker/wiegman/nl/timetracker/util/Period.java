@@ -11,4 +11,6 @@ public interface Period extends Serializable {
     String getTitle();
 
     Period getNext();
+
+    Period getPrevious();
 }

@@ -4,15 +4,9 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.Calendar;
 
-public class WeekPeriod extends AbstractPeriod implements Period{
-
-    private final int weekNumber;
-    private final int year;
+public class WeekPeriod extends AbstractPeriod implements Period {
 
     public WeekPeriod(Calendar dayInWeek) {
-        this.weekNumber = dayInWeek.get(Calendar.WEEK_OF_YEAR);
-        this.year = dayInWeek.get(Calendar.YEAR);
-
         Calendar startOfMonday = DateUtils.iterator(dayInWeek, DateUtils.RANGE_WEEK_MONDAY).next();
         startOfMonday = TimeAndDurationService.getStartOfDay(startOfMonday);
 
@@ -27,6 +21,13 @@ public class WeekPeriod extends AbstractPeriod implements Period{
     @Override
     public String getTitle() {
         return String.format("Week %d - %4d", getFrom().get(Calendar.WEEK_OF_YEAR), getFrom().get(Calendar.YEAR));
+    }
+
+    @Override
+    public Period getPrevious() {
+        Calendar previous = (Calendar) getFrom().clone();
+        previous.add(Calendar.WEEK_OF_YEAR, -1);
+        return new WeekPeriod(previous);
     }
 
     @Override

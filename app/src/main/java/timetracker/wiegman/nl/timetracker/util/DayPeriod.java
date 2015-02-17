@@ -17,6 +17,13 @@ public class DayPeriod extends AbstractPeriod {
     }
 
     @Override
+    public Period getPrevious() {
+        Calendar previous = (Calendar) getFrom().clone();
+        previous.add(Calendar.DAY_OF_MONTH, -1);
+        return new DayPeriod(previous);
+    }
+
+    @Override
     public Period getNext() {
         Calendar next = (Calendar) getFrom().clone();
         next.add(Calendar.DAY_OF_MONTH, 1);
