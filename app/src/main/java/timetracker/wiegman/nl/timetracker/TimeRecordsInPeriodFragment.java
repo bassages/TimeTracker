@@ -123,7 +123,13 @@ public class TimeRecordsInPeriodFragment extends Fragment {
         long toTimeInMillis = period.getTo().getTimeInMillis();
 
         List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(fromTimeMillis, toTimeInMillis);
-        timeRecordsListView.setAdapter(new TimeRecordsInPeriodAdapter(timeRecordsInPeriod));
+        if (timeRecordsInPeriod == null || timeRecordsInPeriod.isEmpty()) {
+            // This can happen when the last item is deleted
+            getFragmentManager().popBackStack();
+        } else {
+            TimeRecordsInPeriodAdapter timeRecordsInPeriodAdapter = new TimeRecordsInPeriodAdapter(timeRecordsInPeriod);
+            timeRecordsListView.setAdapter(timeRecordsInPeriodAdapter);
+        }
     }
 
     private class TimeRecordsInPeriodAdapter extends BaseAdapter {

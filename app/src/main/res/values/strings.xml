@@ -5,12 +5,14 @@
     <string name="action_week_overview">Week totals</string>
     <string name="action_month_overview">Month totals</string>
 
+    <string name="add_timerecord_title">Add time</string>
+    <string name="edit_timerecord_title">Edit time</string>
+
     <string name="timerecord_from_label">From:</string>
     <string name="timerecord_to_label">To:</string>
     <string name="timerecord_break_label">Break:</string>
     <string name="timerecord_note_label">Note:</string>
 
-    <string name="details_title">Details</string>
     <string name="today">Today:</string>
     <string name="this_week">This week:</string>
 

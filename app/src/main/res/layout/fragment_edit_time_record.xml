@@ -9,7 +9,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignWithParentIfMissing="false"
         android:layout_centerHorizontal="true"
-        android:text="@string/details_title"
+        android:text="@string/edit_timerecord_title"
         android:textAlignment="center"
         android:textSize="@dimen/FragmentTitle" />
 

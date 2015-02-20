@@ -106,6 +106,13 @@ public class EditTimeRecordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_edit_time_record, container, false);
 
+        TextView title = (TextView) rootView.findViewById(R.id.timeRecordDetailsTitle);
+        if (timeRecordId == null) {
+            title.setText(R.string.add_timerecord_title);
+        } else {
+            title.setText(R.string.edit_timerecord_title);
+        }
+
         Button deleteButton = (Button) rootView.findViewById(R.id.deleteButton);
         if (timeRecordId == null) {
             LinearLayout buttonHolder = (LinearLayout) rootView.findViewById(R.id.timeRecordDetailsButtonHolder);

@@ -5,10 +5,12 @@
     <string name="action_week_overview">Totalen per week</string>
     <string name="action_month_overview">Totalen per maand</string>
 
+    <string name="add_timerecord_title">Tijd toevoegen</string>
+    <string name="edit_timerecord_title">Tijd wijzigen</string>
+
     <string name="timerecord_from_label">Van:</string>
     <string name="timerecord_to_label">Tot:</string>
     <string name="timerecord_break_label">Pauze:</string>
-    <string name="details_title">Details</string>
 
     <string name="today">Vandaag:</string>
     <string name="this_week">Deze week:</string>

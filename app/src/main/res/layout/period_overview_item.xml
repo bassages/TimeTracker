@@ -16,7 +16,7 @@
 
     <TextView
         android:id="@+id/billableDurationColumn"
-        android:layout_width="95dp"
+        android:layout_width="105dp"
         android:layout_height="wrap_content"
         android:text="999:99:99"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
