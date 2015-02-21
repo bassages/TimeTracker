@@ -31,7 +31,7 @@ public class DayDetailsHelper {
         Calendar startOfDay = TimeAndDurationService.getStartOfDay(day);
         Calendar endOfDay = TimeAndDurationService.getEndOfDay(day);
 
-        List<TimeRecord> timeRecordsOnDay = TimeAndDurationService.getTimeRecordsBetween(startOfDay.getTimeInMillis(), endOfDay.getTimeInMillis());
+        List<TimeRecord> timeRecordsOnDay = TimeAndDurationService.getTimeRecordsBetween(startOfDay, endOfDay);
         int nrOfTimeRecordsOnDay = timeRecordsOnDay.size();
 
         boolean isCheckedInOnDay = false;

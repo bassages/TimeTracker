@@ -67,8 +67,8 @@ public class TimeAndDurationService {
     public static long getBillableDurationOnDay(Calendar day) {
         long dayTotal = 0;
 
-        long startOfDay = DateUtils.truncate(day, Calendar.DAY_OF_MONTH).getTimeInMillis();
-        long endOfDay = startOfDay + DateUtils.MILLIS_PER_DAY;
+        Calendar startOfDay = DateUtils.truncate(day, Calendar.DAY_OF_MONTH);
+        Calendar endOfDay = getEndOfDay(startOfDay);
 
         List<TimeRecord> timeRecordsOnDay = getTimeRecordsBetween(startOfDay, endOfDay);
 
@@ -95,10 +95,10 @@ public class TimeAndDurationService {
         return weekTotal;
     }
 
-    public static List<TimeRecord> getTimeRecordsBetween(long start, long end) {
+    public static List<TimeRecord> getTimeRecordsBetween(Calendar from, Calendar to) {
         return Select.from(TimeRecord.class)
-                .where(Condition.prop("check_in").gt(start))
-                .and(Condition.prop("check_out").lt(end))
+                .where(Condition.prop("check_in").gt(from.getTimeInMillis()))
+                .and(Condition.prop("check_out").lt(to.getTimeInMillis()))
                 .orderBy("check_in")
                 .list();
     }

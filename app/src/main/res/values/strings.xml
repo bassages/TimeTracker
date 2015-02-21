@@ -41,4 +41,14 @@
     <string name="break_bigger_than_billable_duration">The break may not be longer or equal than the selected period</string>
     <string name="delete">Delete</string>
     <string name="confirm_delete">Are you sure that you want to delete this data?</string>
+
+    <string name="export_to_pdf">Save to pdf file</string>
+
+    <string name="export_table_header_date">Date</string>
+    <string name="export_table_header_from">From</string>
+    <string name="export_table_header_to">To</string>
+    <string name="export_table_header_break">Break</string>
+    <string name="export_table_header_duration">Duration</string>
+
+    <string name="export_table_minutes">mins.</string>
 </resources>

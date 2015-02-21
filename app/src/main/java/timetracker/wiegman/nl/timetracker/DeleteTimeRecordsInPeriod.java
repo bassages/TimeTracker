@@ -36,11 +36,7 @@ public class DeleteTimeRecordsInPeriod {
     }
 
     public void handleUserRequestToDeleteRecordsInPeriod() {
-
-        long fromTimeInMillis = from.getTimeInMillis();
-        long toTimeInMillis = to.getTimeInMillis();
-
-        List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(fromTimeInMillis, toTimeInMillis);
+        List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(from, to);
 
         if (timeRecordsInPeriod.size() == 0) {
             nothingToDelete();
@@ -90,7 +86,7 @@ public class DeleteTimeRecordsInPeriod {
         public void onClick(DialogInterface dialog, int which) {
             switch (which) {
                 case DialogInterface.BUTTON_POSITIVE:
-                    List<TimeRecord> timeRecordsOnDay = TimeAndDurationService.getTimeRecordsBetween(from.getTimeInMillis(), to.getTimeInMillis());
+                    List<TimeRecord> timeRecordsOnDay = TimeAndDurationService.getTimeRecordsBetween(from, to);
                     for (TimeRecord recordToDelete : timeRecordsOnDay) {
                         recordToDelete.delete();
                     }

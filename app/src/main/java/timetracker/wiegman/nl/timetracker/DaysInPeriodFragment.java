@@ -1,10 +1,17 @@
 package timetracker.wiegman.nl.timetracker;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -14,6 +21,7 @@ import android.widget.TextView;
 
 import org.apache.commons.lang3.time.DateUtils;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,6 +40,7 @@ import timetracker.wiegman.nl.timetracker.util.TimeAndDurationService;
  * The timerecords on a day can be deleted (long press) or edited (on click).
  */
 public class DaysInPeriodFragment extends Fragment {
+    public static final int MENU_ITEM_EXPORT_TO_PDF_ID = 0;
     private final String LOG_TAG = this.getClass().getSimpleName();
 
     private static final String ARG_PERIOD = "periodTitle";
@@ -73,6 +82,8 @@ public class DaysInPeriodFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+
         View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
 
         titleTextView = (TextView) rootView.findViewById(R.id.timeRecordDetailsTitle);
@@ -93,6 +104,13 @@ public class DaysInPeriodFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        menu.add(0, MENU_ITEM_EXPORT_TO_PDF_ID, 0, R.string.export_to_pdf);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         if (isCurrentPeriodInList() && TimeAndDurationService.isCheckedIn()) {
@@ -104,6 +122,41 @@ public class DaysInPeriodFragment extends Fragment {
     public void onStop() {
         super.onStop();
         deactivateCheckedInTimeUpdater();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == MENU_ITEM_EXPORT_TO_PDF_ID) {
+            Export export = new Export(getActivity(), period);
+            File pdf = export.exportPeriodToPdf();
+            openFile(pdf);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void openFile(File pdf) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setDataAndType(Uri.fromFile(pdf),"application/pdf");
+        getActivity().startActivity(i);
+    }
+
+    public void composeEmail(String subject, String htmlBody) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{});
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+
+        String html = "<p><b>Some Content</b></p><small><p>More content</p></small>";
+        Spanned spanned = Html.fromHtml(new StringBuilder()
+                .append(html)
+                .toString());
+        intent.putExtra(Intent.EXTRA_HTML_TEXT, html);
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, spanned);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     private boolean isCurrentPeriodInList() {
@@ -121,6 +174,7 @@ public class DaysInPeriodFragment extends Fragment {
             checkedInTimeUpdaterExecutor = null;
         }
     }
+
     private class CheckedInTimeUpdater implements Runnable {
         @Override
         public void run() {
@@ -174,6 +228,13 @@ public class DaysInPeriodFragment extends Fragment {
     private void refreshData() {
         titleTextView.setText(period.getTitle());
 
+        List<BillableHoursOnDay> days = getBillableHoursOnDays();
+
+        listViewAdapter = new BillableHoursPerDayAdapter(days);
+        billableDurationOnDayListView.setAdapter(listViewAdapter);
+    }
+
+    private List<BillableHoursOnDay> getBillableHoursOnDays() {
         List<BillableHoursOnDay> days = new ArrayList<>();
 
         Calendar day = (Calendar) period.getFrom().clone();
@@ -183,11 +244,9 @@ public class DaysInPeriodFragment extends Fragment {
             long billableDurationOnDay = TimeAndDurationService.getBillableDurationOnDay(day);
             billableHoursOnDay.setBillableDuration(billableDurationOnDay);
             days.add(billableHoursOnDay);
-
             day.add(Calendar.DAY_OF_MONTH, 1);
         }
-        listViewAdapter = new BillableHoursPerDayAdapter(days);
-        billableDurationOnDayListView.setAdapter(listViewAdapter);
+        return days;
     }
 
     private class BillableHoursPerDayAdapter extends BaseAdapter {

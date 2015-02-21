@@ -119,10 +119,7 @@ public class TimeRecordsInPeriodFragment extends Fragment {
     }
 
     private void refreshData() {
-        long fromTimeMillis = period.getFrom().getTimeInMillis();
-        long toTimeInMillis = period.getTo().getTimeInMillis();
-
-        List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(fromTimeMillis, toTimeInMillis);
+        List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(period.getFrom(), period.getTo());
         if (timeRecordsInPeriod == null || timeRecordsInPeriod.isEmpty()) {
             // This can happen when the last item is deleted
             getFragmentManager().popBackStack();

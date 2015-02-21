@@ -44,4 +44,13 @@
     <string name="confirm_delete">Weet u zeker dat u deze gegevens wilt verwijderen?</string>
     <string name="timerecord_note_label">Notitie:</string>
 
+    <string name="export_to_pdf">Opslaan als pdf bestand</string>
+
+    <string name="export_table_header_date">Datum</string>
+    <string name="export_table_header_from">Van</string>
+    <string name="export_table_header_to">Tot</string>
+    <string name="export_table_header_break">Pauze</string>
+    <string name="export_table_header_duration">Duur</string>
+
+    <string name="export_table_minutes">min.</string>
 </resources>

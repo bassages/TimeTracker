@@ -2,6 +2,8 @@ package timetracker.wiegman.nl.timetracker;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,8 +18,6 @@ import timetracker.wiegman.nl.timetracker.domain.TimeRecord;
 
 public class MainActivity extends Activity {
     private final String LOG_TAG = this.getClass().getSimpleName();
-
-    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +116,6 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        this.menu = menu;
         return true;
     }
 
