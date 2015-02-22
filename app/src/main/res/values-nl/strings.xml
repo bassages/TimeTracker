@@ -46,11 +46,14 @@
 
     <string name="export_to_pdf">Opslaan als pdf bestand</string>
 
+    <string name="exporting_progress_dialog">Bezig met exporteren...</string>
+    <string name="export_completed_to_file">Bestand opgeslagen: %1$s</string>
+
     <string name="export_table_header_date">Datum</string>
     <string name="export_table_header_from">Van</string>
     <string name="export_table_header_to">Tot</string>
     <string name="export_table_header_break">Pauze</string>
-    <string name="export_table_header_duration">Duur</string>
+    <string name="export_table_header_duration">Tijdsduur</string>
 
     <string name="export_table_minutes">min.</string>
 </resources>

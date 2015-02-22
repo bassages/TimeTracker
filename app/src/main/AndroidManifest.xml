@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="timetracker.wiegman.nl.timetracker" >
+    package="nl.wiegman.timetracker" >
 
     <meta-data android:name="DATABASE" android:value="timetracker.db" />
     <meta-data android:name="VERSION" android:value="1" />
     <meta-data android:name="QUERY_LOG" android:value="true" />
     <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="nl.wiegman.timetracker"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name="com.orm.SugarApp"

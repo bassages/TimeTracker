@@ -44,6 +44,9 @@
 
     <string name="export_to_pdf">Save to pdf file</string>
 
+    <string name="exporting_progress_dialog">Export in progress...</string>
+    <string name="export_completed_to_file">File saved: %1$s</string>
+
     <string name="export_table_header_date">Date</string>
     <string name="export_table_header_from">From</string>
     <string name="export_table_header_to">To</string>
