@@ -3,38 +3,27 @@ package nl.wiegman.timetracker;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -66,7 +55,6 @@ public class PdfExport extends AsyncTask<Void, Void, File> {
 
     @Override
     protected void onPreExecute() {
-        super.onPreExecute();
         dialog = new ProgressDialog(context);
         dialog.setMessage(context.getString(R.string.exporting_progress_dialog));
         dialog.show();
@@ -79,8 +67,6 @@ public class PdfExport extends AsyncTask<Void, Void, File> {
 
     @Override
     protected void onPostExecute(File pdfFile) {
-        super.onPostExecute(pdfFile);
-
         closeProgressDialog();
 
         if (pdfFile != null && pdfFile.exists() && pdfFile.canRead()) {

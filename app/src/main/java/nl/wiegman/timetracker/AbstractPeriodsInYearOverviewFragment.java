@@ -2,6 +2,7 @@ package nl.wiegman.timetracker;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -91,16 +92,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
     private void refreshData() {
         yearTextView.setText(Integer.toString(year));
-
-        List<PeriodOverviewItem> periodOverviewItems = getOverviewItems(year);
-
-        listViewAdapter = new TimeRecordsInPeriodAdapter(periodOverviewItems);
-        periodsListView.setAdapter(listViewAdapter);
-
-        Integer positionOfCurrentItem = getPositionOfCurrentItem(periodOverviewItems);
-        if (positionOfCurrentItem != null) {
-            periodsListView.setSelection(positionOfCurrentItem);
-        }
+        new RefreshData().execute();
     }
 
     @Override
@@ -313,6 +305,46 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
             DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), period.getFrom(), period.getTo(), timeRecordsDeletedListener);
             deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
             return true;
+        }
+    }
+
+    private class RefreshData extends AsyncTask<Void, Void, List<PeriodOverviewItem>> {
+
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            openProgressDialog();
+        }
+
+        @Override
+        protected List<PeriodOverviewItem> doInBackground(Void... voids) {
+            return getOverviewItems(year);
+        }
+
+        @Override
+        protected void onPostExecute(List<PeriodOverviewItem> periodOverviewItems) {
+            listViewAdapter = new TimeRecordsInPeriodAdapter(periodOverviewItems);
+            periodsListView.setAdapter(listViewAdapter);
+
+            Integer positionOfCurrentItem = getPositionOfCurrentItem(periodOverviewItems);
+            if (positionOfCurrentItem != null) {
+                periodsListView.setSelection(positionOfCurrentItem);
+            }
+            closeProgressDialog();
+        }
+
+        private void openProgressDialog() {
+            dialog = new ProgressDialog(getActivity());
+            dialog.setMessage(getActivity().getString(R.string.loading_data));
+            dialog.show();
+        }
+
+        private void closeProgressDialog() {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+                dialog = null;
+            }
         }
     }
 }

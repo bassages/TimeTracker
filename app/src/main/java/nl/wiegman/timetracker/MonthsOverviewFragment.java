@@ -1,5 +1,7 @@
 package nl.wiegman.timetracker;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import java.text.SimpleDateFormat;

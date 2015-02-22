@@ -1,13 +1,10 @@
 package nl.wiegman.timetracker;
 
 import android.app.Fragment;
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -133,7 +130,11 @@ public class DaysInPeriodFragment extends Fragment {
     }
 
     private boolean isCurrentPeriodInList() {
-        return getPositionOfCurrentItem(listViewAdapter.getBillableHoursOnDays()) != null;
+        List<BillableHoursOnDay> billableHoursOnDays = null;
+        if (listViewAdapter != null) {
+            billableHoursOnDays = getBillableHoursOnDays();
+        }
+        return billableHoursOnDays != null && getPositionOfCurrentItem(billableHoursOnDays) != null;
     }
 
     private void activateRecalculateCurrentDayUpdater() {
@@ -200,11 +201,7 @@ public class DaysInPeriodFragment extends Fragment {
 
     private void refreshData() {
         titleTextView.setText(period.getTitle());
-
-        List<BillableHoursOnDay> days = getBillableHoursOnDays();
-
-        listViewAdapter = new BillableHoursPerDayAdapter(days);
-        billableDurationOnDayListView.setAdapter(listViewAdapter);
+        new RefreshData().execute();
     }
 
     private List<BillableHoursOnDay> getBillableHoursOnDays() {
@@ -365,6 +362,41 @@ public class DaysInPeriodFragment extends Fragment {
             period = period.getNext();
             refreshData();
         }
-
     }
+
+    private class RefreshData extends AsyncTask<Void, Void, List<BillableHoursOnDay>> {
+
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            openProgressDialog();
+        }
+
+        @Override
+        protected List<BillableHoursOnDay> doInBackground(Void... voids) {
+            return getBillableHoursOnDays();
+        }
+
+        @Override
+        protected void onPostExecute(List<BillableHoursOnDay> billableHoursOnDays) {
+            listViewAdapter = new BillableHoursPerDayAdapter(billableHoursOnDays);
+            billableDurationOnDayListView.setAdapter(listViewAdapter);
+            closeProgressDialog();
+        }
+
+        private void openProgressDialog() {
+            dialog = new ProgressDialog(getActivity());
+            dialog.setMessage(getActivity().getString(R.string.loading_data));
+            dialog.show();
+        }
+
+        private void closeProgressDialog() {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+                dialog = null;
+            }
+        }
+    }
+
 }

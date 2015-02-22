@@ -42,6 +42,8 @@
     <string name="delete">Delete</string>
     <string name="confirm_delete">Are you sure that you want to delete this data?</string>
 
+    <string name="loading_data">Loading data...</string>
+
     <string name="export_to_pdf">Save to pdf file</string>
 
     <string name="exporting_progress_dialog">Export in progress...</string>
