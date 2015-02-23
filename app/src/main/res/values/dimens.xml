@@ -6,4 +6,6 @@
     <dimen name="checkedInPeriodTextSize">60dp</dimen>
     <dimen name="FragmentTitle">35dp</dimen>
     <dimen name="editTimeRecordRowTopBottomMargin">10dp</dimen>
+
+    <dimen name="widget_margin">8dp</dimen>
 </resources>

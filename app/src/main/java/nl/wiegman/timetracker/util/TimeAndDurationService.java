@@ -103,11 +103,13 @@ public class TimeAndDurationService {
                 .list();
     }
 
-    public static void checkIn() {
-        new CheckIn().setTimestamp(Calendar.getInstance()).save();
+    public static CheckIn checkIn() {
+        CheckIn checkIn = new CheckIn().setTimestamp(Calendar.getInstance());
+        checkIn.save();
+        return checkIn;
     }
 
-    public static void checkOut() {
+    public static TimeRecord checkOut() {
         CheckIn checkIn = TimeAndDurationService.getCheckIn();
 
         Calendar checkInTimestamp = checkIn.getTimestamp();
@@ -122,6 +124,8 @@ public class TimeAndDurationService {
         timeRecord.save();
 
         checkIn.delete();
+
+        return timeRecord;
     }
 
     public static long getBillableDurationInMonthOfDay(Calendar dayInMonth) {

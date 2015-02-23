@@ -2,8 +2,10 @@ package nl.wiegman.timetracker;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import nl.wiegman.timetracker.util.Period;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 import nl.wiegman.timetracker.util.WeekPeriod;
+import nl.wiegman.timetracker.widget.CheckInCheckOutWidgetProvider;
 
 public class CheckInCheckoutFragment extends Fragment {
     private final String LOG_TAG = this.getClass().getSimpleName();
@@ -104,11 +107,21 @@ public class CheckInCheckoutFragment extends Fragment {
     private void checkIn() {
         TimeAndDurationService.checkIn();
         pausePlayImageView.setImageResource(R.drawable.ic_av_pause_circle_outline);
+        updateWidget();
     }
 
     private void checkOut() {
         TimeAndDurationService.checkOut();
         pausePlayImageView.setImageResource(R.drawable.ic_av_play_circle_outline);
+        updateWidget();
+    }
+
+    private void updateWidget() {
+        try {
+            CheckInCheckOutWidgetProvider.getUpdateWidgetIntent(getActivity()).send();
+        } catch (PendingIntent.CanceledException e) {
+            Log.e(LOG_TAG, "Unable to update widget: " + e.getMessage());
+        }
     }
 
     private class CheckInCheckOutButtonOnClickListener implements View.OnClickListener {

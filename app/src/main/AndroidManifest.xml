@@ -25,6 +25,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name="nl.wiegman.timetracker.widget.CheckInCheckOutWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="nl.timetracker.intent.action.toggle_checkin_checkout" />
+                <action android:name="nl.timetracker.intent.action.update_widget" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/checkin_checkout_widget_provider" />
+        </receiver>
+
     </application>
 
 </manifest>
