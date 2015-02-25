@@ -69,7 +69,7 @@ public class CheckInCheckOutWidgetProvider extends AppWidgetProvider {
         Log.d(LOG_TAG, "Received intent:" + intent.toString());
 
         if (intent.getAction().equals(INTENT_ACTION_TOGGLE_CHECKIN_CHECKOUT)) {
-            showCheckMessage(context);
+            toggleCheck(context);
             forceUpdateOfWidget(context);
         } else if (intent.getAction().equals(INTENT_ACTION_UPDATE_WIDGET)) {
             forceUpdateOfWidget(context);
@@ -83,7 +83,7 @@ public class CheckInCheckOutWidgetProvider extends AppWidgetProvider {
         onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
-    private void showCheckMessage(Context context) {
+    private void toggleCheck(Context context) {
         String message = "";
         if (TimeAndDurationService.isCheckedIn()) {
             TimeRecord checkOutTimeStamp = TimeAndDurationService.checkOut();
