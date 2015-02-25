@@ -27,7 +27,7 @@ public class MonthPeriod extends AbstractPeriod {
     @Override
     public Period getPrevious() {
         Calendar previous = (Calendar) getFrom().clone();
-        previous.add(Calendar.MONTH, -11);
+        previous.add(Calendar.MONTH, -1);
         return new MonthPeriod(previous);
     }
 

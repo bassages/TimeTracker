@@ -59,4 +59,6 @@
 
     <string name="export_table_minutes">mins.</string>
 
+    <string name="total">Total:</string>
+
 </resources>

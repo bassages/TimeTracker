@@ -15,7 +15,7 @@
         android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
 
     <TextView
-        android:id="@+id/billableDurationColumn"
+        android:id="@+id/totalBillableDurationColumn"
         android:layout_width="105dp"
         android:layout_height="wrap_content"
         android:text="999:99:99"

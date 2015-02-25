@@ -60,4 +60,6 @@
     <string name="export_table_header_duration">Tijdsduur</string>
 
     <string name="export_table_minutes">min.</string>
+
+    <string name="total">Totaal:</string>
 </resources>

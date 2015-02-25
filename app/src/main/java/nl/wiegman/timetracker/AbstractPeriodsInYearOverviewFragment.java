@@ -107,18 +107,6 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
         deactivateCheckedInTimeUpdater();
     }
 
-    private Integer getPositionOfCurrentItem(List<PeriodOverviewItem> periodOverviewItems) {
-        Integer result = null;
-        for (int position = 0; position < periodOverviewItems.size(); position++) {
-            PeriodOverviewItem period = periodOverviewItems.get(position);
-            if (period.isCurrentPeriod()) {
-                result = position;
-                break;
-            }
-        }
-        return result;
-    }
-
     private void activateRecalculateCurrentPeriodUpdater() {
         checkedInTimeUpdaterExecutor = new PeriodicRunnableExecutor(1000, new CheckedInTimeUpdater());
         checkedInTimeUpdaterExecutor.start();
@@ -161,6 +149,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
             long currentPeriodBillableDuration = getActualPeriodBillableDuration();
             return Formatting.formatDuration(currentPeriodBillableDuration);
         }
+
         @Override
         protected void onPostExecute(String formattedBillableDuration) {
             super.onPostExecute(formattedBillableDuration);
@@ -171,12 +160,24 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
                 if (index >= 0) {
                     View periodOverviewItem = periodsListView.getChildAt(index);
                     if (periodOverviewItem != null) {
-                        TextView billableDurationColumnTextView = (TextView) periodOverviewItem.findViewById(R.id.billableDurationColumn);
+                        TextView billableDurationColumnTextView = (TextView) periodOverviewItem.findViewById(R.id.totalBillableDurationColumn);
                         billableDurationColumnTextView.setText(formattedBillableDuration);
                     }
                 }
             }
         }
+    }
+
+    private Integer getPositionOfCurrentItem(List<PeriodOverviewItem> periodOverviewItems) {
+        Integer result = null;
+        for (int position = 0; position < periodOverviewItems.size(); position++) {
+            PeriodOverviewItem period = periodOverviewItems.get(position);
+            if (period.isCurrentPeriod()) {
+                result = position;
+                break;
+            }
+        }
+        return result;
     }
 
     private void showTimeRecordsInPeriod(int periodId, int year) {
@@ -224,7 +225,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
             TextView periodNumberTextView = (TextView) row.findViewById(R.id.periodNumberColumn);
             periodNumberTextView.setText(periodOverviewItem.getPeriodName());
 
-            TextView billableDurationColumn = (TextView) row.findViewById(R.id.billableDurationColumn);
+            TextView billableDurationColumn = (TextView) row.findViewById(R.id.totalBillableDurationColumn);
             long billableDuration = periodOverviewItem.getBillableDuration();
 
             String formattedBillableDuration = Formatting.formatDuration(billableDuration);

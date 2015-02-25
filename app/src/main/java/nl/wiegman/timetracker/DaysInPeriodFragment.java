@@ -37,6 +37,7 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
  */
 public class DaysInPeriodFragment extends Fragment {
     public static final int MENU_ITEM_EXPORT_TO_PDF_ID = 0;
+
     private final String LOG_TAG = this.getClass().getSimpleName();
 
     private static final String ARG_PERIOD = "periodTitle";
@@ -45,6 +46,7 @@ public class DaysInPeriodFragment extends Fragment {
 
     private TextView titleTextView;
     private ListView billableDurationOnDayListView;
+    private TextView footerTotalTextView;
 
     private BillableHoursPerDayAdapter listViewAdapter;
 
@@ -83,6 +85,7 @@ public class DaysInPeriodFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
 
         titleTextView = (TextView) rootView.findViewById(R.id.timeRecordDetailsTitle);
+        footerTotalTextView = (TextView) rootView.findViewById(R.id.totalBillableDurationColumn);
 
         billableDurationOnDayListView = (ListView) rootView.findViewById(R.id.timeRecordsInPeriodListView);
         billableDurationOnDayListView.setOnItemClickListener(new BillableDurationOnDayItemClickListener());
@@ -174,7 +177,7 @@ public class DaysInPeriodFragment extends Fragment {
                 if (index >= 0) {
                     View dayItemView = billableDurationOnDayListView.getChildAt(index);
                     if (dayItemView != null) {
-                        TextView billableDurationColumnTextView = (TextView) dayItemView.findViewById(R.id.billableDurationColumn);
+                        TextView billableDurationColumnTextView = (TextView) dayItemView.findViewById(R.id.totalBillableDurationColumn);
                         billableDurationColumnTextView.setText(formattedBillableDuration);
                     }
                 }
@@ -287,7 +290,7 @@ public class DaysInPeriodFragment extends Fragment {
         }
 
         private TextView getBillableDurationTextView(View row, long billableDuration) {
-            TextView billableHoursColumn = (TextView) row.findViewById(R.id.billableDurationColumn);
+            TextView billableHoursColumn = (TextView) row.findViewById(R.id.totalBillableDurationColumn);
             String formattedBillableDuration = Formatting.formatDuration(billableDuration);
             billableHoursColumn.setText(formattedBillableDuration);
             return billableHoursColumn;
@@ -382,7 +385,22 @@ public class DaysInPeriodFragment extends Fragment {
         protected void onPostExecute(List<BillableHoursOnDay> billableHoursOnDays) {
             listViewAdapter = new BillableHoursPerDayAdapter(billableHoursOnDays);
             billableDurationOnDayListView.setAdapter(listViewAdapter);
+
+            Integer positionOfCurrentItem = getPositionOfCurrentItem(billableHoursOnDays);
+            if (positionOfCurrentItem != null) {
+                billableDurationOnDayListView.setSelection(positionOfCurrentItem);
+            }
+
+            setTotalInFooter(billableHoursOnDays);
             closeProgressDialog();
+        }
+
+        private void setTotalInFooter(List<BillableHoursOnDay> billableHoursOnDays) {
+            long total = 0;
+            for (BillableHoursOnDay billableHoursOnDay : billableHoursOnDays) {
+                total += billableHoursOnDay.getBillableDuration();
+            }
+            footerTotalTextView.setText(Formatting.formatDuration(total));
         }
 
         private void openProgressDialog() {
