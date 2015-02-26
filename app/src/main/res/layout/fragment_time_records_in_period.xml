@@ -64,7 +64,7 @@
 
         <TextView
             android:id="@+id/totalLabelTextView"
-            android:layout_width="110dp"
+            android:layout_width="120dp"
             android:layout_height="match_parent"
             android:text="@string/total"
             android:textColor="@android:color/white"
