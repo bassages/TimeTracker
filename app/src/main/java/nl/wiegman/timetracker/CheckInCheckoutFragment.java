@@ -7,6 +7,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -22,6 +25,9 @@ import nl.wiegman.timetracker.util.WeekPeriod;
 import nl.wiegman.timetracker.widget.CheckInCheckOutWidgetProvider;
 
 public class CheckInCheckoutFragment extends Fragment {
+    private static final int MENU_ITEM_WEEK_OVERVIEW_ID = 0;
+    private static final int MENU_ITEM_MONTH_OVERVIEW_ID = 1;
+
     private final String LOG_TAG = this.getClass().getSimpleName();
 
     private TextView todaysTotalTextView;
@@ -29,11 +35,6 @@ public class CheckInCheckoutFragment extends Fragment {
     private ImageView pausePlayImageView;
 
     private PeriodicRunnableExecutor checkedInTimeUpdaterExecutor;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public void onDestroy() {
@@ -55,6 +56,8 @@ public class CheckInCheckoutFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+
         View rootView = inflater.inflate(R.layout.fragment_checkin_checkout, container, false);
 
         todaysTotalTextView = (TextView) rootView.findViewById(R.id.todaysTotalTextView);
@@ -72,12 +75,49 @@ public class CheckInCheckoutFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.add(0, MENU_ITEM_MONTH_OVERVIEW_ID, 0, R.string.action_month_overview);
+        menu.add(0, MENU_ITEM_WEEK_OVERVIEW_ID, 0, R.string.action_week_overview);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == MENU_ITEM_WEEK_OVERVIEW_ID) {
+            showWeekOverview();
+        } else if (id == MENU_ITEM_MONTH_OVERVIEW_ID) {
+            showMonthOverview();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void setPausePlayImage() {
         if (TimeAndDurationService.isCheckedIn()) {
             pausePlayImageView.setImageResource(R.drawable.ic_av_pause_circle_outline);
         } else {
             pausePlayImageView.setImageResource(R.drawable.ic_av_play_circle_outline);
         }
+    }
+
+    private void showWeekOverview() {
+        WeeksOverviewFragment fragment = WeeksOverviewFragment.newInstance(Calendar.getInstance().get(Calendar.YEAR));
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
+    }
+
+    private void showMonthOverview() {
+        MonthsOverviewFragment fragment = MonthsOverviewFragment.newInstance(Calendar.getInstance().get(Calendar.YEAR));
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
     }
 
     private class ShowThisWeeksTimeRecords implements View.OnClickListener {

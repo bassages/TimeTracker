@@ -9,6 +9,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import nl.wiegman.timetracker.domain.CheckIn;
@@ -41,7 +42,7 @@ public class DayDetailsHelper {
         }
 
         if (nrOfTimeRecordsOnDay == 0 && isCheckedInOnDay) {
-            showCheckedInDialog(checkIn);
+            new CheckedInOnDayDialog(activity).showCheckedInDialog();
         } else if (nrOfTimeRecordsOnDay == 0) {
             showDialogThatThereIsNothingToDelete();
         } else if (nrOfTimeRecordsOnDay == 1) {
@@ -49,28 +50,6 @@ public class DayDetailsHelper {
         } else {
             showTimeRecordsOnDayFragment(day);
         }
-    }
-
-    private void showCheckedInDialog(CheckIn checkIn) {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_NEUTRAL:
-                        dialog.dismiss();
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        TimeAndDurationService.checkOut();
-                        break;
-                }
-            }
-        };
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE dd-MM-yyyy HH:mm:ss");
-        String message = activity.getString(R.string.checked_in_at, sdf.format(checkIn.getTimestamp().getTime()));
-        builder.setMessage(message)
-                .setNeutralButton(android.R.string.ok, dialogClickListener)
-                .setNegativeButton(R.string.checkout, dialogClickListener)
-                .show();
     }
 
     private void showDialogThatThereIsNothingToDelete() {

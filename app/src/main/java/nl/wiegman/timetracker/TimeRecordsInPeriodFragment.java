@@ -34,6 +34,7 @@ public class TimeRecordsInPeriodFragment extends Fragment {
 
     private TextView titleTextView;
     private ListView timeRecordsListView;
+    private TextView footerTotalTextView;
 
     /**
      * Use this factory method to create a new instance of
@@ -64,10 +65,11 @@ public class TimeRecordsInPeriodFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
+        rootView.findViewById(R.id.previousImageView).setVisibility(View.GONE);
+        rootView.findViewById(R.id.nextImageView).setVisibility(View.GONE);
 
         titleTextView = (TextView) rootView.findViewById(R.id.timeRecordDetailsTitle);
-        titleTextView.setText(period.getTitle());
-
+        footerTotalTextView = (TextView) rootView.findViewById(R.id.totalBillableDurationColumn);
         timeRecordsListView = (ListView) rootView.findViewById(R.id.timeRecordsInPeriodListView);
 
         timeRecordsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -119,6 +121,8 @@ public class TimeRecordsInPeriodFragment extends Fragment {
     }
 
     private void refreshData() {
+        titleTextView.setText(period.getTitle());
+
         List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(period.getFrom(), period.getTo());
         if (timeRecordsInPeriod == null || timeRecordsInPeriod.isEmpty()) {
             // This can happen when the last item is deleted
@@ -126,7 +130,16 @@ public class TimeRecordsInPeriodFragment extends Fragment {
         } else {
             TimeRecordsInPeriodAdapter timeRecordsInPeriodAdapter = new TimeRecordsInPeriodAdapter(timeRecordsInPeriod);
             timeRecordsListView.setAdapter(timeRecordsInPeriodAdapter);
+            footerTotalTextView.setText(Formatting.formatDuration(getTotalBillableDuration(timeRecordsInPeriod)));
         }
+    }
+
+    private long getTotalBillableDuration(List<TimeRecord> timeRecordsInPeriod) {
+        long result = 0;
+        for (TimeRecord timeRecord : timeRecordsInPeriod) {
+            result += timeRecord.getBillableDuration();
+        }
+        return result;
     }
 
     private class TimeRecordsInPeriodAdapter extends BaseAdapter {

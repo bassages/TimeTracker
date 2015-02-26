@@ -111,9 +111,7 @@ public class DaysInPeriodFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (isCurrentPeriodInList() && TimeAndDurationService.isCheckedIn()) {
-            activateRecalculateCurrentDayUpdater();
-        }
+        activateRecalculateCurrentDayUpdater();
     }
 
     @Override
@@ -132,14 +130,6 @@ public class DaysInPeriodFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isCurrentPeriodInList() {
-        List<BillableHoursOnDay> billableHoursOnDays = null;
-        if (listViewAdapter != null) {
-            billableHoursOnDays = getBillableHoursOnDays();
-        }
-        return billableHoursOnDays != null && getPositionOfCurrentItem(billableHoursOnDays) != null;
-    }
-
     private void activateRecalculateCurrentDayUpdater() {
         checkedInTimeUpdaterExecutor = new PeriodicRunnableExecutor(1000, new CheckedInTimeUpdater());
         checkedInTimeUpdaterExecutor.start();
@@ -155,11 +145,11 @@ public class DaysInPeriodFragment extends Fragment {
     private class CheckedInTimeUpdater implements Runnable {
         @Override
         public void run() {
-            new Updater().execute();
+            new PeriodicUpdate().execute();
         }
     }
 
-    private class Updater extends AsyncTask<Void, Void, String> {
+    private class PeriodicUpdate extends AsyncTask<Void, Void, String> {
 
         @Override
         protected String doInBackground(Void... voids) {
@@ -169,9 +159,8 @@ public class DaysInPeriodFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String formattedBillableDuration) {
-            super.onPostExecute(formattedBillableDuration);
-
-            Integer positionOfCurrentItem = getPositionOfCurrentItem(listViewAdapter.getBillableHoursOnDays());
+            List<BillableDurationOnDay> billableDurationOnDays = listViewAdapter.getBillableDurationOnDays();
+            Integer positionOfCurrentItem = getPositionOfCurrentItem(billableDurationOnDays);
             if (positionOfCurrentItem != null) {
                 int index = positionOfCurrentItem - billableDurationOnDayListView.getFirstVisiblePosition();
                 if (index >= 0) {
@@ -182,13 +171,14 @@ public class DaysInPeriodFragment extends Fragment {
                     }
                 }
             }
+            footerTotalTextView.setText(Formatting.formatDuration(period.getBillableDuration()));
         }
     }
 
-    private Integer getPositionOfCurrentItem(List<BillableHoursOnDay> billableHoursOnDays) {
+    private Integer getPositionOfCurrentItem(List<BillableDurationOnDay> billableHoursOnDays) {
         Integer result = null;
         for (int position = 0; position < billableHoursOnDays.size(); position++) {
-            BillableHoursOnDay billableHoursOnDay = billableHoursOnDays.get(position);
+            BillableDurationOnDay billableHoursOnDay = billableHoursOnDays.get(position);
             if (isCurrentDay(billableHoursOnDay)) {
                 result = position;
                 break;
@@ -197,7 +187,7 @@ public class DaysInPeriodFragment extends Fragment {
         return result;
     }
 
-    private boolean isCurrentDay(BillableHoursOnDay billableHoursOnDay) {
+    private boolean isCurrentDay(BillableDurationOnDay billableHoursOnDay) {
         Calendar today = Calendar.getInstance();
         return DateUtils.isSameDay(billableHoursOnDay.getDay(), today);
     }
@@ -207,12 +197,12 @@ public class DaysInPeriodFragment extends Fragment {
         new RefreshData().execute();
     }
 
-    private List<BillableHoursOnDay> getBillableHoursOnDays() {
-        List<BillableHoursOnDay> days = new ArrayList<>();
+    private List<BillableDurationOnDay> getBillableHoursOnDays() {
+        List<BillableDurationOnDay> days = new ArrayList<>();
 
         Calendar day = (Calendar) period.getFrom().clone();
         while (day.getTimeInMillis() < period.getTo().getTimeInMillis()) {
-            BillableHoursOnDay billableHoursOnDay = new BillableHoursOnDay();
+            BillableDurationOnDay billableHoursOnDay = new BillableDurationOnDay();
             billableHoursOnDay.setDay((Calendar)day.clone());
             long billableDurationOnDay = TimeAndDurationService.getBillableDurationOnDay(day);
             billableHoursOnDay.setBillableDuration(billableDurationOnDay);
@@ -223,12 +213,12 @@ public class DaysInPeriodFragment extends Fragment {
     }
 
     private class BillableHoursPerDayAdapter extends BaseAdapter {
-        private List<BillableHoursOnDay> billableHoursOnDays;
+        private List<BillableDurationOnDay> billableHoursOnDays;
 
         /**
          * Constructor
          */
-        public BillableHoursPerDayAdapter(List<BillableHoursOnDay> billableHoursOnDays) {
+        public BillableHoursPerDayAdapter(List<BillableDurationOnDay> billableHoursOnDays) {
             this.billableHoursOnDays = billableHoursOnDays;
         }
 
@@ -249,7 +239,7 @@ public class DaysInPeriodFragment extends Fragment {
 
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
-            BillableHoursOnDay billableHoursOnDay = billableHoursOnDays.get(position);
+            BillableDurationOnDay billableHoursOnDay = billableHoursOnDays.get(position);
 
             Date day = billableHoursOnDay.getDay().getTime();
             long billableDuration = billableHoursOnDay.getBillableDuration();
@@ -296,12 +286,12 @@ public class DaysInPeriodFragment extends Fragment {
             return billableHoursColumn;
         }
 
-        public List<BillableHoursOnDay> getBillableHoursOnDays() {
+        public List<BillableDurationOnDay> getBillableDurationOnDays() {
             return billableHoursOnDays;
         }
     }
 
-    private class BillableHoursOnDay {
+    private class BillableDurationOnDay {
         private Calendar day;
         private long billableDuration;
 
@@ -367,7 +357,7 @@ public class DaysInPeriodFragment extends Fragment {
         }
     }
 
-    private class RefreshData extends AsyncTask<Void, Void, List<BillableHoursOnDay>> {
+    private class RefreshData extends AsyncTask<Void, Void, List<BillableDurationOnDay>> {
 
         private ProgressDialog dialog;
 
@@ -377,12 +367,12 @@ public class DaysInPeriodFragment extends Fragment {
         }
 
         @Override
-        protected List<BillableHoursOnDay> doInBackground(Void... voids) {
+        protected List<BillableDurationOnDay> doInBackground(Void... voids) {
             return getBillableHoursOnDays();
         }
 
         @Override
-        protected void onPostExecute(List<BillableHoursOnDay> billableHoursOnDays) {
+        protected void onPostExecute(List<BillableDurationOnDay> billableHoursOnDays) {
             listViewAdapter = new BillableHoursPerDayAdapter(billableHoursOnDays);
             billableDurationOnDayListView.setAdapter(listViewAdapter);
 
@@ -395,9 +385,9 @@ public class DaysInPeriodFragment extends Fragment {
             closeProgressDialog();
         }
 
-        private void setTotalInFooter(List<BillableHoursOnDay> billableHoursOnDays) {
+        private void setTotalInFooter(List<BillableDurationOnDay> billableHoursOnDays) {
             long total = 0;
-            for (BillableHoursOnDay billableHoursOnDay : billableHoursOnDays) {
+            for (BillableDurationOnDay billableHoursOnDay : billableHoursOnDays) {
                 total += billableHoursOnDay.getBillableDuration();
             }
             footerTotalTextView.setText(Formatting.formatDuration(total));

@@ -13,4 +13,6 @@ public interface Period extends Serializable {
     Period getNext();
 
     Period getPrevious();
+
+    long getBillableDuration();
 }

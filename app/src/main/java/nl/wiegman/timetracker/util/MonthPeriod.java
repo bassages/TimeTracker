@@ -32,6 +32,11 @@ public class MonthPeriod extends AbstractPeriod {
     }
 
     @Override
+    public long getBillableDuration() {
+        return TimeAndDurationService.getBillableDurationInMonthOfDay(getFrom());
+    }
+
+    @Override
     public Period getNext() {
         Calendar next = (Calendar) getFrom().clone();
         next.add(Calendar.MONTH, 1);

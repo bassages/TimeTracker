@@ -24,6 +24,11 @@ public class DayPeriod extends AbstractPeriod {
     }
 
     @Override
+    public long getBillableDuration() {
+        return TimeAndDurationService.getBillableDurationOnDay(getFrom());
+    }
+
+    @Override
     public Period getNext() {
         Calendar next = (Calendar) getFrom().clone();
         next.add(Calendar.DAY_OF_MONTH, 1);

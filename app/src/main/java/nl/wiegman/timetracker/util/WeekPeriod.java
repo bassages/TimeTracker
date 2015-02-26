@@ -31,6 +31,11 @@ public class WeekPeriod extends AbstractPeriod implements Period {
     }
 
     @Override
+    public long getBillableDuration() {
+        return TimeAndDurationService.getBillableDurationInWeekOfDay(getFrom());
+    }
+
+    @Override
     public Period getNext() {
         Calendar next = (Calendar) getFrom().clone();
         next.add(Calendar.WEEK_OF_YEAR, 1);

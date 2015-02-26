@@ -39,7 +39,11 @@ public class DeleteTimeRecordsInPeriod {
         List<TimeRecord> timeRecordsInPeriod = TimeAndDurationService.getTimeRecordsBetween(from, to);
 
         if (timeRecordsInPeriod.size() == 0) {
-            nothingToDelete();
+            if (TimeAndDurationService.isCheckedIn()) {
+                new CheckedInOnDayDialog(activity).showCheckedInDialog();
+            } else {
+                nothingToDelete();
+            }
         } else {
             DialogInterface.OnClickListener dialogClickListener = new DeleteConfirmationDialogOnClickListener();
 

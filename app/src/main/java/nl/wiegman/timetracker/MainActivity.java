@@ -35,6 +35,12 @@ public class MainActivity extends Activity {
         CheckIn.deleteAll(CheckIn.class);
         TimeRecord.deleteAll(TimeRecord.class);
 
+        // 9-2015
+        saveTimeRecord("26-02-2015 07:01:12", "26-02-2015 15:40:04", 30);
+        saveTimeRecord("25-02-2015 06:58:28", "25-02-2015 14:16:44", 30);
+        saveTimeRecord("24-02-2015 06:54:40", "24-02-2015 15:37:43", 30);
+        saveTimeRecord("23-02-2015 07:00:00", "23-02-2015 16:04:02", 30);
+
         // 8-2015
         saveTimeRecord("20-02-2015 06:57:10", "20-02-2015 13:36:16", 30);
         saveTimeRecord("19-02-2015 07:00:33", "19-02-2015 16:17:27", 30);
@@ -112,24 +118,15 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_week) {
-            showWeekOverview();
-        } else if (id == R.id.action_month) {
-            showMonthOverview();
-        } else if (id == R.id.action_add) {
+        if (id == R.id.action_add) {
             showAdd();
         }
         return super.onOptionsItemSelected(item);
@@ -141,24 +138,6 @@ public class MainActivity extends Activity {
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
-
-    private void showWeekOverview() {
-        WeeksOverviewFragment fragment = WeeksOverviewFragment.newInstance(Calendar.getInstance().get(Calendar.YEAR));
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
-    }
-
-    private void showMonthOverview() {
-        MonthsOverviewFragment fragment = MonthsOverviewFragment.newInstance(Calendar.getInstance().get(Calendar.YEAR));
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
     }
 }
