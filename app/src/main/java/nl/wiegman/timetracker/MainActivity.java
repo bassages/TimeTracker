@@ -36,6 +36,7 @@ public class MainActivity extends Activity {
         TimeRecord.deleteAll(TimeRecord.class);
 
         // 9-2015
+        saveTimeRecord("27-02-2015 06:49:57", "27-02-2015 14:55:53", 30);
         saveTimeRecord("26-02-2015 07:01:12", "26-02-2015 15:40:04", 30);
         saveTimeRecord("25-02-2015 06:58:28", "25-02-2015 14:16:44", 30);
         saveTimeRecord("24-02-2015 06:54:40", "24-02-2015 15:37:43", 30);
