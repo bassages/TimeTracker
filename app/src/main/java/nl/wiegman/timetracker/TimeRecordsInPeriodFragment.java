@@ -19,6 +19,7 @@ import java.util.List;
 import nl.wiegman.timetracker.domain.TimeRecord;
 import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
+import nl.wiegman.timetracker.util.FragmentHelper;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 /**
@@ -72,17 +73,8 @@ public class TimeRecordsInPeriodFragment extends Fragment {
         footerTotalTextView = (TextView) rootView.findViewById(R.id.totalBillableDurationColumn);
         timeRecordsListView = (ListView) rootView.findViewById(R.id.timeRecordsInPeriodListView);
 
-        timeRecordsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> arg0, View view, int position, long timeRecordId) {
-                editTimeRecord(timeRecordId);
-            }
-        });
-        timeRecordsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long id) {
-                deleteTimeRecordWhenConfirmed(id);
-                return true;
-            }
-        });
+        timeRecordsListView.setOnItemClickListener(new ListViewItemClickListener());
+        timeRecordsListView.setOnItemLongClickListener(new ListViewItemLongClickListener());
 
         refreshData();
 
@@ -113,11 +105,7 @@ public class TimeRecordsInPeriodFragment extends Fragment {
 
     private void editTimeRecord(long timeRecordId) {
         EditTimeRecordFragment fragment = EditTimeRecordFragment.newInstance(timeRecordId);
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        FragmentHelper.showFragment(getActivity(), fragment);
     }
 
     private void refreshData() {
@@ -192,4 +180,16 @@ public class TimeRecordsInPeriodFragment extends Fragment {
         }
     }
 
+    private class ListViewItemClickListener implements AdapterView.OnItemClickListener {
+        public void onItemClick(AdapterView<?> arg0, View view, int position, long timeRecordId) {
+            editTimeRecord(timeRecordId);
+        }
+    }
+
+    private class ListViewItemLongClickListener implements AdapterView.OnItemLongClickListener {
+        public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long id) {
+            deleteTimeRecordWhenConfirmed(id);
+            return true;
+        }
+    }
 }

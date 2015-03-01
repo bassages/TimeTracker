@@ -44,7 +44,6 @@ public class MonthsOverviewFragment extends AbstractPeriodsInYearOverviewFragmen
         date.clear();
         date.set(Calendar.MONTH, (int)month);
         date.set(Calendar.YEAR, year);
-
         return new MonthPeriod(date);
     }
 

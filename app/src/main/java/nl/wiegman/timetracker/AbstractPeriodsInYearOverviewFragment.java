@@ -18,6 +18,7 @@ import java.util.List;
 
 import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
+import nl.wiegman.timetracker.util.FragmentHelper;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
 
 public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
@@ -183,12 +184,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     private void showTimeRecordsInPeriod(int periodId, int year) {
         Period period = getPeriod(periodId, year);
         DaysInPeriodFragment fragment = DaysInPeriodFragment.newInstance(period);
-
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        FragmentHelper.showFragment(getActivity(), fragment);
     }
 
     private class TimeRecordsInPeriodAdapter extends BaseAdapter {

@@ -20,6 +20,7 @@ import java.util.Calendar;
 
 import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
+import nl.wiegman.timetracker.util.FragmentHelper;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 import nl.wiegman.timetracker.period.WeekPeriod;
@@ -66,12 +67,12 @@ public class CheckInCheckoutFragment extends Fragment {
 
         pausePlayImageView = (ImageView) rootView.findViewById(R.id.pausePlayImageView);
         pausePlayImageView.setOnClickListener(new CheckInCheckOutButtonOnClickListener());
-        setPausePlayImage();
 
         todaysTotalTextView.setOnClickListener(new ShowTodaysDetails());
         thisWeeksTotalTextView.setOnClickListener(new ShowThisWeeksTimeRecords());
 
-        new CheckedInTimeUpdater().run();
+        new IconUpdater().execute();
+        new Updater().execute();
 
         return rootView;
     }
@@ -86,7 +87,6 @@ public class CheckInCheckoutFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == MENU_ITEM_WEEK_OVERVIEW_ID) {
             showWeekOverview();
         } else if (id == MENU_ITEM_MONTH_OVERVIEW_ID) {
@@ -95,30 +95,14 @@ public class CheckInCheckoutFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setPausePlayImage() {
-        if (TimeAndDurationService.isCheckedIn()) {
-            pausePlayImageView.setImageResource(R.drawable.ic_av_pause_circle_outline_blue);
-        } else {
-            pausePlayImageView.setImageResource(R.drawable.ic_av_play_circle_outline_blue);
-        }
-    }
-
     private void showWeekOverview() {
         WeeksOverviewFragment fragment = WeeksOverviewFragment.newInstance(Calendar.getInstance().get(Calendar.YEAR));
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
+        FragmentHelper.showFragment(getActivity(), fragment);
     }
 
     private void showMonthOverview() {
         MonthsOverviewFragment fragment = MonthsOverviewFragment.newInstance(Calendar.getInstance().get(Calendar.YEAR));
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
+        FragmentHelper.showFragment(getActivity(), fragment);
     }
 
     private class ShowThisWeeksTimeRecords implements View.OnClickListener {
@@ -215,6 +199,23 @@ public class CheckInCheckoutFragment extends Fragment {
             super.onPostExecute(s);
             todaysTotalTextView.setText(s[0]);
             thisWeeksTotalTextView.setText(s[1]);
+        }
+    }
+
+    private class IconUpdater extends AsyncTask<Void, Void, Boolean>  {
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            return TimeAndDurationService.isCheckedIn();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean checkedIn) {
+            if (checkedIn) {
+                pausePlayImageView.setImageResource(R.drawable.ic_av_pause_circle_outline_blue);
+            } else {
+                pausePlayImageView.setImageResource(R.drawable.ic_av_play_circle_outline_blue);
+            }
         }
     }
 

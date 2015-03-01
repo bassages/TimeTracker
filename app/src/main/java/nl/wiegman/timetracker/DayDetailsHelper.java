@@ -13,6 +13,7 @@ import java.util.List;
 import nl.wiegman.timetracker.domain.CheckIn;
 import nl.wiegman.timetracker.domain.TimeRecord;
 import nl.wiegman.timetracker.period.DayPeriod;
+import nl.wiegman.timetracker.util.FragmentHelper;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class DayDetailsHelper {
@@ -68,22 +69,13 @@ public class DayDetailsHelper {
 
     private void showEditTimeRecordFragment(List<TimeRecord> timeRecordsOnDay) {
         EditTimeRecordFragment fragment = EditTimeRecordFragment.newInstance(timeRecordsOnDay.get(0).getId());
-        FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        FragmentHelper.showFragment(activity, fragment);
     }
 
     private void showTimeRecordsOnDayFragment(Calendar day) {
         DayPeriod period = new DayPeriod(day);
-
         TimeRecordsInPeriodFragment fragment = TimeRecordsInPeriodFragment.newInstance(period);
-        FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        FragmentHelper.showFragment(activity, fragment);
     }
 
 }
