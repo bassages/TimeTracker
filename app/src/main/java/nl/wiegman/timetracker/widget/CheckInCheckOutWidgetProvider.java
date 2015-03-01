@@ -45,7 +45,7 @@ public class CheckInCheckOutWidgetProvider extends AppWidgetProvider {
         }
 
         for (int appWidgetId : appWidgetIds) {
-            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.checkin_checkout_widget);
+            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_checkin_checkout);
             remoteViews.setOnClickPendingIntent(R.id.checkinCheckoutWidgetIconImageView, updateIntent);
             remoteViews.setImageViewResource(R.id.checkinCheckoutWidgetIconImageView, iconDrawableId);
             remoteViews.setTextViewText(R.id.checkinCheckoutWidgetTextView, text);

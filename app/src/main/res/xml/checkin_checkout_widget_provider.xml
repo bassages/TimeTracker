@@ -2,8 +2,8 @@
     android:minWidth="40dp"
     android:minHeight="40dp"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/checkin_checkout_widget"
+    android:initialLayout="@layout/widget_checkin_checkout"
     android:resizeMode="none"
     android:widgetCategory="home_screen|keyguard"
-    android:initialKeyguardLayout="@layout/checkin_checkout_widget">
+    android:initialKeyguardLayout="@layout/widget_checkin_checkout">
 </appwidget-provider>

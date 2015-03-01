@@ -101,7 +101,7 @@ public class TimePickerWithSecondsDialog extends AlertDialog implements DialogIn
 
         LayoutInflater inflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.time_picker_dialog, null);
+        View view = inflater.inflate(R.layout.dialog_time_picker, null);
         setView(view);
         mTimePicker = (TimePicker) view.findViewById(R.id.timePicker);
 
