@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
 
     private void showCheckInCheckOutFragment() {
         CheckInCheckoutFragment fragment = new CheckInCheckoutFragment();
-        FragmentHelper.showFragment(this, fragment);
+        FragmentHelper.showFragment(this, fragment, false);
     }
 
     private void showAddTimeRecordFragment() {

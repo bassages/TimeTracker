@@ -8,11 +8,17 @@ import nl.wiegman.timetracker.R;
 
 public class FragmentHelper {
 
-    public static void showFragment(Activity activity, Fragment fragment) {
+    public static void showFragment(Activity activity, Fragment fragment, boolean addToBackStack) {
         FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null);
+        if (addToBackStack) {
+            fragmentTransaction.addToBackStack(null);
+        }
         fragmentTransaction.commit();
+    }
+
+    public static void showFragment(Activity activity, Fragment fragment) {
+        showFragment(activity, fragment, true);
     }
 }
