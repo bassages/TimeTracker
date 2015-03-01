@@ -97,9 +97,9 @@ public class CheckInCheckoutFragment extends Fragment {
 
     private void setPausePlayImage() {
         if (TimeAndDurationService.isCheckedIn()) {
-            pausePlayImageView.setImageResource(R.drawable.ic_av_pause_circle_outline);
+            pausePlayImageView.setImageResource(R.drawable.ic_av_pause_circle_outline_blue);
         } else {
-            pausePlayImageView.setImageResource(R.drawable.ic_av_play_circle_outline);
+            pausePlayImageView.setImageResource(R.drawable.ic_av_play_circle_outline_blue);
         }
     }
 
@@ -147,13 +147,13 @@ public class CheckInCheckoutFragment extends Fragment {
 
     private void checkIn() {
         TimeAndDurationService.checkIn();
-        pausePlayImageView.setImageResource(R.drawable.ic_av_pause_circle_outline);
+        pausePlayImageView.setImageResource(R.drawable.ic_av_pause_circle_outline_blue);
         updateWidget();
     }
 
     private void checkOut() {
         TimeAndDurationService.checkOut();
-        pausePlayImageView.setImageResource(R.drawable.ic_av_play_circle_outline);
+        pausePlayImageView.setImageResource(R.drawable.ic_av_play_circle_outline_blue);
         updateWidget();
     }
 
