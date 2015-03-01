@@ -22,26 +22,12 @@ public class CheckedInOnDayDialog {
     }
 
     public void showCheckedInDialog() {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_NEUTRAL:
-                        dialog.dismiss();
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        TimeAndDurationService.checkOut();
-                        break;
-                }
-            }
-        };
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         Date checkInTimestamp = TimeAndDurationService.getCheckIn().getTimestamp().getTime();
-        String[] params = new String[] {checkDateFormat.format(checkInTimestamp), checkTimeFormat.format(checkInTimestamp)};
-        String message = context.getString(R.string.checked_in_at, params);
+        String message = context.getString(R.string.checked_in_at, checkDateFormat.format(checkInTimestamp), checkTimeFormat.format(checkInTimestamp));
         builder.setMessage(message)
-                .setNeutralButton(android.R.string.ok, dialogClickListener)
-                .setNegativeButton(R.string.checkout, dialogClickListener)
+                .setNeutralButton(android.R.string.ok, new DismissOnClickListener())
                 .show();
     }
 

@@ -109,14 +109,9 @@ public class CheckInCheckoutFragment extends Fragment {
         @Override
         public void onClick(View view) {
             Calendar today = Calendar.getInstance();
-
             Period period = new WeekPeriod(today);
-
             DaysInPeriodFragment fragment = DaysInPeriodFragment.newInstance(period);
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, fragment);
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
+            FragmentHelper.showFragment(getActivity(), fragment);
         }
     }
 
