@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import nl.wiegman.timetracker.domain.TimeRecord;
 import nl.wiegman.timetracker.util.Formatting;
-import nl.wiegman.timetracker.util.Period;
+import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class PdfExport extends AsyncTask<Void, Void, File> {
@@ -80,40 +80,44 @@ public class PdfExport extends AsyncTask<Void, Void, File> {
         Document document = null;
         FileOutputStream outputStream = null;
 
-        try {
-            File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/TimeTracker");
-            directory.mkdirs();
+        if (isExternalStorageWritable()) {
+            try {
+                File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/TimeTracker");
+                directory.mkdirs();
 
-            pdfFile = new File(directory, period.getTitle() + ".pdf");
-            pdfFile.setReadable(true, false);
-            pdfFile.setWritable(true, false);
+                pdfFile = new File(directory, period.getTitle() + ".pdf");
+                pdfFile.setReadable(true, false);
+                pdfFile.setWritable(true, false);
 
-            Log.d(LOG_TAG, "PDF file: " + pdfFile.getAbsolutePath());
+                Log.d(LOG_TAG, "PDF file: " + pdfFile.getAbsolutePath());
 
-            outputStream = new FileOutputStream(pdfFile);
+                outputStream = new FileOutputStream(pdfFile);
 
-            document = getDocument(outputStream);
+                document = getDocument(outputStream);
 
-            document.add(getTitle());
-            document.add(Chunk.NEWLINE);
-            document.add(createTable());
+                document.add(getTitle());
+                document.add(Chunk.NEWLINE);
+                document.add(createTable());
 
-            document.close();
-            outputStream.close();
-
-        } catch (DocumentException | IOException e) {
-            Log.e(LOG_TAG, e.getMessage());
-        } finally {
-            if (document != null) {
                 document.close();
-            }
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, e.getMessage());
+                outputStream.close();
+
+            } catch (DocumentException | IOException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            } finally {
+                if (document != null) {
+                    document.close();
+                }
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        Log.e(LOG_TAG, e.getMessage());
+                    }
                 }
             }
+        } else {
+            Toast.makeText(context, R.string.export_external_storage_not_available, Toast.LENGTH_LONG).show();
         }
         return pdfFile;
     }
@@ -133,6 +137,15 @@ public class PdfExport extends AsyncTask<Void, Void, File> {
         } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage());
         }
+    }
+
+    /** Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
     }
 
     private void openFile(File pdfFile) {

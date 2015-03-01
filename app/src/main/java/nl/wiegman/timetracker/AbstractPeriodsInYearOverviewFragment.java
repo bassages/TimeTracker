@@ -17,7 +17,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import nl.wiegman.timetracker.util.Formatting;
-import nl.wiegman.timetracker.util.Period;
+import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
 
 public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
@@ -67,7 +67,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_period_overview, container, false);
 
-        yearTextView = (TextView) rootView.findViewById(R.id.yearTextView);
+        yearTextView = (TextView) rootView.findViewById(R.id.title);
 
         periodsListView = (ListView) rootView.findViewById(R.id.periodListView);
         periodsListView.setOnItemClickListener(new PeriodItemClickListener());

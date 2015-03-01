@@ -106,7 +106,7 @@ public class EditTimeRecordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_edit_time_record, container, false);
 
-        TextView title = (TextView) rootView.findViewById(R.id.timeRecordDetailsTitle);
+        TextView title = (TextView) rootView.findViewById(R.id.title);
         if (timeRecordId == null) {
             title.setText(R.string.add_timerecord_title);
         } else {

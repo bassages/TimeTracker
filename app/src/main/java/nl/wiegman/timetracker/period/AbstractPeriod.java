@@ -1,4 +1,4 @@
-package nl.wiegman.timetracker.util;
+package nl.wiegman.timetracker.period;
 
 import java.util.Calendar;
 

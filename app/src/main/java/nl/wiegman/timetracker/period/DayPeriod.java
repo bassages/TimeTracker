@@ -1,7 +1,9 @@
-package nl.wiegman.timetracker.util;
+package nl.wiegman.timetracker.period;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class DayPeriod extends AbstractPeriod {
 

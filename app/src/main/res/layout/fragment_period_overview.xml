@@ -3,44 +3,52 @@
     android:layout_height="match_parent"
     tools:context="nl.wiegman.timetracker.WeeksOverviewFragment">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/previousImageView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/ic_hardware_keyboard_arrow_left_black"
-        android:layout_above="@+id/periodListView"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp" />
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/FragmentHeaderHeight"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="true">
 
-    <TextView android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="XXXX"
-        android:layout_gravity="center_horizontal|top"
-        android:id="@+id/yearTextView"
-        android:gravity="center_horizontal"
-        android:textSize="@dimen/FragmentTitle"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        <ImageView
+            android:id="@+id/previousImageView"
+            style="?android:attr/buttonBarButtonStyle"
+            android:scaleType="fitCenter"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_hardware_keyboard_arrow_left_black"
+            android:padding="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/nextImageView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_hardware_keyboard_arrow_right_black"
-        android:layout_above="@+id/periodListView"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp" />
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  "
+            android:textSize="@dimen/FragmentTitleText"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+            android:id="@+id/nextImageView"
+            style="?android:attr/buttonBarButtonStyle"
+            android:scaleType="fitCenter"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_hardware_keyboard_arrow_right_black"
+            android:padding="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="233dp"
         android:id="@+id/periodListView"
         android:layout_gravity="center_horizontal|top"
-        android:layout_below="@+id/yearTextView"
+        android:layout_below="@+id/header"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"

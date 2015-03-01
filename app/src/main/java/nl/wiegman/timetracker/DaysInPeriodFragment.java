@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import nl.wiegman.timetracker.util.Formatting;
-import nl.wiegman.timetracker.util.Period;
+import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
@@ -84,7 +84,7 @@ public class DaysInPeriodFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
 
-        titleTextView = (TextView) rootView.findViewById(R.id.timeRecordDetailsTitle);
+        titleTextView = (TextView) rootView.findViewById(R.id.title);
         footerTotalTextView = (TextView) rootView.findViewById(R.id.totalBillableDurationColumn);
 
         billableDurationOnDayListView = (ListView) rootView.findViewById(R.id.timeRecordsInPeriodListView);
@@ -149,16 +149,19 @@ public class DaysInPeriodFragment extends Fragment {
         }
     }
 
-    private class PeriodicUpdate extends AsyncTask<Void, Void, String> {
+    private class PeriodicUpdate extends AsyncTask<Void, Void, CurrentItemUpdateData> {
 
         @Override
-        protected String doInBackground(Void... voids) {
+        protected CurrentItemUpdateData doInBackground(Void... voids) {
+            CurrentItemUpdateData data = new CurrentItemUpdateData();
             long currentPeriodBillableDuration = TimeAndDurationService.getBillableDurationOnDay(Calendar.getInstance());
-            return Formatting.formatDuration(currentPeriodBillableDuration);
+            data.current = Formatting.formatDuration(currentPeriodBillableDuration);
+            data.total = Formatting.formatDuration(period.getBillableDuration());
+            return data;
         }
 
         @Override
-        protected void onPostExecute(String formattedBillableDuration) {
+        protected void onPostExecute(CurrentItemUpdateData updateData) {
             List<BillableDurationOnDay> billableDurationOnDays = listViewAdapter.getBillableDurationOnDays();
             Integer positionOfCurrentItem = getPositionOfCurrentItem(billableDurationOnDays);
             if (positionOfCurrentItem != null) {
@@ -167,12 +170,17 @@ public class DaysInPeriodFragment extends Fragment {
                     View dayItemView = billableDurationOnDayListView.getChildAt(index);
                     if (dayItemView != null) {
                         TextView billableDurationColumnTextView = (TextView) dayItemView.findViewById(R.id.totalBillableDurationColumn);
-                        billableDurationColumnTextView.setText(formattedBillableDuration);
+                        billableDurationColumnTextView.setText(updateData.current);
                     }
                 }
             }
-            footerTotalTextView.setText(Formatting.formatDuration(period.getBillableDuration()));
+            footerTotalTextView.setText(updateData.total);
         }
+    }
+
+    private class CurrentItemUpdateData {
+        private String total;
+        private String current;
     }
 
     private Integer getPositionOfCurrentItem(List<BillableDurationOnDay> billableHoursOnDays) {

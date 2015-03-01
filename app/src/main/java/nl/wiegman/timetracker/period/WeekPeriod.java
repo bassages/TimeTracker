@@ -1,8 +1,10 @@
-package nl.wiegman.timetracker.util;
+package nl.wiegman.timetracker.period;
 
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.Calendar;
+
+import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class WeekPeriod extends AbstractPeriod implements Period {
 

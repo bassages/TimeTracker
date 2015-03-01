@@ -1,7 +1,5 @@
 package nl.wiegman.timetracker;
 
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import java.text.SimpleDateFormat;
@@ -9,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import nl.wiegman.timetracker.util.MonthPeriod;
-import nl.wiegman.timetracker.util.Period;
+import nl.wiegman.timetracker.period.MonthPeriod;
+import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class MonthsOverviewFragment extends AbstractPeriodsInYearOverviewFragment {

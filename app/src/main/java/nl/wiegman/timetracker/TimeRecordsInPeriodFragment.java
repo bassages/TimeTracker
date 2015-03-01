@@ -18,7 +18,7 @@ import java.util.List;
 
 import nl.wiegman.timetracker.domain.TimeRecord;
 import nl.wiegman.timetracker.util.Formatting;
-import nl.wiegman.timetracker.util.Period;
+import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 /**
@@ -68,7 +68,7 @@ public class TimeRecordsInPeriodFragment extends Fragment {
         rootView.findViewById(R.id.previousImageView).setVisibility(View.GONE);
         rootView.findViewById(R.id.nextImageView).setVisibility(View.GONE);
 
-        titleTextView = (TextView) rootView.findViewById(R.id.timeRecordDetailsTitle);
+        titleTextView = (TextView) rootView.findViewById(R.id.title);
         footerTotalTextView = (TextView) rootView.findViewById(R.id.totalBillableDurationColumn);
         timeRecordsListView = (ListView) rootView.findViewById(R.id.timeRecordsInPeriodListView);
 

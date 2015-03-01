@@ -59,6 +59,9 @@
 
     <string name="export_table_minutes">mins.</string>
 
+    <string name="export_external_storage_not_available">Kan pdf bestand niet maken omdat externe opslag niet beschikbaar is</string>
+
     <string name="total">Total:</string>
+    <string name="crashMessageQuestionEmail">Oops.. the application stopped unexpectedly :-(. Do you you want to help the developers of this app to fix the problem by sending them an e-mail containing the relevant information?</string>
 
 </resources>

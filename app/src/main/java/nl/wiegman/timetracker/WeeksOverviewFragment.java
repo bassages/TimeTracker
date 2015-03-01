@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import nl.wiegman.timetracker.util.Period;
+import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
-import nl.wiegman.timetracker.util.WeekPeriod;
+import nl.wiegman.timetracker.period.WeekPeriod;
 
 public class WeeksOverviewFragment extends AbstractPeriodsInYearOverviewFragment {
 

@@ -1,9 +1,11 @@
-package nl.wiegman.timetracker.util;
+package nl.wiegman.timetracker.period;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class MonthPeriod extends AbstractPeriod {
 

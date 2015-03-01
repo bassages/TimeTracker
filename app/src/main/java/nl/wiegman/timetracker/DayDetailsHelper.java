@@ -7,14 +7,12 @@ import android.content.DialogInterface;
 
 import org.apache.commons.lang3.time.DateUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import nl.wiegman.timetracker.domain.CheckIn;
 import nl.wiegman.timetracker.domain.TimeRecord;
-import nl.wiegman.timetracker.util.DayPeriod;
+import nl.wiegman.timetracker.period.DayPeriod;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class DayDetailsHelper {
