@@ -27,8 +27,8 @@
 
     <string name="checkin">Inklokken</string>
     <string name="checkout">Uitklokken</string>
-    <string name="checked_in_at">U ben ingeklokt op %1$s om %2$s</string>
-    <string name="checked_out_at">U ben uitgeklokt op %1$s om %2$s</string>
+    <string name="checked_in_at">U bent ingeklokt op %1$s om %2$s</string>
+    <string name="checked_out_at">U bent uitgeklokt op %1$s om %2$s</string>
 
     <string name="no_details_available_because_no_checkin">Er zijn geen details beschikbaar omdat u niet heeft geklokt op de geselecteerde dag</string>
 

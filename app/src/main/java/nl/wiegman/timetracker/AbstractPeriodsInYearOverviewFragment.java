@@ -1,7 +1,6 @@
 package nl.wiegman.timetracker;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -30,6 +29,8 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
     private TextView yearTextView;
     private ListView periodsListView;
+
+    private SwipeDetector listViewSwipeDetector;
 
     private TimeRecordsInPeriodAdapter listViewAdapter;
 
@@ -66,6 +67,8 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        listViewSwipeDetector = new SwipeDetector();
+
         View rootView = inflater.inflate(R.layout.fragment_period_overview, container, false);
 
         yearTextView = (TextView) rootView.findViewById(R.id.title);
@@ -73,6 +76,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
         periodsListView = (ListView) rootView.findViewById(R.id.periodListView);
         periodsListView.setOnItemClickListener(new PeriodItemClickListener());
         periodsListView.setOnItemLongClickListener(new PeriodItemLongClickListener());
+        periodsListView.setOnTouchListener(listViewSwipeDetector);
 
         View previous = rootView.findViewById(R.id.previousImageView);
         previous.setOnClickListener(new PreviousOnClickListener());
@@ -120,20 +124,28 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
         }
     }
 
-    private class NextOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            year += 1;
-            refreshData();
-        }
-    }
-
     private class PreviousOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            year -= 1;
-            refreshData();
+            previousYear();
         }
+    }
+
+    private class NextOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            nextYear();
+        }
+    }
+
+    private void previousYear() {
+        year -= 1;
+        refreshData();
+    }
+
+    private void nextYear() {
+        year += 1;
+        refreshData();
     }
 
     private class CheckedInTimeUpdater implements Runnable {
@@ -285,12 +297,33 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     private class PeriodItemClickListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            showTimeRecordsInPeriod((int) id, year);
+            if(listViewSwipeDetector.swipeDetected()) {
+                handleSwipe();
+            } else {
+                handleClick((int) id);
+            }
+        }
+
+        private void handleClick(int id) {
+            showTimeRecordsInPeriod(id, year);
         }
     }
 
     private class PeriodItemLongClickListener implements AdapterView.OnItemLongClickListener {
+        @Override
         public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long periodId) {
+            boolean result;
+            if(listViewSwipeDetector.swipeDetected()) {
+                result = false;
+                handleSwipe();
+            } else {
+                result = true;
+                handleLongCLick(periodId);
+            }
+            return result;
+        }
+
+        private void handleLongCLick(long periodId) {
             Period period = getPeriod(periodId, year);
 
             DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = new DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener() {
@@ -301,7 +334,14 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
             };
             DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), period.getFrom(), period.getTo(), timeRecordsDeletedListener);
             deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
-            return true;
+        }
+    }
+
+    private void handleSwipe() {
+        if(listViewSwipeDetector.getAction() == SwipeDetector.Action.RL) {
+            nextYear();
+        } else if (listViewSwipeDetector.getAction() == SwipeDetector.Action.LR) {
+            previousYear();
         }
     }
 

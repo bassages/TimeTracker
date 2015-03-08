@@ -36,9 +36,9 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
  * The timerecords on a day can be deleted (long press) or edited (on click).
  */
 public class DaysInPeriodFragment extends Fragment {
-    public static final int MENU_ITEM_EXPORT_TO_PDF_ID = 0;
-
     private final String LOG_TAG = this.getClass().getSimpleName();
+
+    public static final int MENU_ITEM_EXPORT_TO_PDF_ID = 0;
 
     private static final String ARG_PERIOD = "periodTitle";
 
@@ -47,6 +47,8 @@ public class DaysInPeriodFragment extends Fragment {
     private TextView titleTextView;
     private ListView billableDurationOnDayListView;
     private TextView footerTotalTextView;
+
+    private SwipeDetector listViewSwipeDetector;
 
     private BillableHoursPerDayAdapter listViewAdapter;
 
@@ -81,6 +83,7 @@ public class DaysInPeriodFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        listViewSwipeDetector = new SwipeDetector();
 
         View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
 
@@ -90,6 +93,7 @@ public class DaysInPeriodFragment extends Fragment {
         billableDurationOnDayListView = (ListView) rootView.findViewById(R.id.timeRecordsInPeriodListView);
         billableDurationOnDayListView.setOnItemClickListener(new BillableDurationOnDayItemClickListener());
         billableDurationOnDayListView.setOnItemLongClickListener(new BillableDurationLongClickListener());
+        billableDurationOnDayListView.setOnTouchListener(listViewSwipeDetector);
 
         View previous = rootView.findViewById(R.id.previousImageView);
         previous.setOnClickListener(new PreviousOnClickListener());
@@ -321,7 +325,16 @@ public class DaysInPeriodFragment extends Fragment {
     }
 
     private class BillableDurationOnDayItemClickListener implements AdapterView.OnItemClickListener {
+        @Override
         public void onItemClick(AdapterView<?> arg0, View view, int position, long timestamp) {
+            if(listViewSwipeDetector.swipeDetected()) {
+                handleSwipe();
+            } else {
+                handleClick(timestamp);
+            }
+        }
+
+        private void handleClick(long timestamp) {
             Calendar day = Calendar.getInstance();
             day.setTimeInMillis(timestamp);
             DayDetailsHelper dayDetailsHelper = new DayDetailsHelper(getActivity());
@@ -330,7 +343,21 @@ public class DaysInPeriodFragment extends Fragment {
     }
 
     private class BillableDurationLongClickListener implements AdapterView.OnItemLongClickListener {
+        @Override
         public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long timestamp) {
+            boolean result;
+            if(listViewSwipeDetector.swipeDetected()) {
+                result = false;
+                handleSwipe();
+            } else {
+                result = true;
+                handleLongClick(timestamp);
+            }
+
+            return result;
+        }
+
+        private void handleLongClick(long timestamp) {
             Calendar day = Calendar.getInstance();
             day.setTimeInMillis(timestamp);
 
@@ -345,24 +372,39 @@ public class DaysInPeriodFragment extends Fragment {
             };
             DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), startOfDay, endOfDay, timeRecordsDeletedListener);
             deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
-            return true;
+        }
+    }
+
+    private void handleSwipe() {
+        if(listViewSwipeDetector.getAction() == SwipeDetector.Action.RL) {
+            nextPeriod();
+        } else if (listViewSwipeDetector.getAction() == SwipeDetector.Action.LR) {
+            previousPeriod();
         }
     }
 
     private class PreviousOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            period = period.getPrevious();
-            refreshData();
+            previousPeriod();
         }
     }
 
     private class NextOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            period = period.getNext();
-            refreshData();
+            nextPeriod();
         }
+    }
+
+    private void previousPeriod() {
+        period = period.getPrevious();
+        refreshData();
+    }
+
+    private void nextPeriod() {
+        period = period.getNext();
+        refreshData();
     }
 
     private class RefreshData extends AsyncTask<Void, Void, List<BillableDurationOnDay>> {
@@ -414,5 +456,4 @@ public class DaysInPeriodFragment extends Fragment {
             }
         }
     }
-
 }

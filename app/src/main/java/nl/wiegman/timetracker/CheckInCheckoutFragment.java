@@ -16,6 +16,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.nineoldandroids.animation.Animator;
+
 import java.util.Calendar;
 
 import nl.wiegman.timetracker.util.Formatting;
@@ -105,6 +109,31 @@ public class CheckInCheckoutFragment extends Fragment {
         FragmentHelper.showFragment(getActivity(), fragment);
     }
 
+    private class AnimatorListener implements Animator.AnimatorListener {
+        private final int newImageResourceId;
+
+        /**
+         * Constructor
+         */
+        public AnimatorListener(int newImageResourceId) {
+            this.newImageResourceId = newImageResourceId;
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            pausePlayImageView.setImageResource(newImageResourceId);
+            YoYo.with(Techniques.FlipInX)
+                    .playOn(pausePlayImageView);
+        }
+
+        @Override
+        public void onAnimationStart(Animator animation) {}
+        @Override
+        public void onAnimationCancel(Animator animation) {}
+        @Override
+        public void onAnimationRepeat(Animator animation) {}
+    }
+
     private class ShowThisWeeksTimeRecords implements View.OnClickListener {
         @Override
         public void onClick(View view) {
@@ -126,15 +155,22 @@ public class CheckInCheckoutFragment extends Fragment {
 
     private void checkIn() {
         TimeAndDurationService.checkIn();
-        pausePlayImageView.setImageResource(R.drawable.ic_av_pause_circle_outline_blue);
+        animateCheckInCheckOutButton(R.drawable.ic_av_pause_circle_outline_blue);
         updateWidget();
     }
 
     private void checkOut() {
         TimeAndDurationService.checkOut();
-        pausePlayImageView.setImageResource(R.drawable.ic_av_play_circle_outline_blue);
+        animateCheckInCheckOutButton(R.drawable.ic_av_play_circle_outline_blue);
         updateWidget();
     }
+
+    private void animateCheckInCheckOutButton(int newImageResourceId) {
+        YoYo.with(Techniques.FlipOutX)
+                .withListener(new AnimatorListener(newImageResourceId))
+                .playOn(pausePlayImageView);
+    }
+
 
     private void updateWidget() {
         try {

@@ -11,7 +11,6 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
 import nl.wiegman.timetracker.period.WeekPeriod;
 
 public class WeeksOverviewFragment extends AbstractPeriodsInYearOverviewFragment {
-
     private final String LOG_TAG = this.getClass().getSimpleName();
 
     /**
