@@ -24,6 +24,14 @@
         android:layout_below="@+id/todaysTotalLabelTextView"
         android:layout_centerHorizontal="true" />
 
+    <ImageView
+        android:id="@+id/pausePlayImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_av_play_circle_outline_blue"
+        android:clickable="true" />
+
     <TextView
         android:id="@+id/thisWeeksTotalLabelTextView"
         android:layout_width="wrap_content"
@@ -42,14 +50,5 @@
         android:textSize="@dimen/checkedInPeriodTextSize"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
-
-    <ImageButton
-        android:id="@+id/pausePlayImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        style="?android:attr/buttonBarButtonStyle"
-        android:src="@drawable/ic_av_play_circle_outline_blue"
-        android:clickable="true" />
 
 </RelativeLayout>

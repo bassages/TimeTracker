@@ -22,6 +22,9 @@ import com.nineoldandroids.animation.Animator;
 
 import java.util.Calendar;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.FragmentHelper;
@@ -36,9 +39,14 @@ public class CheckInCheckoutFragment extends Fragment {
 
     private final String LOG_TAG = this.getClass().getSimpleName();
 
-    private TextView todaysTotalTextView;
-    private TextView thisWeeksTotalTextView;
-    private ImageView pausePlayImageView;
+    @InjectView(R.id.todaysTotalTextView)
+    TextView todaysTotalTextView;
+
+    @InjectView(R.id.thisWeeksTotalTextView)
+    TextView thisWeeksTotalTextView;
+
+    @InjectView(R.id.pausePlayImageView)
+    ImageView pausePlayImageView;
 
     private PeriodicRunnableExecutor checkedInTimeUpdaterExecutor;
 
@@ -62,18 +70,10 @@ public class CheckInCheckoutFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
-
         View rootView = inflater.inflate(R.layout.fragment_checkin_checkout, container, false);
+        ButterKnife.inject(this, rootView);
 
-        todaysTotalTextView = (TextView) rootView.findViewById(R.id.todaysTotalTextView);
-        thisWeeksTotalTextView = (TextView) rootView.findViewById(R.id.thisWeeksTotalTextView);
-
-        pausePlayImageView = (ImageView) rootView.findViewById(R.id.pausePlayImageView);
-        pausePlayImageView.setOnClickListener(new CheckInCheckOutButtonOnClickListener());
-
-        todaysTotalTextView.setOnClickListener(new ShowTodaysDetails());
-        thisWeeksTotalTextView.setOnClickListener(new ShowThisWeeksTimeRecords());
+        setHasOptionsMenu(true);
 
         new IconUpdater().execute();
         new Updater().execute();
@@ -122,8 +122,7 @@ public class CheckInCheckoutFragment extends Fragment {
         @Override
         public void onAnimationEnd(Animator animation) {
             pausePlayImageView.setImageResource(newImageResourceId);
-            YoYo.with(Techniques.FlipInX)
-                    .playOn(pausePlayImageView);
+            YoYo.with(Techniques.RotateIn).playOn(pausePlayImageView);
         }
 
         @Override
@@ -134,22 +133,28 @@ public class CheckInCheckoutFragment extends Fragment {
         public void onAnimationRepeat(Animator animation) {}
     }
 
-    private class ShowThisWeeksTimeRecords implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            Calendar today = Calendar.getInstance();
-            Period period = new WeekPeriod(today);
-            DaysInPeriodFragment fragment = DaysInPeriodFragment.newInstance(period);
-            FragmentHelper.showFragment(getActivity(), fragment);
-        }
+    @OnClick(R.id.thisWeeksTotalTextView)
+    public void thisWeeksTotalOnClick(View view) {
+        Calendar today = Calendar.getInstance();
+        Period period = new WeekPeriod(today);
+        DaysInPeriodFragment fragment = DaysInPeriodFragment.newInstance(period);
+        FragmentHelper.showFragment(getActivity(), fragment);
     }
 
-    private class ShowTodaysDetails implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            Calendar day = Calendar.getInstance();
-            DayDetailsHelper dayDetailsHelper = new DayDetailsHelper(getActivity());
-            dayDetailsHelper.showDetailsOrTimeRecordsOfDay(day);
+    @OnClick(R.id.todaysTotalTextView)
+    public void todaysTotalOnClick(View view) {
+        Calendar day = Calendar.getInstance();
+        DayDetailsHelper dayDetailsHelper = new DayDetailsHelper(getActivity());
+        dayDetailsHelper.showDetailsOrTimeRecordsOfDay(day);
+    }
+
+    @OnClick(R.id.pausePlayImageView)
+    public void pausePlayOnClick(View view) {
+        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+        if (TimeAndDurationService.isCheckedIn()) {
+            checkOut();
+        } else {
+            checkIn();
         }
     }
 
@@ -166,8 +171,9 @@ public class CheckInCheckoutFragment extends Fragment {
     }
 
     private void animateCheckInCheckOutButton(int newImageResourceId) {
-        YoYo.with(Techniques.FlipOutX)
-                .withListener(new AnimatorListener(newImageResourceId))
+        pausePlayImageView.setImageResource(newImageResourceId);
+        YoYo.with(Techniques.Landing)
+//                .withListener(new AnimatorListener(newImageResourceId))
                 .playOn(pausePlayImageView);
     }
 
@@ -177,18 +183,6 @@ public class CheckInCheckoutFragment extends Fragment {
             CheckInCheckOutWidgetProvider.getUpdateWidgetIntent(getActivity()).send();
         } catch (PendingIntent.CanceledException e) {
             Log.e(LOG_TAG, "Unable to update widget: " + e.getMessage());
-        }
-    }
-
-    private class CheckInCheckOutButtonOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-            if (TimeAndDurationService.isCheckedIn()) {
-                checkOut();
-            } else {
-                checkIn();
-            }
         }
     }
 
