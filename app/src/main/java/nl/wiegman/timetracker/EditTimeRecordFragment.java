@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import nl.wiegman.timetracker.domain.TimeRecord;
 
 import static android.view.View.OnClickListener;
@@ -105,30 +107,11 @@ public class EditTimeRecordFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_edit_time_record, container, false);
+        ButterKnife.inject(this, rootView);
 
-        TextView title = (TextView) rootView.findViewById(R.id.title);
-        if (timeRecordId == null) {
-            title.setText(R.string.add_timerecord_title);
-        } else {
-            title.setText(R.string.edit_timerecord_title);
-        }
-
-        Button deleteButton = (Button) rootView.findViewById(R.id.deleteButton);
-        if (timeRecordId == null) {
-            LinearLayout buttonHolder = (LinearLayout) rootView.findViewById(R.id.timeRecordDetailsButtonHolder);
-            buttonHolder.removeView(deleteButton);
-        } else {
-            deleteButton.setOnClickListener(new DeleteButtonOnClickListener());
-        }
-
-        Button cancelButton = (Button) rootView.findViewById(R.id.cancelButton);
-        cancelButton.setOnClickListener(new CancelButtonOnClickListener());
-
-        Button saveButton = (Button) rootView.findViewById(R.id.saveTimeRecordButton);
-        saveButton.setOnClickListener(new SaveButtonOnClickListener());
-
+        setTitle();
+        showHideDeleteButton();
         refreshHmiFromFieldValues();
-
         return rootView;
     }
 
@@ -139,6 +122,49 @@ public class EditTimeRecordFragment extends Fragment {
         outState.putLong(INSTANCE_STATE_KEY_TO, to.getTimeInMillis());
         outState.putLong(INSTANCE_STATE_KEY_BREAK, breakInMillis);
         outState.putString(INSTANCE_STATE_KEY_NOTE, note);
+    }
+
+    @OnClick(R.id.saveTimeRecordButton)
+    public void saveTimeRecordButtonOnClick(View view) {
+        if (validationOk()) {
+            TimeRecord timeRecord;
+            if (EditTimeRecordFragment.this.timeRecordId != null) {
+                timeRecord = TimeRecord.findById(TimeRecord.class, EditTimeRecordFragment.this.timeRecordId);
+            } else {
+                timeRecord = new TimeRecord();
+            }
+            timeRecord.setCheckIn(from);
+            timeRecord.setCheckOut(to);
+            timeRecord.setBreakInMilliseconds(breakInMillis);
+            timeRecord.setNote(note);
+            timeRecord.save();
+
+            closeFragment();
+        }
+    }
+
+    @OnClick(R.id.cancelButton)
+    public void onClick(View view) {
+        closeFragment();
+    }
+
+    private void showHideDeleteButton() {
+        Button deleteButton = (Button) rootView.findViewById(R.id.deleteButton);
+        if (timeRecordId == null) {
+            LinearLayout buttonHolder = (LinearLayout) rootView.findViewById(R.id.timeRecordDetailsButtonHolder);
+            buttonHolder.removeView(deleteButton);
+        } else {
+            deleteButton.setOnClickListener(new DeleteButtonOnClickListener());
+        }
+    }
+
+    private void setTitle() {
+        TextView title = (TextView) rootView.findViewById(R.id.title);
+        if (timeRecordId == null) {
+            title.setText(R.string.add_timerecord_title);
+        } else {
+            title.setText(R.string.edit_timerecord_title);
+        }
     }
 
     private void setFieldValuesFromTimeRecord() {
@@ -412,27 +438,6 @@ public class EditTimeRecordFragment extends Fragment {
         }
     }
 
-    private class SaveButtonOnClickListener implements OnClickListener {
-        @Override
-        public void onClick(View view) {
-            if (validationOk()) {
-                TimeRecord timeRecord;
-                if (EditTimeRecordFragment.this.timeRecordId != null) {
-                    timeRecord = TimeRecord.findById(TimeRecord.class, EditTimeRecordFragment.this.timeRecordId);
-                } else {
-                    timeRecord = new TimeRecord();
-                }
-                timeRecord.setCheckIn(from);
-                timeRecord.setCheckOut(to);
-                timeRecord.setBreakInMilliseconds(breakInMillis);
-                timeRecord.setNote(note);
-                timeRecord.save();
-
-                closeFragment();
-            }
-        }
-    }
-
     private boolean validationOk() {
         boolean result = true;
 
@@ -456,13 +461,6 @@ public class EditTimeRecordFragment extends Fragment {
         }
 
         return result;
-    }
-
-    private class CancelButtonOnClickListener implements OnClickListener {
-        @Override
-        public void onClick(View view) {
-            closeFragment();
-        }
     }
 
     private class BreakTextViewOnClickListener implements OnClickListener {

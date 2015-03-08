@@ -109,30 +109,6 @@ public class CheckInCheckoutFragment extends Fragment {
         FragmentHelper.showFragment(getActivity(), fragment);
     }
 
-    private class AnimatorListener implements Animator.AnimatorListener {
-        private final int newImageResourceId;
-
-        /**
-         * Constructor
-         */
-        public AnimatorListener(int newImageResourceId) {
-            this.newImageResourceId = newImageResourceId;
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            pausePlayImageView.setImageResource(newImageResourceId);
-            YoYo.with(Techniques.RotateIn).playOn(pausePlayImageView);
-        }
-
-        @Override
-        public void onAnimationStart(Animator animation) {}
-        @Override
-        public void onAnimationCancel(Animator animation) {}
-        @Override
-        public void onAnimationRepeat(Animator animation) {}
-    }
-
     @OnClick(R.id.thisWeeksTotalTextView)
     public void thisWeeksTotalOnClick(View view) {
         Calendar today = Calendar.getInstance();
@@ -172,9 +148,7 @@ public class CheckInCheckoutFragment extends Fragment {
 
     private void animateCheckInCheckOutButton(int newImageResourceId) {
         pausePlayImageView.setImageResource(newImageResourceId);
-        YoYo.with(Techniques.Landing)
-//                .withListener(new AnimatorListener(newImageResourceId))
-                .playOn(pausePlayImageView);
+        YoYo.with(Techniques.Landing).playOn(pausePlayImageView);
     }
 
 

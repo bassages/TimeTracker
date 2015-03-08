@@ -24,6 +24,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
@@ -44,9 +47,14 @@ public class DaysInPeriodFragment extends Fragment {
 
     private Period period;
 
-    private TextView titleTextView;
-    private ListView billableDurationOnDayListView;
-    private TextView footerTotalTextView;
+    @InjectView(R.id.title)
+    TextView titleTextView;
+
+    @InjectView(R.id.timeRecordsInPeriodListView)
+    ListView billableDurationOnDayListView;
+
+    @InjectView(R.id.totalBillableDurationColumn)
+    TextView footerTotalTextView;
 
     private SwipeDetector listViewSwipeDetector;
 
@@ -75,6 +83,9 @@ public class DaysInPeriodFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+
         if (getArguments() != null) {
             period = (Period) getArguments().getSerializable(ARG_PERIOD);
         }
@@ -82,24 +93,14 @@ public class DaysInPeriodFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
+        View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
+        ButterKnife.inject(this, rootView);
+
         listViewSwipeDetector = new SwipeDetector();
 
-        View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
-
-        titleTextView = (TextView) rootView.findViewById(R.id.title);
-        footerTotalTextView = (TextView) rootView.findViewById(R.id.totalBillableDurationColumn);
-
-        billableDurationOnDayListView = (ListView) rootView.findViewById(R.id.timeRecordsInPeriodListView);
         billableDurationOnDayListView.setOnItemClickListener(new BillableDurationOnDayItemClickListener());
         billableDurationOnDayListView.setOnItemLongClickListener(new BillableDurationLongClickListener());
         billableDurationOnDayListView.setOnTouchListener(listViewSwipeDetector);
-
-        View previous = rootView.findViewById(R.id.previousImageView);
-        previous.setOnClickListener(new PreviousOnClickListener());
-
-        View next = rootView.findViewById(R.id.nextImageView);
-        next.setOnClickListener(new NextOnClickListener());
 
         refreshData();
 
@@ -133,6 +134,17 @@ public class DaysInPeriodFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @OnClick(R.id.previousImageView)
+    public void previousOnClick(View view) {
+        previousPeriod();
+    }
+
+    @OnClick(R.id.nextImageView)
+    public void nextOnClick(View view) {
+        nextPeriod();
+    }
+
 
     private void activateRecalculateCurrentDayUpdater() {
         checkedInTimeUpdaterExecutor = new PeriodicRunnableExecutor(1000, new CheckedInTimeUpdater());
@@ -380,20 +392,6 @@ public class DaysInPeriodFragment extends Fragment {
             nextPeriod();
         } else if (listViewSwipeDetector.getAction() == SwipeDetector.Action.LR) {
             previousPeriod();
-        }
-    }
-
-    private class PreviousOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            previousPeriod();
-        }
-    }
-
-    private class NextOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            nextPeriod();
         }
     }
 
