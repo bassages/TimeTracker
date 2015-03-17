@@ -15,6 +15,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
+import butterknife.OnItemLongClick;
 import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.FragmentHelper;
@@ -27,7 +32,10 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
     public static final String INSTANCE_STATE_YEAR = "YEAR";
 
+    @InjectView(R.id.title)
     private TextView yearTextView;
+
+    @InjectView(R.id.periodsListView)
     private ListView periodsListView;
 
     private SwipeDetector listViewSwipeDetector;
@@ -67,15 +75,11 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_period_overview, container, false);
+        ButterKnife.inject(this, rootView);
+
         listViewSwipeDetector = new SwipeDetector();
 
-        View rootView = inflater.inflate(R.layout.fragment_period_overview, container, false);
-
-        yearTextView = (TextView) rootView.findViewById(R.id.title);
-
-        periodsListView = (ListView) rootView.findViewById(R.id.periodListView);
-        periodsListView.setOnItemClickListener(new PeriodItemClickListener());
-        periodsListView.setOnItemLongClickListener(new PeriodItemLongClickListener());
         periodsListView.setOnTouchListener(listViewSwipeDetector);
 
         View previous = rootView.findViewById(R.id.previousImageView);
@@ -294,47 +298,43 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
         }
     }
 
-    private class PeriodItemClickListener implements AdapterView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if(listViewSwipeDetector.swipeDetected()) {
-                handleSwipe();
-            } else {
-                handleClick((int) id);
-            }
-        }
-
-        private void handleClick(int id) {
-            showTimeRecordsInPeriod(id, year);
+    @OnItemClick(R.id.periodsListView)
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        if(listViewSwipeDetector.swipeDetected()) {
+            handleSwipe();
+        } else {
+            handleClick((int) id);
         }
     }
 
-    private class PeriodItemLongClickListener implements AdapterView.OnItemLongClickListener {
-        @Override
-        public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long periodId) {
-            boolean result;
-            if(listViewSwipeDetector.swipeDetected()) {
-                result = false;
-                handleSwipe();
-            } else {
-                result = true;
-                handleLongCLick(periodId);
+    private void handleClick(int id) {
+            showTimeRecordsInPeriod(id, year);
+        }
+
+    @OnItemLongClick(R.id.periodsListView)
+    public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long periodId) {
+        boolean result;
+        if(listViewSwipeDetector.swipeDetected()) {
+            result = false;
+            handleSwipe();
+        } else {
+            result = true;
+            handleLongCLick(periodId);
+        }
+        return result;
+    }
+
+    private void handleLongCLick(long periodId) {
+        Period period = getPeriod(periodId, year);
+
+        DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = new DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener() {
+            @Override
+            public void recordDeleted() {
+                refreshData();
             }
-            return result;
-        }
-
-        private void handleLongCLick(long periodId) {
-            Period period = getPeriod(periodId, year);
-
-            DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = new DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener() {
-                @Override
-                public void recordDeleted() {
-                    refreshData();
-                }
-            };
-            DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), period.getFrom(), period.getTo(), timeRecordsDeletedListener);
-            deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
-        }
+        };
+        DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), period.getFrom(), period.getTo(), timeRecordsDeletedListener);
+        deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
     }
 
     private void handleSwipe() {

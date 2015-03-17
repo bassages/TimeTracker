@@ -46,7 +46,7 @@
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="233dp"
-        android:id="@+id/periodListView"
+        android:id="@+id/periodsListView"
         android:layout_gravity="center_horizontal|top"
         android:layout_below="@+id/header"
         android:layout_alignParentLeft="true"
