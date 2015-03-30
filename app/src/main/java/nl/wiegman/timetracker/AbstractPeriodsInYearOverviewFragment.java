@@ -33,10 +33,10 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     public static final String INSTANCE_STATE_YEAR = "YEAR";
 
     @InjectView(R.id.title)
-    private TextView yearTextView;
+    public TextView yearTextView;
 
     @InjectView(R.id.periodsListView)
-    private ListView periodsListView;
+    public ListView periodsListView;
 
     private SwipeDetector listViewSwipeDetector;
 
