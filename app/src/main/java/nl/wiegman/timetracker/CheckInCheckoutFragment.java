@@ -1,7 +1,6 @@
 package nl.wiegman.timetracker;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,19 +17,19 @@ import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.nineoldandroids.animation.Animator;
 
 import java.util.Calendar;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import nl.wiegman.timetracker.period.Day;
 import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.FragmentHelper;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
-import nl.wiegman.timetracker.period.WeekPeriod;
+import nl.wiegman.timetracker.period.Week;
 import nl.wiegman.timetracker.widget.CheckInCheckOutWidgetProvider;
 
 public class CheckInCheckoutFragment extends Fragment {
@@ -51,24 +50,6 @@ public class CheckInCheckoutFragment extends Fragment {
     private PeriodicRunnableExecutor checkedInTimeUpdaterExecutor;
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        deactivateCheckedInTimeUpdater();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        activateCheckedInTimeUpdater();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        deactivateCheckedInTimeUpdater();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_checkin_checkout, container, false);
         ButterKnife.inject(this, rootView);
@@ -85,6 +66,24 @@ public class CheckInCheckoutFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.add(0, MENU_ITEM_MONTH_OVERVIEW_ID, 0, R.string.action_month_overview);
         menu.add(0, MENU_ITEM_WEEK_OVERVIEW_ID, 0, R.string.action_week_overview);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        activateCheckedInTimeUpdater();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        deactivateCheckedInTimeUpdater();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        deactivateCheckedInTimeUpdater();
     }
 
     @Override
@@ -112,7 +111,7 @@ public class CheckInCheckoutFragment extends Fragment {
     @OnClick(R.id.thisWeeksTotalTextView)
     public void thisWeeksTotalOnClick(View view) {
         Calendar today = Calendar.getInstance();
-        Period period = new WeekPeriod(today);
+        Period period = new Week(today);
         DaysInPeriodFragment fragment = DaysInPeriodFragment.newInstance(period);
         FragmentHelper.showFragment(getActivity(), fragment);
     }
@@ -182,10 +181,13 @@ public class CheckInCheckoutFragment extends Fragment {
     private class Updater extends AsyncTask<Void, Void, String[]> {
         @Override
         protected String[] doInBackground(Void... voids) {
-            Calendar today = Calendar.getInstance();
+            Calendar now = Calendar.getInstance();
 
-            long dayTotal = TimeAndDurationService.getBillableDurationOnDay(today);
-            long weekTotal = TimeAndDurationService.getBillableDurationInWeekOfDay(today);
+            Day today = new Day(now);
+            long dayTotal = today.getBillableDuration();
+
+            Week thisWeek = new Week(now);
+            long weekTotal = thisWeek.getBillableDuration();
 
             return new String[] {
                                     Formatting.formatDuration(dayTotal),

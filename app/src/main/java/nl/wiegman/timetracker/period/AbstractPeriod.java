@@ -2,6 +2,8 @@ package nl.wiegman.timetracker.period;
 
 import java.util.Calendar;
 
+import nl.wiegman.timetracker.util.TimeAndDurationService;
+
 public abstract class AbstractPeriod implements Period {
 
     private Calendar from;
@@ -23,6 +25,11 @@ public abstract class AbstractPeriod implements Period {
 
     protected void setTo(Calendar to) {
         this.to = to;
+    }
+
+    @Override
+    public long getBillableDuration() {
+        return TimeAndDurationService.getBillableDurationInPeriod(this);
     }
 
 }

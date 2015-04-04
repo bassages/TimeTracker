@@ -2,12 +2,10 @@ package nl.wiegman.timetracker;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nl.wiegman.timetracker.domain.CheckIn;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class CheckedInOnDayDialog {
@@ -24,7 +22,7 @@ public class CheckedInOnDayDialog {
     public void showCheckedInDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        Date checkInTimestamp = TimeAndDurationService.getCheckIn().getTimestamp().getTime();
+        Date checkInTimestamp = TimeAndDurationService.getCheckIn().getCheckIn().getTime();
         String message = context.getString(R.string.checked_in_at, checkDateFormat.format(checkInTimestamp), checkTimeFormat.format(checkInTimestamp));
         builder.setMessage(message)
                 .setNeutralButton(android.R.string.ok, new DismissOnClickListener())

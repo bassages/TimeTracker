@@ -27,6 +27,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import nl.wiegman.timetracker.period.Day;
 import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
@@ -170,7 +171,7 @@ public class DaysInPeriodFragment extends Fragment {
         @Override
         protected CurrentItemUpdateData doInBackground(Void... voids) {
             CurrentItemUpdateData data = new CurrentItemUpdateData();
-            long currentPeriodBillableDuration = TimeAndDurationService.getBillableDurationOnDay(Calendar.getInstance());
+            long currentPeriodBillableDuration = new Day(Calendar.getInstance()).getBillableDuration();
             data.current = Formatting.formatDuration(currentPeriodBillableDuration);
             data.total = Formatting.formatDuration(period.getBillableDuration());
             return data;
@@ -228,7 +229,7 @@ public class DaysInPeriodFragment extends Fragment {
         while (day.getTimeInMillis() < period.getTo().getTimeInMillis()) {
             BillableDurationOnDay billableHoursOnDay = new BillableDurationOnDay();
             billableHoursOnDay.setDay((Calendar)day.clone());
-            long billableDurationOnDay = TimeAndDurationService.getBillableDurationOnDay(day);
+            long billableDurationOnDay = new Day(day).getBillableDuration();
             billableHoursOnDay.setBillableDuration(billableDurationOnDay);
             days.add(billableHoursOnDay);
             day.add(Calendar.DAY_OF_MONTH, 1);

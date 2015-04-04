@@ -7,9 +7,9 @@ import java.util.Calendar;
 
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
-public class MonthPeriod extends AbstractPeriod {
+public class Month extends AbstractPeriod {
 
-    public MonthPeriod(Calendar dayInMonth) {
+    public Month(Calendar dayInMonth) {
         Calendar start = TimeAndDurationService.getStartOfMonth(dayInMonth);
         setFrom(start);
 
@@ -30,18 +30,13 @@ public class MonthPeriod extends AbstractPeriod {
     public Period getPrevious() {
         Calendar previous = (Calendar) getFrom().clone();
         previous.add(Calendar.MONTH, -1);
-        return new MonthPeriod(previous);
-    }
-
-    @Override
-    public long getBillableDuration() {
-        return TimeAndDurationService.getBillableDurationInMonthOfDay(getFrom());
+        return new Month(previous);
     }
 
     @Override
     public Period getNext() {
         Calendar next = (Calendar) getFrom().clone();
         next.add(Calendar.MONTH, 1);
-        return new MonthPeriod(next);
+        return new Month(next);
     }
 }

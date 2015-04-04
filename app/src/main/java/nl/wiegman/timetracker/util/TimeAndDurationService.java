@@ -1,5 +1,7 @@
 package nl.wiegman.timetracker.util;
 
+import android.text.format.Time;
+
 import com.orm.query.Condition;
 import com.orm.query.Select;
 
@@ -10,36 +12,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import nl.wiegman.timetracker.domain.CheckIn;
 import nl.wiegman.timetracker.domain.TimeRecord;
+import nl.wiegman.timetracker.period.Period;
 
 public class TimeAndDurationService {
-
     private static final String LOG_TAG = TimeAndDurationService.class.getSimpleName();
 
-    private static final long DEFAULT_BREAKDURATION = TimeUnit.MINUTES.toMillis(30);
+    private static final long DEFAULT_BREAK_DURATION = TimeUnit.MINUTES.toMillis(30);
 
     public static boolean isCheckedIn() {
         return getCheckIn() != null;
     }
 
-    public static CheckIn getCheckIn() {
-        CheckIn result = null;
-        List<CheckIn> checkIns = CheckIn.listAll(CheckIn.class);
-        if (!checkIns.isEmpty()) {
-            result = checkIns.get(0);
+    public static TimeRecord getCheckIn() {
+        String nullDateMillis = Long.toString(TimeRecord.NULL_DATE_MILLIS);
+        List<TimeRecord> checkIn = TimeRecord.find(TimeRecord.class, "check_out = ?", nullDateMillis);
+        TimeRecord result = null;
+        if (!checkIn.isEmpty()) {
+            result = checkIn.get(0);
         }
         return result;
-    }
-
-    public static long getTotalDurationCheckedIn() {
-        long totalDurationCheckedIn = 0;
-        CheckIn checkIn = getCheckIn();
-        if (checkIn != null) {
-            totalDurationCheckedIn = Calendar.getInstance().getTimeInMillis() - checkIn.getTimestamp().getTimeInMillis();
-            totalDurationCheckedIn -= getBreakDuration(totalDurationCheckedIn);
-        }
-        return totalDurationCheckedIn;
     }
 
     private static long getBreakDuration(long totalCheckedInDuration) {
@@ -49,8 +41,8 @@ public class TimeAndDurationService {
 
         if (totalCheckedInDuration > breakFrom) {
             long i = totalCheckedInDuration - breakFrom;
-            if (i > DEFAULT_BREAKDURATION) {
-                result = DEFAULT_BREAKDURATION;
+            if (i > DEFAULT_BREAK_DURATION) {
+                result = DEFAULT_BREAK_DURATION;
             } else {
                 result = i;
             }
@@ -58,91 +50,47 @@ public class TimeAndDurationService {
         return result;
     }
 
-    /**
-     * Returns the total time on a given date.
-     *
-     * If the date is the current date and the user is checked in
-     * then the duration of this checkIn will be included in the result.
-     */
-    public static long getBillableDurationOnDay(Calendar day) {
-        long dayTotal = 0;
+    public static long getBillableDurationInPeriod(Period period) {
+        long result = 0;
 
-        Calendar startOfDay = DateUtils.truncate(day, Calendar.DAY_OF_MONTH);
-        Calendar endOfDay = getEndOfDay(startOfDay);
-
-        List<TimeRecord> timeRecordsOnDay = getTimeRecordsBetween(startOfDay, endOfDay);
-
-        for (TimeRecord timeRecord : timeRecordsOnDay) {
-            dayTotal += timeRecord.getBillableDuration();
+        List<TimeRecord> timeRecordsInPeriod = getTimeRecordsBetween(period.getFrom(), period.getTo());
+        for (TimeRecord timeRecord : timeRecordsInPeriod) {
+            result += timeRecord.getBillableDuration();
         }
 
-        Calendar today = Calendar.getInstance();
-        if (DateUtils.isSameDay(day, today) && isCheckedIn()) {
-            long totalDurationCheckedIn = getTotalDurationCheckedIn();
-            dayTotal += totalDurationCheckedIn;
-        }
-        return dayTotal;
-    }
-
-    public static long getBillableDurationInWeekOfDay(Calendar dayInWeek) {
-        long weekTotal = 0;
-
-        Iterator<Calendar> iterator = DateUtils.iterator(dayInWeek, DateUtils.RANGE_WEEK_MONDAY);
-        while(iterator.hasNext()) {
-            Calendar next = iterator.next();
-            weekTotal += getBillableDurationOnDay(next);
-        }
-        return weekTotal;
+        return result;
     }
 
     public static List<TimeRecord> getTimeRecordsBetween(Calendar from, Calendar to) {
-        return Select.from(TimeRecord.class)
-                .where(Condition.prop("check_in").gt(from.getTimeInMillis()))
-                .and(Condition.prop("check_out").lt(to.getTimeInMillis()))
-                .orderBy("check_in")
-                .list();
+        String fromTimeInMillis = Long.toString(from.getTimeInMillis());
+        String toTimeInMillis = Long.toString(to.getTimeInMillis());
+        return TimeRecord.find(TimeRecord.class, "check_in > ? AND check_in < ? order by check_in", fromTimeInMillis, toTimeInMillis);
     }
 
-    public static CheckIn checkIn() {
-        CheckIn checkIn = new CheckIn().setTimestamp(Calendar.getInstance());
-        checkIn.save();
-        return checkIn;
+    public static TimeRecord checkIn() {
+        TimeRecord timeRecord = new TimeRecord();
+        Calendar checkIn = Calendar.getInstance();
+        checkIn.set(Calendar.MILLISECOND, 0);
+        timeRecord.setCheckIn(checkIn);
+        timeRecord.save();
+        return timeRecord;
     }
 
     public static TimeRecord checkOut() {
-        CheckIn checkIn = TimeAndDurationService.getCheckIn();
-
-        Calendar checkInTimestamp = checkIn.getTimestamp();
-        checkInTimestamp.set(Calendar.MILLISECOND, 0);
+        TimeRecord timeRecord = TimeAndDurationService.getCheckIn();
 
         Calendar checkOutTimestamp = Calendar.getInstance();
         checkOutTimestamp.set(Calendar.MILLISECOND, 0);
 
-        TimeRecord timeRecord = new TimeRecord();
-        timeRecord.setCheckIn(checkInTimestamp).setCheckOut(checkOutTimestamp);
-        timeRecord.setBreakInMilliseconds(getBreakDuration(timeRecord.getDuration()));
-        timeRecord.save();
+        timeRecord.setCheckOut(checkOutTimestamp);
 
-        checkIn.delete();
-
-        return timeRecord;
-    }
-
-    public static long getBillableDurationInMonthOfDay(Calendar dayInMonth) {
-        long monthTotal = 0;
-
-        Calendar start = getStartOfMonth(dayInMonth);
-
-        Calendar end = (Calendar) start.clone();
-        end.add(Calendar.MONTH, 1);
-        end.add(Calendar.MILLISECOND, -1);
-
-        while (start.getTimeInMillis() < end.getTimeInMillis()) {
-            monthTotal += getBillableDurationOnDay(start);
-            start.add(Calendar.DAY_OF_MONTH, 1);
+        if (timeRecord.getBreakInMilliseconds() == null) {
+            timeRecord.setBreakInMilliseconds(getBreakDuration(timeRecord.getDuration()));
         }
 
-        return monthTotal;
+        timeRecord.save();
+
+        return timeRecord;
     }
 
     public static Calendar getStartOfMonth(Calendar dayInMonth) {

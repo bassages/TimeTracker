@@ -2,7 +2,6 @@ package nl.wiegman.timetracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -10,9 +9,8 @@ import org.apache.commons.lang3.time.DateUtils;
 import java.util.Calendar;
 import java.util.List;
 
-import nl.wiegman.timetracker.domain.CheckIn;
 import nl.wiegman.timetracker.domain.TimeRecord;
-import nl.wiegman.timetracker.period.DayPeriod;
+import nl.wiegman.timetracker.period.Day;
 import nl.wiegman.timetracker.util.FragmentHelper;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
@@ -35,8 +33,8 @@ public class DayDetailsHelper {
         int nrOfTimeRecordsOnDay = timeRecordsOnDay.size();
 
         boolean isCheckedInOnDay = false;
-        CheckIn checkIn = TimeAndDurationService.getCheckIn();
-        if (checkIn != null && DateUtils.isSameDay(day, checkIn.getTimestamp())) {
+        TimeRecord checkIn = TimeAndDurationService.getCheckIn();
+        if (checkIn != null && DateUtils.isSameDay(day, checkIn.getCheckIn())) {
             isCheckedInOnDay = true;
         }
 
@@ -73,9 +71,8 @@ public class DayDetailsHelper {
     }
 
     private void showTimeRecordsOnDayFragment(Calendar day) {
-        DayPeriod period = new DayPeriod(day);
+        Day period = new Day(day);
         TimeRecordsInPeriodFragment fragment = TimeRecordsInPeriodFragment.newInstance(period);
         FragmentHelper.showFragment(activity, fragment);
     }
-
 }

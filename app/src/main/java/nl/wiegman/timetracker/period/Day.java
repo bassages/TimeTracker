@@ -5,9 +5,9 @@ import java.util.Calendar;
 
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
-public class DayPeriod extends AbstractPeriod {
+public class Day extends AbstractPeriod {
 
-    public DayPeriod(Calendar day) {
+    public Day(Calendar day) {
         setFrom(TimeAndDurationService.getStartOfDay(day));
         setTo(TimeAndDurationService.getEndOfDay(day));
     }
@@ -22,18 +22,13 @@ public class DayPeriod extends AbstractPeriod {
     public Period getPrevious() {
         Calendar previous = (Calendar) getFrom().clone();
         previous.add(Calendar.DAY_OF_MONTH, -1);
-        return new DayPeriod(previous);
-    }
-
-    @Override
-    public long getBillableDuration() {
-        return TimeAndDurationService.getBillableDurationOnDay(getFrom());
+        return new Day(previous);
     }
 
     @Override
     public Period getNext() {
         Calendar next = (Calendar) getFrom().clone();
         next.add(Calendar.DAY_OF_MONTH, 1);
-        return new DayPeriod(next);
+        return new Day(next);
     }
 }

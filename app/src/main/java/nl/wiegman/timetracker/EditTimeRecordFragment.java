@@ -42,6 +42,7 @@ public class EditTimeRecordFragment extends Fragment {
     private static final String INSTANCE_STATE_KEY_TO = "TO";
     private static final String INSTANCE_STATE_KEY_BREAK = "BREAK";
     private static final String INSTANCE_STATE_KEY_NOTE = "NOTE";
+    private static final String INSTANCE_STATE_KEY_ISCHECKIN = "ISCHECKIN";
 
     private static final String ARG_PARAM_TIMERECORD_ID = "timeRecordId";
 
@@ -53,6 +54,7 @@ public class EditTimeRecordFragment extends Fragment {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd-MM-yyyy");
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
+    private boolean isCheckin;
     private Calendar from;
     private Calendar to;
     private Long breakInMillis;
@@ -122,6 +124,7 @@ public class EditTimeRecordFragment extends Fragment {
         outState.putLong(INSTANCE_STATE_KEY_TO, to.getTimeInMillis());
         outState.putLong(INSTANCE_STATE_KEY_BREAK, breakInMillis);
         outState.putString(INSTANCE_STATE_KEY_NOTE, note);
+        outState.putBoolean(INSTANCE_STATE_KEY_ISCHECKIN, isCheckin);
     }
 
     @OnClick(R.id.saveTimeRecordButton)
@@ -134,7 +137,11 @@ public class EditTimeRecordFragment extends Fragment {
                 timeRecord = new TimeRecord();
             }
             timeRecord.setCheckIn(from);
-            timeRecord.setCheckOut(to);
+
+            if (!timeRecord.isCheckIn()) {
+                timeRecord.setCheckOut(to);
+            }
+
             timeRecord.setBreakInMilliseconds(breakInMillis);
             timeRecord.setNote(note);
             timeRecord.save();
@@ -174,11 +181,13 @@ public class EditTimeRecordFragment extends Fragment {
             to = (Calendar) timeRecord.getCheckOut().clone();
             breakInMillis = timeRecord.getBreakInMilliseconds();
             note = timeRecord.getNote();
+            isCheckin = timeRecord.isCheckIn();
         } else {
             from = Calendar.getInstance();
             to = Calendar.getInstance();
             breakInMillis = 0l;
             note = "";
+            isCheckin = false;
         }
     }
 
@@ -191,58 +200,69 @@ public class EditTimeRecordFragment extends Fragment {
 
         breakInMillis = savedInstanceState.getLong(INSTANCE_STATE_KEY_BREAK);
         note = savedInstanceState.getString(INSTANCE_STATE_KEY_NOTE);
+        isCheckin = savedInstanceState.getBoolean(INSTANCE_STATE_KEY_ISCHECKIN);
     }
 
     private void refreshHmiFromFieldValues() {
-        refreshFromDate(dateFormat, from);
-        refreshFromTime(timeFormat, from);
-
-        refreshToDate(dateFormat, to);
-        refreshToTime(timeFormat, to);
-
-        refreshBreak(breakInMillis);
-        refreshNote(note);
+        refreshFromDate();
+        refreshFromTime();
+        refreshToDate();
+        refreshToTime();
+        refreshBreak();
+        refreshNote();
     }
 
-    private void refreshNote(String note) {
+    private void refreshNote() {
         TextView noteTextView = (TextView) rootView.findViewById(R.id.noteValueTextView);
-        noteTextView.setText(note);
+        if (note == null || "".equals(note)) {
+            noteTextView.setText("-");
+        } else {
+            noteTextView.setText(note);
+        }
         noteTextView.setOnClickListener(new NoteTextViewOnClickListener());
     }
 
-    private void refreshFromDate(SimpleDateFormat dateFormat, Calendar checkIn) {
+    private void refreshFromDate() {
         TextView fromDateTextView = (TextView) rootView.findViewById(R.id.fromDateValueTextView);
-        String formattedFromDate = dateFormat.format(checkIn.getTime());
+        String formattedFromDate = dateFormat.format(from.getTime());
         fromDateTextView.setText(formattedFromDate);
-        EditDateClickListener fromDateClickListener = new EditDateClickListener(checkIn);
+        EditDateClickListener fromDateClickListener = new EditDateClickListener(from);
         fromDateTextView.setOnClickListener(fromDateClickListener);
     }
 
-    private void refreshFromTime(SimpleDateFormat timeFormat, Calendar checkIn) {
+    private void refreshFromTime() {
         TextView fromTimeTextView = (TextView) rootView.findViewById(R.id.fromTimeValueTextView);
-        String formattedFromTime = timeFormat.format(checkIn.getTime());
+        String formattedFromTime = timeFormat.format(from.getTime());
         fromTimeTextView.setText(formattedFromTime);
-        EditTimeClickListener fromTimeClickListener = new EditTimeClickListener(checkIn);
+        EditTimeClickListener fromTimeClickListener = new EditTimeClickListener(from);
         fromTimeTextView.setOnClickListener(fromTimeClickListener);
     }
 
-    private void refreshToDate(SimpleDateFormat dateFormat, Calendar checkOut) {
+    private void refreshToDate() {
         TextView toDateTextView = (TextView) rootView.findViewById(R.id.toDateValueTextView);
-        String formattedToDate = dateFormat.format(checkOut.getTime());
-        toDateTextView.setText(formattedToDate);
-        EditDateClickListener toDateClickListener = new EditDateClickListener(checkOut);
-        toDateTextView.setOnClickListener(toDateClickListener);
+        if (isCheckin) {
+            toDateTextView.setText("-");
+        } else {
+            String formattedToDate = dateFormat.format(to.getTime());
+            toDateTextView.setText(formattedToDate);
+            EditDateClickListener toDateClickListener = new EditDateClickListener(to);
+            toDateTextView.setOnClickListener(toDateClickListener);
+        }
     }
 
-    private void refreshToTime(SimpleDateFormat timeFormat, Calendar checkOut) {
+    private void refreshToTime() {
         TextView toTimeTextView = (TextView) rootView.findViewById(R.id.toTimeValueTextView);
-        String formattedToTime = timeFormat.format(checkOut.getTime());
-        toTimeTextView.setText(formattedToTime);
-        EditTimeClickListener toTimeClickListener = new EditTimeClickListener(checkOut);
-        toTimeTextView.setOnClickListener(toTimeClickListener);
+        if (isCheckin) {
+            toTimeTextView.setText("");
+        } else {
+            String formattedToTime = timeFormat.format(to.getTime());
+            toTimeTextView.setText(formattedToTime);
+            EditTimeClickListener toTimeClickListener = new EditTimeClickListener(to);
+            toTimeTextView.setOnClickListener(toTimeClickListener);
+        }
     }
 
-    private void refreshBreak(Long breakInMillis) {
+    private void refreshBreak() {
         TextView breakTextView = (TextView) rootView.findViewById(R.id.breakValueTextView);
         long breakInMinutes = TimeUnit.MILLISECONDS.toMinutes(breakInMillis);
         breakTextView.setOnClickListener(new BreakTextViewOnClickListener(breakInMinutes));

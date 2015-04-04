@@ -84,17 +84,15 @@ public class CheckInCheckOutWidgetProvider extends AppWidgetProvider {
     }
 
     private void toggleCheck(Context context) {
-        String message = "";
+        String message;
         if (TimeAndDurationService.isCheckedIn()) {
             TimeRecord checkOutTimeStamp = TimeAndDurationService.checkOut();
             Date checkOutTime = checkOutTimeStamp.getCheckOut().getTime();
-            String[] params = new String[] {checkDateFormat.format(checkOutTime), checkTimeFormat.format(checkOutTime)};
-            message = context.getString(R.string.checked_out_at, params);
+            message = context.getString(R.string.checked_out_at, checkDateFormat.format(checkOutTime), checkTimeFormat.format(checkOutTime));
         } else {
-            CheckIn checkIn = TimeAndDurationService.checkIn();
-            Date checkInTime = checkIn.getTimestamp().getTime();
-            String[] params = new String[] {checkDateFormat.format(checkInTime), checkTimeFormat.format(checkInTime)};
-            message = context.getString(R.string.checked_in_at, params);
+            TimeRecord checkIn = TimeAndDurationService.checkIn();
+            Date checkInTime = checkIn.getCheckIn().getTime();
+            message = context.getString(R.string.checked_in_at, checkDateFormat.format(checkInTime), checkTimeFormat.format(checkInTime));
         }
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }

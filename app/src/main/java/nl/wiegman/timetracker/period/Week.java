@@ -6,9 +6,9 @@ import java.util.Calendar;
 
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
-public class WeekPeriod extends AbstractPeriod implements Period {
+public class Week extends AbstractPeriod implements Period {
 
-    public WeekPeriod(Calendar dayInWeek) {
+    public Week(Calendar dayInWeek) {
         Calendar startOfMonday = DateUtils.iterator(dayInWeek, DateUtils.RANGE_WEEK_MONDAY).next();
         startOfMonday = TimeAndDurationService.getStartOfDay(startOfMonday);
 
@@ -29,18 +29,13 @@ public class WeekPeriod extends AbstractPeriod implements Period {
     public Period getPrevious() {
         Calendar previous = (Calendar) getFrom().clone();
         previous.add(Calendar.WEEK_OF_YEAR, -1);
-        return new WeekPeriod(previous);
-    }
-
-    @Override
-    public long getBillableDuration() {
-        return TimeAndDurationService.getBillableDurationInWeekOfDay(getFrom());
+        return new Week(previous);
     }
 
     @Override
     public Period getNext() {
         Calendar next = (Calendar) getFrom().clone();
         next.add(Calendar.WEEK_OF_YEAR, 1);
-        return new WeekPeriod(next);
+        return new Week(next);
     }
 }

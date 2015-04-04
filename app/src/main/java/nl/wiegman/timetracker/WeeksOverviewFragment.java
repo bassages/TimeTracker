@@ -6,9 +6,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import nl.wiegman.timetracker.period.Day;
 import nl.wiegman.timetracker.period.Period;
+import nl.wiegman.timetracker.period.Week;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
-import nl.wiegman.timetracker.period.WeekPeriod;
 
 public class WeeksOverviewFragment extends AbstractPeriodsInYearOverviewFragment {
     private final String LOG_TAG = this.getClass().getSimpleName();
@@ -33,7 +34,7 @@ public class WeeksOverviewFragment extends AbstractPeriodsInYearOverviewFragment
 
     @Override
     protected long getActualPeriodBillableDuration() {
-        return TimeAndDurationService.getBillableDurationInWeekOfDay(Calendar.getInstance());
+        return new Week(Calendar.getInstance()).getBillableDuration();
     }
 
     @Override
@@ -42,7 +43,7 @@ public class WeeksOverviewFragment extends AbstractPeriodsInYearOverviewFragment
         date.clear();
         date.set(Calendar.WEEK_OF_YEAR, (int)weekNumber);
         date.set(Calendar.YEAR, year);
-        return new WeekPeriod(date);
+        return new Week(date);
     }
 
     @Override
@@ -63,7 +64,7 @@ public class WeeksOverviewFragment extends AbstractPeriodsInYearOverviewFragment
             periodOverviewItem.setPeriodName(Integer.toString(weekNumber));
             periodOverviewItem.setCurrentPeriod(isCurrentPeriod);
 
-            long billableDurationInWeek = TimeAndDurationService.getBillableDurationInWeekOfDay(dayInWeek);
+            long billableDurationInWeek = new Week(dayInWeek).getBillableDuration();
             periodOverviewItem.setBillableDuration(billableDurationInWeek);
 
             periodOverviewItems.add(periodOverviewItem);

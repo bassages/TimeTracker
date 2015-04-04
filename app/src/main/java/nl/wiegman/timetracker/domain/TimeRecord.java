@@ -3,11 +3,19 @@ package nl.wiegman.timetracker.domain;
 import com.orm.SugarRecord;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class TimeRecord extends SugarRecord<TimeRecord> {
 
-    private Calendar checkIn;
-    private Calendar checkOut;
+    public static final long NULL_DATE_MILLIS = Long.MAX_VALUE;
+    public static final Calendar NULL_DATE;
+    static {
+        NULL_DATE = Calendar.getInstance();
+        NULL_DATE.setTime(new Date(NULL_DATE_MILLIS));
+    }
+
+    private Calendar checkIn = NULL_DATE;
+    private Calendar checkOut = NULL_DATE;
     private Long breakInMilliseconds;
     private String note;
 
@@ -52,7 +60,17 @@ public class TimeRecord extends SugarRecord<TimeRecord> {
     }
 
     public long getDuration() {
-        return checkOut.getTimeInMillis() - checkIn.getTimeInMillis();
+        long result;
+
+        if (checkOut.getTimeInMillis() == NULL_DATE_MILLIS) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.MILLISECOND, 0);
+            result = calendar.getTimeInMillis() - checkIn.getTimeInMillis();
+        } else {
+            result = checkOut.getTimeInMillis() - checkIn.getTimeInMillis();
+        }
+
+        return result;
     }
 
     public long getBillableDuration() {
@@ -61,5 +79,14 @@ public class TimeRecord extends SugarRecord<TimeRecord> {
             result = result - breakInMilliseconds;
         }
         return result;
+    }
+
+    public boolean isCheckIn() {
+        return checkOut.getTimeInMillis() == NULL_DATE_MILLIS;
+    }
+
+    @Override
+    public String toString() {
+        return "From: " + checkIn.getTime() + " to: " + checkOut.getTime();
     }
 }

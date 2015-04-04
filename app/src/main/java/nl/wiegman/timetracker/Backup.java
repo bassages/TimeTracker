@@ -5,13 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import nl.wiegman.timetracker.domain.CheckIn;
 import nl.wiegman.timetracker.domain.TimeRecord;
 
 public class Backup {
 
     public static void restore() {
-        CheckIn.deleteAll(CheckIn.class);
         TimeRecord.deleteAll(TimeRecord.class);
 
         // 9-2015

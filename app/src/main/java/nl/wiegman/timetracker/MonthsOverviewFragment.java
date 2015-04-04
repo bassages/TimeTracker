@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import nl.wiegman.timetracker.period.MonthPeriod;
+import nl.wiegman.timetracker.period.Day;
+import nl.wiegman.timetracker.period.Month;
 import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
@@ -35,7 +36,7 @@ public class MonthsOverviewFragment extends AbstractPeriodsInYearOverviewFragmen
 
     @Override
     protected long getActualPeriodBillableDuration() {
-        return TimeAndDurationService.getBillableDurationInMonthOfDay(Calendar.getInstance());
+        return new Month(Calendar.getInstance()).getBillableDuration();
     }
 
     @Override
@@ -44,7 +45,7 @@ public class MonthsOverviewFragment extends AbstractPeriodsInYearOverviewFragmen
         date.clear();
         date.set(Calendar.MONTH, (int)month);
         date.set(Calendar.YEAR, year);
-        return new MonthPeriod(date);
+        return new Month(date);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class MonthsOverviewFragment extends AbstractPeriodsInYearOverviewFragmen
 
         Calendar dayInMonth = TimeAndDurationService.getFirstDayOfYear(year);
         while (dayInMonth.get(Calendar.YEAR) == year) {
-            long billableDurationInWeek = TimeAndDurationService.getBillableDurationInMonthOfDay(dayInMonth);
+            long billableDurationInMonth = new Month(dayInMonth).getBillableDuration();
             int month = dayInMonth.get(Calendar.MONTH);
             boolean isCurrentPeriod = month==currentMonth && year==currentYear;
 
@@ -64,7 +65,7 @@ public class MonthsOverviewFragment extends AbstractPeriodsInYearOverviewFragmen
             periodOverviewItem.setPeriodId(month);
             periodOverviewItem.setPeriodName(new SimpleDateFormat("MMM").format(dayInMonth.getTime()));
             periodOverviewItem.setCurrentPeriod(isCurrentPeriod);
-            periodOverviewItem.setBillableDuration(billableDurationInWeek);
+            periodOverviewItem.setBillableDuration(billableDurationInMonth);
 
             periodOverviewItems.add(periodOverviewItem);
 
