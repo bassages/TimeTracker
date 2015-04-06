@@ -58,6 +58,7 @@
     <string name="export_table_header_to">Tot</string>
     <string name="export_table_header_break">Pauze</string>
     <string name="export_table_header_duration">Tijdsduur</string>
+    <string name="export_table_header_note">Notitie</string>
 
     <string name="export_table_minutes">min.</string>
 

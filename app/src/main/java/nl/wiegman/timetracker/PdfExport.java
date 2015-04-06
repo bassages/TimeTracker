@@ -158,7 +158,8 @@ public class PdfExport extends AsyncTask<Void, Void, File> {
 
     private Document getDocument(FileOutputStream outputStream) throws DocumentException {
         Document document;
-        document = new Document(PageSize.A4);
+        document = new Document(PageSize.A4.rotate());
+
         document.setMargins(55, 55, 80, 80);
         PdfWriter docWriter = PdfWriter.getInstance(document, outputStream);
         document.open();
@@ -173,15 +174,24 @@ public class PdfExport extends AsyncTask<Void, Void, File> {
         return new Phrase(period.getTitle(), font);
     }
 
-    public Element createTable() {
-        int numColumns = 5;
+    public Element createTable() throws DocumentException {
+        int numColumns = 6;
         PdfPTable table = new PdfPTable(numColumns);
         table.setHeaderRows(1);
         table.setHorizontalAlignment(Element.ALIGN_LEFT);
         table.setWidthPercentage(100);
 
-        addTableHeader(table);
+        float[] columnWidths = new float[] {
+                10f, // Date
+                10f, // From
+                10f, // To
+                10f, // Pause
+                10f, // Duration
+                20f  // Note
+            };
+        table.setWidths(columnWidths);
 
+        addTableHeader(table);
         long total = addTableContent(table);
         addTableFooter(table, total);
 
@@ -199,25 +209,37 @@ public class PdfExport extends AsyncTask<Void, Void, File> {
             List<TimeRecord> timeRecordsOnDay = TimeAndDurationService.getTimeRecordsBetween(startOfDay, endOfDay);
 
             if (timeRecordsOnDay == null || timeRecordsOnDay.isEmpty()) {
-                addCell(table, dayInWeekFormat.format(day.getTime()));
-                addCell(table, "");
-                addCell(table, "");
-                addCell(table, "");
-                addCell(table, Formatting.formatDuration(0));
+                addRowForDayWithoutCheckin(table, day);
             } else {
                 for (TimeRecord timeRecord : timeRecordsOnDay) {
-                    addCell(table, dayInWeekFormat.format(timeRecord.getCheckIn().getTime()));
-                    addCell(table, timeFormat.format(timeRecord.getCheckIn().getTime()));
-                    addCell(table, timeFormat.format(timeRecord.getCheckOut().getTime()));
-                    addCell(table, TimeUnit.MILLISECONDS.toMinutes(timeRecord.getBreakInMilliseconds()) + " " + context.getString(R.string.export_table_minutes));
-                    addCell(table, Formatting.formatDuration(timeRecord.getBillableDuration()));
+                    addRowForTimeRecord(table, timeRecord);
                     totalBillableDuration += timeRecord.getBillableDuration();
                 }
             }
             day.add(Calendar.DAY_OF_MONTH, 1);
         }
-
         return totalBillableDuration;
+    }
+
+    private void addRowForDayWithoutCheckin(PdfPTable table, Calendar day) {
+        addCell(table, dayInWeekFormat.format(day.getTime()));
+        addCell(table, "");
+        addCell(table, "");
+        addCell(table, "");
+        addCell(table, Formatting.formatDuration(0));
+        addCell(table, "");
+    }
+
+    private void addRowForTimeRecord(PdfPTable table, TimeRecord timeRecord) {
+        addCell(table, dayInWeekFormat.format(timeRecord.getCheckIn().getTime()));
+        addCell(table, timeFormat.format(timeRecord.getCheckIn().getTime()));
+        addCell(table, timeFormat.format(timeRecord.getCheckOut().getTime()));
+        addCell(table, TimeUnit.MILLISECONDS.toMinutes(timeRecord.getBreakInMilliseconds()) + " " + context.getString(R.string.export_table_minutes));
+        addCell(table, Formatting.formatDuration(timeRecord.getBillableDuration()));
+
+        PdfPCell cell = new PdfPCell(new Phrase(timeRecord.getNote()));
+        cell.setPaddingLeft(5);
+        table.addCell(cell);
     }
 
     private void addTableHeader(PdfPTable table) {
@@ -226,18 +248,22 @@ public class PdfExport extends AsyncTask<Void, Void, File> {
         table.addCell(getHeaderCell(context.getString(R.string.export_table_header_to)));
         table.addCell(getHeaderCell(context.getString(R.string.export_table_header_break)));
         table.addCell(getHeaderCell(context.getString(R.string.export_table_header_duration)));
+        table.addCell(getHeaderCell(context.getString(R.string.export_table_header_note)));
     }
 
     private void addTableFooter(PdfPTable table, long total) {
-        PdfPCell c = new PdfPCell();
-        c.setColspan(4);
-        table.addCell(c);
+        PdfPCell cell = new PdfPCell();
+        cell.setColspan(4);
+        table.addCell(cell);
 
         Font font = new Font();
         font.setStyle(Font.BOLD);
         PdfPCell totalCell = new PdfPCell(new Phrase(Formatting.formatDuration(total), font));
         totalCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(totalCell);
+
+        cell = new PdfPCell();
+        table.addCell(cell);
     }
 
     private PdfPCell getHeaderCell(String text) {

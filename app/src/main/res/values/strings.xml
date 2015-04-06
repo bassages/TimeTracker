@@ -56,6 +56,7 @@
     <string name="export_table_header_to">To</string>
     <string name="export_table_header_break">Break</string>
     <string name="export_table_header_duration">Duration</string>
+    <string name="export_table_header_note">Note</string>
 
     <string name="export_table_minutes">mins.</string>
 
