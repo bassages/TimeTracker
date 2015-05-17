@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import nl.wiegman.timetracker.domain.TimeRecord;
+import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 import static android.view.View.OnClickListener;
 
@@ -45,6 +46,8 @@ public class EditTimeRecordFragment extends Fragment {
     private static final String INSTANCE_STATE_KEY_ISCHECKIN = "ISCHECKIN";
 
     private static final String ARG_PARAM_TIMERECORD_ID = "timeRecordId";
+
+    private static final String UNSET = "-";
 
     // The id of the timerecord to edit, or null if creating a new one
     private Long timeRecordId;
@@ -215,7 +218,7 @@ public class EditTimeRecordFragment extends Fragment {
     private void refreshNote() {
         TextView noteTextView = (TextView) rootView.findViewById(R.id.noteValueTextView);
         if (note == null || "".equals(note)) {
-            noteTextView.setText("-");
+            noteTextView.setText(UNSET);
         } else {
             noteTextView.setText(note);
         }
@@ -241,7 +244,7 @@ public class EditTimeRecordFragment extends Fragment {
     private void refreshToDate() {
         TextView toDateTextView = (TextView) rootView.findViewById(R.id.toDateValueTextView);
         if (isCheckin) {
-            toDateTextView.setText("-");
+            toDateTextView.setText(UNSET);
         } else {
             String formattedToDate = dateFormat.format(to.getTime());
             toDateTextView.setText(formattedToDate);
@@ -263,11 +266,34 @@ public class EditTimeRecordFragment extends Fragment {
     }
 
     private void refreshBreak() {
+        if (isCheckin && breakInMillis == null) {
+            Long defaultBreakDuration = TimeAndDurationService.getCheckIn().getDefaultBreakDuration();
+            if (defaultBreakDuration > 0) {
+                setBreak(defaultBreakDuration);
+            } else {
+                setBreak(null);
+            }
+        } else {
+            setBreak(breakInMillis);
+        }
+    }
+
+    private void setBreak(Long breakMs) {
         TextView breakTextView = (TextView) rootView.findViewById(R.id.breakValueTextView);
-        long breakInMinutes = TimeUnit.MILLISECONDS.toMinutes(breakInMillis);
-        breakTextView.setOnClickListener(new BreakTextViewOnClickListener(breakInMinutes));
-        String textToSet = getString(R.string.break_minutes, breakInMinutes);
+
+        Long breakInMinutes;
+        String textToSet;
+
+        if (breakMs == null) {
+            textToSet = UNSET;
+            breakInMinutes = 0l;
+        } else {
+            breakInMinutes = TimeUnit.MILLISECONDS.toMinutes(breakMs);
+            textToSet = getString(R.string.break_minutes, breakInMinutes);
+        }
+
         breakTextView.setText(textToSet);
+        breakTextView.setOnClickListener(new BreakTextViewOnClickListener(breakInMinutes));
     }
 
     private class NoteTextViewOnClickListener implements OnClickListener {
@@ -464,6 +490,11 @@ public class EditTimeRecordFragment extends Fragment {
         long fromTimeInMillis = from.getTimeInMillis();
         long toTimeInMillis = to.getTimeInMillis();
 
+        long breaky = 0;
+        if (breakInMillis != null) {
+            breaky = breakInMillis;
+        }
+
         if (fromTimeInMillis >= toTimeInMillis) {
             result = false;
 
@@ -471,7 +502,7 @@ public class EditTimeRecordFragment extends Fragment {
             builder.setMessage(R.string.to_date_must_be_later_than_from_date)
                     .setNeutralButton(android.R.string.ok, new DismissOnClickListener())
                     .show();
-        } else if (((toTimeInMillis - fromTimeInMillis) - breakInMillis) <= 0) {
+        } else if (((toTimeInMillis - fromTimeInMillis) - breaky) <= 0) {
             result = false;
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

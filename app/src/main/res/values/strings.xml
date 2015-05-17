@@ -47,6 +47,7 @@
     <string name="loading_data">Loading data...</string>
 
     <string name="export_to_pdf">Save to pdf file</string>
+    <string name="create_backup">Create backup</string>
 
     <string name="exporting_progress_dialog">Export in progress...</string>
     <string name="export_completed_to_file">File saved: %1$s</string>

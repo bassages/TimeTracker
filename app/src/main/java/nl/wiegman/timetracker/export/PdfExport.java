@@ -1,4 +1,4 @@
-package nl.wiegman.timetracker;
+package nl.wiegman.timetracker.export;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import nl.wiegman.timetracker.R;
 import nl.wiegman.timetracker.domain.TimeRecord;
 import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;

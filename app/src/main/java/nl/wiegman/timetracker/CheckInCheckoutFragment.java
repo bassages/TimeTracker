@@ -23,18 +23,20 @@ import java.util.Calendar;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import nl.wiegman.timetracker.export.XmlExport;
 import nl.wiegman.timetracker.period.Day;
-import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
+import nl.wiegman.timetracker.period.Week;
+import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.util.FragmentHelper;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
-import nl.wiegman.timetracker.period.Week;
 import nl.wiegman.timetracker.widget.CheckInCheckOutWidgetProvider;
 
 public class CheckInCheckoutFragment extends Fragment {
     private static final int MENU_ITEM_WEEK_OVERVIEW_ID = 0;
     private static final int MENU_ITEM_MONTH_OVERVIEW_ID = 1;
+    private static final int MENU_ITEM_EXPORT_XML = 2;
 
     private final String LOG_TAG = this.getClass().getSimpleName();
 
@@ -66,6 +68,7 @@ public class CheckInCheckoutFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.add(0, MENU_ITEM_MONTH_OVERVIEW_ID, 0, R.string.action_month_overview);
         menu.add(0, MENU_ITEM_WEEK_OVERVIEW_ID, 0, R.string.action_week_overview);
+        menu.add(0, MENU_ITEM_EXPORT_XML, 0, R.string.create_backup);
     }
 
     @Override
@@ -94,8 +97,14 @@ public class CheckInCheckoutFragment extends Fragment {
             showWeekOverview();
         } else if (id == MENU_ITEM_MONTH_OVERVIEW_ID) {
             showMonthOverview();
+        } else if (id == MENU_ITEM_EXPORT_XML) {
+            createBackup();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createBackup() {
+        new XmlExport(getActivity()).execute();
     }
 
     private void showWeekOverview() {

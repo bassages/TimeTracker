@@ -2,11 +2,10 @@ apply plugin: 'com.android.application'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
     compile 'com.github.satyan:sugar:1.3'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'commons-io:commons-io:2.4'
-
-    compile 'com.itextpdf:itextpdf:5.5.4'
 
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.daimajia.easing:library:1.0.1@aar'
@@ -20,7 +19,7 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "timetracker.wiegman.nl.timetracker"
+        applicationId "nl.wiegman.timetracker"
         minSdkVersion 17
         targetSdkVersion 21
         versionCode 1

@@ -18,8 +18,6 @@ import nl.wiegman.timetracker.period.Period;
 public class TimeAndDurationService {
     private static final String LOG_TAG = TimeAndDurationService.class.getSimpleName();
 
-    private static final long DEFAULT_BREAK_DURATION = TimeUnit.MINUTES.toMillis(30);
-
     public static boolean isCheckedIn() {
         return getCheckIn() != null;
     }
@@ -34,22 +32,6 @@ public class TimeAndDurationService {
         return result;
     }
 
-    private static long getBreakDuration(long totalCheckedInDuration) {
-        long result = 0;
-
-        long breakFrom = TimeUnit.HOURS.toMillis(5);
-
-        if (totalCheckedInDuration > breakFrom) {
-            long i = totalCheckedInDuration - breakFrom;
-            if (i > DEFAULT_BREAK_DURATION) {
-                result = DEFAULT_BREAK_DURATION;
-            } else {
-                result = i;
-            }
-        }
-        return result;
-    }
-
     public static long getBillableDurationInPeriod(Period period) {
         long result = 0;
 
@@ -57,7 +39,6 @@ public class TimeAndDurationService {
         for (TimeRecord timeRecord : timeRecordsInPeriod) {
             result += timeRecord.getBillableDuration();
         }
-
         return result;
     }
 
@@ -84,10 +65,9 @@ public class TimeAndDurationService {
 
         timeRecord.setCheckOut(checkOutTimestamp);
 
-        if (timeRecord.getBreakInMilliseconds() == null) {
-            timeRecord.setBreakInMilliseconds(getBreakDuration(timeRecord.getDuration()));
+        if (!timeRecord.hasBreak()) {
+            timeRecord.setDefaultBreak();
         }
-
         timeRecord.save();
 
         return timeRecord;
