@@ -48,9 +48,15 @@
 
     <string name="export_to_pdf">Save to pdf file</string>
     <string name="create_backup">Create backup</string>
+    <string name="restore_backup">Restore from a backup file</string>
 
-    <string name="exporting_progress_dialog">Export in progress...</string>
-    <string name="export_completed_to_file">File saved: %1$s</string>
+    <string name="exporting_progress_dialog">Creating the backup...</string>
+    <string name="export_completed_to_file">The backup file was successfully saved here: %1$s</string>
+
+    <string name="importing_progress_dialog">Restoring the backup...</string>
+    <string name="importing_progress_dialog_nr_of_timerecords">Read %d timerecords from backup file...</string>
+    <string name="import_completed">The backup was successfully restored</string>
+    <string name="import_failed">Backup file could not be restored successfully</string>
 
     <string name="export_table_header_date">Date</string>
     <string name="export_table_header_from">From</string>

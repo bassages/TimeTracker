@@ -1,10 +1,8 @@
-package nl.wiegman.timetracker.export;
+package nl.wiegman.timetracker.export_import;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.util.Xml;
@@ -22,59 +20,18 @@ import java.util.Iterator;
 import nl.wiegman.timetracker.R;
 import nl.wiegman.timetracker.domain.TimeRecord;
 
-public class XmlExport extends AsyncTask<Void, Void, File> {
+public class XmlExport extends AbstractExport {
     private static final SimpleDateFormat COMMENT_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-
-    private final String LOG_TAG = this.getClass().getSimpleName();
-
-    private final Context context;
-
-    private ProgressDialog dialog;
 
     /**
      * Constructor
      */
     public XmlExport(Context context) {
-        this.context = context;
+        super(context);
     }
 
     @Override
-    protected void onPreExecute() {
-        dialog = new ProgressDialog(context);
-        dialog.setMessage(context.getString(R.string.exporting_progress_dialog));
-        dialog.show();
-    }
-
-    @Override
-    public File doInBackground(Void... voids) {
-        return exportToXml();
-    }
-
-    @Override
-    protected void onPostExecute(File xmlFile) {
-        closeProgressDialog();
-        if (xmlFile != null && xmlFile.exists() && xmlFile.canRead()) {
-            showFileLocationToast(xmlFile);
-        }
-    }
-
-    private void closeProgressDialog() {
-        if (dialog.isShowing()) {
-            dialog.dismiss();
-            dialog = null;
-        }
-    }
-
-    /** Checks if external storage is available for read and write */
-    public boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-    private File exportToXml() {
+    protected File doExport() {
         File xmlFile = null;
         FileWriter writer = null;
 
@@ -85,7 +42,7 @@ public class XmlExport extends AsyncTask<Void, Void, File> {
                 File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/TimeTracker");
                 directory.mkdirs();
 
-                xmlFile = new File(directory, "Backup-" + getFormattedDate(backupCreationDate) + ".xml");
+                xmlFile = new File(directory, "Backup-" + COMMENT_DATE_FORMAT.format(backupCreationDate) + ".xml");
                 xmlFile.setReadable(true, false);
                 xmlFile.setWritable(true, false);
 
@@ -98,11 +55,11 @@ public class XmlExport extends AsyncTask<Void, Void, File> {
 
                 xmlSerializer.startDocument("UTF-8", true);
 
-                xmlSerializer.startTag(null, "backup");
+                xmlSerializer.startTag(null, ExportImportXmlElements.BACKUP);
                 addCreationTimestamp(xmlSerializer, backupCreationDate);
                 addApplicationVersion(xmlSerializer);
                 addTimeRecords(xmlSerializer);
-                xmlSerializer.endTag(null, "backup");
+                xmlSerializer.endTag(null, ExportImportXmlElements.BACKUP);
 
                 xmlSerializer.endDocument();
 
@@ -127,13 +84,13 @@ public class XmlExport extends AsyncTask<Void, Void, File> {
 
     private void addCreationTimestamp(XmlSerializer xmlSerializer, Date backupCreationDate) throws IOException {
         xmlSerializer.comment(toComment(backupCreationDate.getTime()));
-        xmlSerializer.startTag(null, "createdOn");
+        xmlSerializer.startTag(null, ExportImportXmlElements.CREATED_ON);
         xmlSerializer.text(Long.toString(backupCreationDate.getTime()));
-        xmlSerializer.endTag(null, "createdOn");
+        xmlSerializer.endTag(null, ExportImportXmlElements.CREATED_ON);
     }
 
     private void addApplicationVersion(XmlSerializer xmlSerializer) throws IOException {
-        xmlSerializer.startTag(null, "applicationVersion");
+        xmlSerializer.startTag(null, ExportImportXmlElements.APPLICATION_VERSION);
 
         String version = null;
         try {
@@ -143,11 +100,7 @@ public class XmlExport extends AsyncTask<Void, Void, File> {
             version = "?";
         }
         xmlSerializer.text(version);
-        xmlSerializer.endTag(null, "applicationVersion");
-    }
-
-    private String getFormattedDate(Date backupCreationDate) {
-        return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(backupCreationDate);
+        xmlSerializer.endTag(null, ExportImportXmlElements.APPLICATION_VERSION);
     }
 
     private void showFileLocationToast(File pdfFile) {
@@ -161,7 +114,7 @@ public class XmlExport extends AsyncTask<Void, Void, File> {
     }
 
     private void addTimeRecords(XmlSerializer xmlSerializer) throws IOException {
-        xmlSerializer.startTag(null, "timeRecords");
+        xmlSerializer.startTag(null, ExportImportXmlElements.TIME_RECORDS);
 
         Iterator<TimeRecord> timeRecordIterator = TimeRecord.findAsIterator(TimeRecord.class, null, null);
         while (timeRecordIterator.hasNext()) {
@@ -171,35 +124,35 @@ public class XmlExport extends AsyncTask<Void, Void, File> {
             }
         }
 
-        xmlSerializer.endTag(null, "timeRecords");
+        xmlSerializer.endTag(null, ExportImportXmlElements.TIME_RECORDS);
     }
 
     private void exportSingleTimeRecord(TimeRecord timeRecord, XmlSerializer xmlSerializer) throws IOException {
-        xmlSerializer.startTag(null, "timeRecord");
+        xmlSerializer.startTag(null, ExportImportXmlElements.TIME_RECORD);
 
         xmlSerializer.comment(toComment(timeRecord.getCheckIn().getTimeInMillis()));
-        xmlSerializer.startTag(null, "checkin");
+        xmlSerializer.startTag(null, ExportImportXmlElements.CHECKIN);
         xmlSerializer.text(Long.toString(timeRecord.getCheckIn().getTimeInMillis()));
-        xmlSerializer.endTag(null, "checkin");
+        xmlSerializer.endTag(null, ExportImportXmlElements.CHECKIN);
 
         xmlSerializer.comment(toComment(timeRecord.getCheckOut().getTimeInMillis()));
-        xmlSerializer.startTag(null, "checkout");
+        xmlSerializer.startTag(null, ExportImportXmlElements.CHECKOUT);
         xmlSerializer.text(Long.toString(timeRecord.getCheckOut().getTimeInMillis()));
-        xmlSerializer.endTag(null, "checkout");
+        xmlSerializer.endTag(null, ExportImportXmlElements.CHECKOUT);
 
-        xmlSerializer.startTag(null, "breakInMillis");
+        xmlSerializer.startTag(null, ExportImportXmlElements.BREAK_IN_MILLIS);
         if (timeRecord.getBreakInMilliseconds() != null) {
             xmlSerializer.text(Long.toString(timeRecord.getBreakInMilliseconds()));
         }
-        xmlSerializer.endTag(null, "breakInMillis");
+        xmlSerializer.endTag(null, ExportImportXmlElements.BREAK_IN_MILLIS);
 
-        xmlSerializer.startTag(null, "note");
+        xmlSerializer.startTag(null, ExportImportXmlElements.NOTE);
         if (timeRecord.getNote() != null) {
             xmlSerializer.text(timeRecord.getNote());
         }
-        xmlSerializer.endTag(null, "note");
+        xmlSerializer.endTag(null, ExportImportXmlElements.NOTE);
 
-        xmlSerializer.endTag(null, "timeRecord");
+        xmlSerializer.endTag(null, ExportImportXmlElements.TIME_RECORD);
     }
 
     private String toComment(long timeInMillis) {

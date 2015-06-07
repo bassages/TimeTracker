@@ -2,6 +2,7 @@ package nl.wiegman.timetracker;
 
 import android.app.Fragment;
 import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +24,8 @@ import java.util.Calendar;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import nl.wiegman.timetracker.export.XmlExport;
+import nl.wiegman.timetracker.export_import.XmlExport;
+import nl.wiegman.timetracker.export_import.XmlImport;
 import nl.wiegman.timetracker.period.Day;
 import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.period.Week;
@@ -37,6 +39,8 @@ public class CheckInCheckoutFragment extends Fragment {
     private static final int MENU_ITEM_WEEK_OVERVIEW_ID = 0;
     private static final int MENU_ITEM_MONTH_OVERVIEW_ID = 1;
     private static final int MENU_ITEM_EXPORT_XML = 2;
+    private static final int MENU_ITEM_IMPORT_XML = 3;
+    public static final int REQUEST_CODE_SELECT_BACKUP_FILE = 100;
 
     private final String LOG_TAG = this.getClass().getSimpleName();
 
@@ -66,9 +70,10 @@ public class CheckInCheckoutFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.add(0, MENU_ITEM_MONTH_OVERVIEW_ID, 0, R.string.action_month_overview);
-        menu.add(0, MENU_ITEM_WEEK_OVERVIEW_ID, 0, R.string.action_week_overview);
-        menu.add(0, MENU_ITEM_EXPORT_XML, 0, R.string.create_backup);
+        menu.add(0, MENU_ITEM_MONTH_OVERVIEW_ID, 1, R.string.action_month_overview);
+        menu.add(0, MENU_ITEM_WEEK_OVERVIEW_ID, 2, R.string.action_week_overview);
+        menu.add(0, MENU_ITEM_EXPORT_XML, 3, R.string.create_backup);
+        menu.add(0, MENU_ITEM_IMPORT_XML, 4, R.string.restore_backup);
     }
 
     @Override
@@ -99,8 +104,30 @@ public class CheckInCheckoutFragment extends Fragment {
             showMonthOverview();
         } else if (id == MENU_ITEM_EXPORT_XML) {
             createBackup();
+        } else if (id == MENU_ITEM_IMPORT_XML) {
+            letTheUserSelectABackupFile();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void letTheUserSelectABackupFile() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("text/xml");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        startActivityForResult(intent, REQUEST_CODE_SELECT_BACKUP_FILE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (REQUEST_CODE_SELECT_BACKUP_FILE == requestCode) {
+            if (data != null) {
+                String path = data.getData().getPath();
+                new XmlImport(getActivity()).execute(path);
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void createBackup() {

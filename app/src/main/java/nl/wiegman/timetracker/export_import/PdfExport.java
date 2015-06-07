@@ -1,10 +1,8 @@
-package nl.wiegman.timetracker.export;
+package nl.wiegman.timetracker.export_import;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -35,48 +33,22 @@ import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
-public class PdfExport extends AsyncTask<Void, Void, File> {
-    private final String LOG_TAG = this.getClass().getSimpleName();
+public class PdfExport extends AbstractExport {
 
-    private final Context context;
     private final Period period;
 
     private final SimpleDateFormat dayInWeekFormat = new SimpleDateFormat("EEE dd-MM");
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
-    private ProgressDialog dialog;
-
     /**
      * Constructor
      */
     public PdfExport(Context context, Period period) {
-        this.context = context;
+        super(context);
         this.period = period;
     }
 
-    @Override
-    protected void onPreExecute() {
-        dialog = new ProgressDialog(context);
-        dialog.setMessage(context.getString(R.string.exporting_progress_dialog));
-        dialog.show();
-    }
-
-    @Override
-    public File doInBackground(Void... voids) {
-        return exportToPdf();
-    }
-
-    @Override
-    protected void onPostExecute(File pdfFile) {
-        closeProgressDialog();
-
-        if (pdfFile != null && pdfFile.exists() && pdfFile.canRead()) {
-            showFileLocationToast(pdfFile);
-            openFile(pdfFile);
-        }
-    }
-
-    private File exportToPdf() {
+    protected File doExport() {
         File pdfFile = null;
         Document document = null;
         FileOutputStream outputStream = null;
@@ -123,23 +95,6 @@ public class PdfExport extends AsyncTask<Void, Void, File> {
         return pdfFile;
     }
 
-    private void closeProgressDialog() {
-        if (dialog.isShowing()) {
-            dialog.dismiss();
-            dialog = null;
-        }
-    }
-
-    private void showFileLocationToast(File pdfFile) {
-        int duration = Toast.LENGTH_LONG;
-        try {
-            Toast toast = Toast.makeText(context, context.getString(R.string.export_completed_to_file, pdfFile.getCanonicalPath()), duration);
-            toast.show();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage());
-        }
-    }
-
     /** Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
@@ -149,7 +104,8 @@ public class PdfExport extends AsyncTask<Void, Void, File> {
         return false;
     }
 
-    private void openFile(File pdfFile) {
+    @Override
+    protected void openExportedFile(File pdfFile) {
         Intent i = new Intent(Intent.ACTION_VIEW);
         Uri data = Uri.fromFile(pdfFile);
         i.setDataAndType(data, "application/pdf");
