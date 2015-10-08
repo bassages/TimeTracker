@@ -141,7 +141,7 @@ public class EditTimeRecordFragment extends Fragment {
             }
             timeRecord.setCheckIn(from);
 
-            if (!timeRecord.isCheckIn()) {
+            if (timeRecordId == null || !timeRecord.isCheckIn()) {
                 timeRecord.setCheckOut(to);
             }
 
@@ -209,8 +209,10 @@ public class EditTimeRecordFragment extends Fragment {
     private void refreshHmiFromFieldValues() {
         refreshFromDate();
         refreshFromTime();
+
         refreshToDate();
         refreshToTime();
+
         refreshBreak();
         refreshNote();
     }

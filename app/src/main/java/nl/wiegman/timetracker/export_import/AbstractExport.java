@@ -31,7 +31,7 @@ public abstract class AbstractExport extends AsyncTask<Void, Void, File> {
     @Override
     protected void onPreExecute() {
         dialog = new ProgressDialog(context);
-        dialog.setMessage(context.getString(R.string.exporting_progress_dialog));
+        dialog.setMessage(context.getString(getResourceIdMessageExportInProgess()));
         dialog.show();
     }
 
@@ -50,6 +50,9 @@ public abstract class AbstractExport extends AsyncTask<Void, Void, File> {
         }
     }
 
+    protected abstract int getResourceIdMessageExportInProgess();
+    protected abstract int getResourceIdMessageExportCompleted();
+
     protected abstract File doExport();
 
     protected void openExportedFile(File exportedFile) {
@@ -59,7 +62,7 @@ public abstract class AbstractExport extends AsyncTask<Void, Void, File> {
     private void showFileLocationToast(File pdfFile) {
         int duration = Toast.LENGTH_LONG;
         try {
-            Toast toast = Toast.makeText(context, context.getString(R.string.export_completed_to_file, pdfFile.getCanonicalPath()), duration);
+            Toast toast = Toast.makeText(context, context.getString(getResourceIdMessageExportCompleted(), pdfFile.getCanonicalPath()), duration);
             toast.show();
         } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage());

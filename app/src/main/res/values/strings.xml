@@ -50,8 +50,11 @@
     <string name="create_backup">Create backup</string>
     <string name="restore_backup">Restore from a backup file</string>
 
-    <string name="exporting_progress_dialog">Creating the backup...</string>
-    <string name="export_completed_to_file">The backup file was successfully saved here: %1$s</string>
+    <string name="exporting_backup_progress_dialog">Creating the backup...</string>
+    <string name="export_backup_completed_to_file">The backup file was successfully saved here: %1$s</string>
+
+    <string name="exporting_pdf_progress_dialog">Creating the pdf...</string>
+    <string name="export_pdf_completed_to_file">The pdf file was successfully saved here: %1$s</string>
 
     <string name="importing_progress_dialog">Restoring the backup...</string>
     <string name="importing_progress_dialog_nr_of_timerecords">Read %d timerecords from backup file...</string>

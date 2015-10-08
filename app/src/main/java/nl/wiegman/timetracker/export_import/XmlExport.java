@@ -31,6 +31,16 @@ public class XmlExport extends AbstractExport {
     }
 
     @Override
+    protected int getResourceIdMessageExportInProgess() {
+        return R.string.exporting_backup_progress_dialog;
+    }
+
+    @Override
+    protected int getResourceIdMessageExportCompleted() {
+        return R.string.export_backup_completed_to_file;
+    }
+
+    @Override
     protected File doExport() {
         File xmlFile = null;
         FileWriter writer = null;
@@ -106,7 +116,7 @@ public class XmlExport extends AbstractExport {
     private void showFileLocationToast(File pdfFile) {
         int duration = Toast.LENGTH_LONG;
         try {
-            Toast toast = Toast.makeText(context, context.getString(R.string.export_completed_to_file, pdfFile.getCanonicalPath()), duration);
+            Toast toast = Toast.makeText(context, context.getString(R.string.export_backup_completed_to_file, pdfFile.getCanonicalPath()), duration);
             toast.show();
         } catch (IOException e) {
             Log.e(LOG_TAG, e.getMessage());

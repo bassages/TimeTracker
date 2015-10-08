@@ -48,6 +48,16 @@ public class PdfExport extends AbstractExport {
         this.period = period;
     }
 
+    @Override
+    protected int getResourceIdMessageExportInProgess() {
+        return R.string.exporting_pdf_progress_dialog;
+    }
+
+    @Override
+    protected int getResourceIdMessageExportCompleted() {
+        return R.string.export_pdf_completed_to_file;
+    }
+
     protected File doExport() {
         File pdfFile = null;
         Document document = null;
