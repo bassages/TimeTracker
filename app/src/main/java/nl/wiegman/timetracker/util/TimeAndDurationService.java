@@ -1,23 +1,14 @@
 package nl.wiegman.timetracker.util;
 
-import android.text.format.Time;
-
-import com.orm.query.Condition;
-import com.orm.query.Select;
-
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import nl.wiegman.timetracker.domain.TimeRecord;
 import nl.wiegman.timetracker.period.Period;
 
 public class TimeAndDurationService {
-    private static final String LOG_TAG = TimeAndDurationService.class.getSimpleName();
-
     public static boolean isCheckedIn() {
         return getCheckIn() != null;
     }

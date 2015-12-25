@@ -20,13 +20,12 @@ public class PeriodicRunnableExecutor {
         this.rateInMilliseconds = rateInMilliseconds;
     }
 
-    public PeriodicRunnableExecutor start() {
+    public void start() {
         if (executorService == null) {
             executorService = new ScheduledThreadPoolExecutor(1);
             int startDelay = 0;
             executorService.scheduleWithFixedDelay(runnable, startDelay, rateInMilliseconds, TimeUnit.MILLISECONDS);
         }
-        return this;
     }
 
     public void stop() {

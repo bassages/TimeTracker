@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import nl.wiegman.timetracker.util.FragmentHelper;
 
 public class MainActivity extends Activity {
-    private final String LOG_TAG = this.getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

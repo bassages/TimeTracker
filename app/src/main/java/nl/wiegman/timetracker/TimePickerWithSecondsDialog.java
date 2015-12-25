@@ -42,10 +42,10 @@ public class TimePickerWithSecondsDialog extends AlertDialog implements DialogIn
     private final Calendar mCalendar;
     private final java.text.DateFormat mDateFormat;
 
-    int mInitialHourOfDay;
-    int mInitialMinute;
-    int mInitialSeconds;
-    boolean mIs24HourView;
+    final int mInitialHourOfDay;
+    final int mInitialMinute;
+    final int mInitialSeconds;
+    final boolean mIs24HourView;
 
     /**
      * @param context Parent.

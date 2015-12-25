@@ -21,8 +21,8 @@ import com.daimajia.androidanimations.library.YoYo;
 
 import java.util.Calendar;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 import nl.wiegman.timetracker.export_import.XmlExport;
 import nl.wiegman.timetracker.export_import.XmlImport;
@@ -40,17 +40,18 @@ public class CheckInCheckoutFragment extends Fragment {
     private static final int MENU_ITEM_MONTH_OVERVIEW_ID = 1;
     private static final int MENU_ITEM_EXPORT_XML = 2;
     private static final int MENU_ITEM_IMPORT_XML = 3;
+
     public static final int REQUEST_CODE_SELECT_BACKUP_FILE = 100;
 
     private final String LOG_TAG = this.getClass().getSimpleName();
 
-    @InjectView(R.id.todaysTotalTextView)
+    @Bind(R.id.todaysTotalTextView)
     TextView todaysTotalTextView;
 
-    @InjectView(R.id.thisWeeksTotalTextView)
+    @Bind(R.id.thisWeeksTotalTextView)
     TextView thisWeeksTotalTextView;
 
-    @InjectView(R.id.pausePlayImageView)
+    @Bind(R.id.pausePlayImageView)
     ImageView pausePlayImageView;
 
     private PeriodicRunnableExecutor checkedInTimeUpdaterExecutor;
@@ -58,7 +59,7 @@ public class CheckInCheckoutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_checkin_checkout, container, false);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
 
         setHasOptionsMenu(true);
 

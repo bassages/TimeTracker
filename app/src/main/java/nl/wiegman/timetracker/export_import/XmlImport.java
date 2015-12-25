@@ -19,8 +19,6 @@ import nl.wiegman.timetracker.R;
 import nl.wiegman.timetracker.domain.TimeRecord;
 
 public class XmlImport extends AsyncTask<String, String, Void> {
-    private final String LOG_TAG = this.getClass().getSimpleName();
-
     protected final Context context;
 
     private ProgressDialog dialog;
@@ -90,14 +88,18 @@ public class XmlImport extends AsyncTask<String, String, Void> {
                 continue;
             }
             String name = parser.getName();
-            if (name.equals(ExportImportXmlElements.TIME_RECORDS)) {
-                // Keep reading...
-            } else if (name.equals(ExportImportXmlElements.TIME_RECORD)) {
-                TimeRecord timeRecord = readTimeRecord(parser);
-                timeRecords.add(timeRecord);
-                publishProgress(context.getString(R.string.importing_progress_dialog_nr_of_timerecords, timeRecords.size()));
-            } else {
-                skip(parser);
+            switch (name) {
+                case ExportImportXmlElements.TIME_RECORDS:
+                    // Keep reading...
+                    break;
+                case ExportImportXmlElements.TIME_RECORD:
+                    TimeRecord timeRecord = readTimeRecord(parser);
+                    timeRecords.add(timeRecord);
+                    publishProgress(context.getString(R.string.importing_progress_dialog_nr_of_timerecords, timeRecords.size()));
+                    break;
+                default:
+                    skip(parser);
+                    break;
             }
         }
         return timeRecords;
@@ -117,22 +119,34 @@ public class XmlImport extends AsyncTask<String, String, Void> {
                 continue;
             }
             String name = parser.getName();
-            if (name.equals(ExportImportXmlElements.CHECKIN)) {
-                checkIn = readContentOfTag(parser, ExportImportXmlElements.CHECKIN);
-            } else if (name.equals(ExportImportXmlElements.CHECKOUT)) {
-                checkOut = readContentOfTag(parser, ExportImportXmlElements.CHECKOUT);
-            } else if (name.equals(ExportImportXmlElements.BREAK_IN_MILLIS)) {
-                breakInMillis = readContentOfTag(parser, ExportImportXmlElements.BREAK_IN_MILLIS);
-            } else if (name.equals(ExportImportXmlElements.NOTE)) {
-                note = readContentOfTag(parser, ExportImportXmlElements.NOTE);
-            } else {
-                skip(parser);
+            switch (name) {
+                case ExportImportXmlElements.CHECKIN:
+                    checkIn = readContentOfTag(parser, ExportImportXmlElements.CHECKIN);
+                    break;
+                case ExportImportXmlElements.CHECKOUT:
+                    checkOut = readContentOfTag(parser, ExportImportXmlElements.CHECKOUT);
+                    break;
+                case ExportImportXmlElements.BREAK_IN_MILLIS:
+                    breakInMillis = readContentOfTag(parser, ExportImportXmlElements.BREAK_IN_MILLIS);
+                    break;
+                case ExportImportXmlElements.NOTE:
+                    note = readContentOfTag(parser, ExportImportXmlElements.NOTE);
+                    break;
+                default:
+                    skip(parser);
+                    break;
             }
         }
         TimeRecord timeRecord = new TimeRecord();
         timeRecord.setCheckIn(getCalendar(checkIn));
         timeRecord.setCheckOut(getCalendar(checkOut));
-        timeRecord.setBreakInMilliseconds(Long.valueOf(breakInMillis));
+
+        if (breakInMillis == null) {
+            timeRecord.setBreakInMilliseconds(0l);
+        } else {
+            timeRecord.setBreakInMilliseconds(Long.valueOf(breakInMillis));
+        }
+
         timeRecord.setNote(note);
         return timeRecord;
     }

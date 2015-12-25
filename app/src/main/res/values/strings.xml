@@ -29,7 +29,7 @@
     <string name="checkin">Checkin</string>
     <string name="checkout">Checkout</string>
     <string name="checked_in_at">You checked in at %1$s %2$s</string>
-    <string name="checked_out_at">You checked out at %1$s %1$s</string>
+    <string name="checked_out_at">You checked out at %1$s %2$s</string>
 
     <string name="no_details_available_because_no_checkin">There are no details available because you have not checked in on the selected date</string>
 
@@ -44,20 +44,20 @@
     <string name="delete">Delete</string>
     <string name="confirm_delete">Are you sure that you want to delete this data?</string>
 
-    <string name="loading_data">Loading data...</string>
+    <string name="loading_data">Loading data…</string>
 
     <string name="export_to_pdf">Save to pdf file</string>
     <string name="create_backup">Create backup</string>
     <string name="restore_backup">Restore from a backup file</string>
 
-    <string name="exporting_backup_progress_dialog">Creating the backup...</string>
+    <string name="exporting_backup_progress_dialog">Creating the backup…</string>
     <string name="export_backup_completed_to_file">The backup file was successfully saved here: %1$s</string>
 
-    <string name="exporting_pdf_progress_dialog">Creating the pdf...</string>
+    <string name="exporting_pdf_progress_dialog">Creating the pdf…</string>
     <string name="export_pdf_completed_to_file">The pdf file was successfully saved here: %1$s</string>
 
-    <string name="importing_progress_dialog">Restoring the backup...</string>
-    <string name="importing_progress_dialog_nr_of_timerecords">Read %d timerecords from backup file...</string>
+    <string name="importing_progress_dialog">Restoring the backup…</string>
+    <string name="importing_progress_dialog_nr_of_timerecords">Read %d timerecords from backup file…</string>
     <string name="import_completed">The backup was successfully restored</string>
     <string name="import_failed">Backup file could not be restored successfully</string>
 
@@ -73,6 +73,7 @@
     <string name="export_external_storage_not_available">Unable to create pdf because external storage is not available</string>
 
     <string name="total">Total:</string>
-    <string name="crashMessageQuestionEmail">Oops.. the application stopped unexpectedly :-(. Do you you want to help the developers of this app to fix the problem by sending them an e-mail containing the relevant information?</string>
+    <string name="crashMessageQuestionEmail">Oops… the application stopped unexpectedly :-(. Do you you want to help the developers of this app to fix the problem by sending them an e-mail containing the relevant information?</string>
+    <string name="add_timerecord">Add…</string>
 
 </resources>

@@ -7,7 +7,7 @@ import android.view.View;
 public class SwipeDetector implements View.OnTouchListener {
     private final String LOG_TAG = this.getClass().getSimpleName();
 
-    public static enum Action {
+    public enum Action {
         LR, // Left to Right
         RL, // Right to Left
         TB, // Top to bottom
@@ -16,7 +16,9 @@ public class SwipeDetector implements View.OnTouchListener {
 
     }
     private static final int MIN_DISTANCE = 100;
-    private float downX, downY, upX, upY;
+    private float downX;
+    private float downY;
+    private float upY;
     private Action mSwipeDetected = Action.None;
 
     public boolean swipeDetected() {
@@ -36,7 +38,7 @@ public class SwipeDetector implements View.OnTouchListener {
                 return false; // allow other events like Click to be processed
             }
             case MotionEvent.ACTION_MOVE: {
-                upX = event.getX();
+                float upX = event.getX();
                 upY = event.getY();
 
                 float deltaX = downX - upX;

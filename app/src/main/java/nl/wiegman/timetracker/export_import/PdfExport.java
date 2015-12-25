@@ -49,7 +49,7 @@ public class PdfExport extends AbstractExport {
     }
 
     @Override
-    protected int getResourceIdMessageExportInProgess() {
+    protected int getResourceIdMessageExportInProgress() {
         return R.string.exporting_pdf_progress_dialog;
     }
 
@@ -108,10 +108,7 @@ public class PdfExport extends AbstractExport {
     /** Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     @Override
@@ -128,12 +125,12 @@ public class PdfExport extends AbstractExport {
         document = new Document(PageSize.A4.rotate());
 
         document.setMargins(55, 55, 80, 80);
-        PdfWriter docWriter = PdfWriter.getInstance(document, outputStream);
+        PdfWriter.getInstance(document, outputStream);
         document.open();
         return document;
     }
 
-    private Element getTitle() throws DocumentException, IOException {
+    private Element getTitle() {
         Font font = new Font();
         font.setColor(BaseColor.BLACK);
         font.setStyle(Font.BOLD);

@@ -14,7 +14,7 @@ public abstract class AbstractPeriod implements Period {
         return from;
     }
 
-    protected void setFrom(Calendar from) {
+    void setFrom(Calendar from) {
         this.from = from;
     }
 

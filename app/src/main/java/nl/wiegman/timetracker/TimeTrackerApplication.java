@@ -1,6 +1,5 @@
 package nl.wiegman.timetracker;
 
-import android.app.Application;
 import android.content.Intent;
 
 public class TimeTrackerApplication extends com.orm.SugarApp {

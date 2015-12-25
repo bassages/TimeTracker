@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import nl.wiegman.timetracker.R;
-import nl.wiegman.timetracker.domain.CheckIn;
 import nl.wiegman.timetracker.domain.TimeRecord;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
@@ -35,7 +34,7 @@ public class CheckInCheckOutWidgetProvider extends AppWidgetProvider {
 
         boolean checkedIn = TimeAndDurationService.isCheckedIn();
         int iconDrawableId;
-        String text = "";
+        String text;
         if (checkedIn) {
             iconDrawableId = R.drawable.ic_widget_pause;
             text = context.getString(R.string.checkout);

@@ -6,13 +6,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import nl.wiegman.timetracker.period.Day;
 import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.period.Week;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class WeeksOverviewFragment extends AbstractPeriodsInYearOverviewFragment {
-    private final String LOG_TAG = this.getClass().getSimpleName();
 
     /**
      * Use this factory method to create a new instance of

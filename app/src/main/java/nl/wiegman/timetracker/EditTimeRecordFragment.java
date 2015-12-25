@@ -37,8 +37,6 @@ import static android.view.View.OnClickListener;
  * Each detail can be edited.
  */
 public class EditTimeRecordFragment extends Fragment {
-    private final String LOG_TAG = this.getClass().getSimpleName();
-
     private static final String INSTANCE_STATE_KEY_FROM = "FROM";
     private static final String INSTANCE_STATE_KEY_TO = "TO";
     private static final String INSTANCE_STATE_KEY_BREAK = "BREAK";
@@ -112,7 +110,7 @@ public class EditTimeRecordFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_edit_time_record, container, false);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
 
         setTitle();
         showHideDeleteButton();
@@ -560,7 +558,7 @@ public class EditTimeRecordFragment extends Fragment {
     }
 
     private class NoteSetListener implements DialogInterface.OnClickListener {
-        private EditText editText;
+        private final EditText editText;
 
         public NoteSetListener(EditText editText) {
             this.editText = editText;

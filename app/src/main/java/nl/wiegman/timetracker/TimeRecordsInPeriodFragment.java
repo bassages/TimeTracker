@@ -2,7 +2,6 @@ package nl.wiegman.timetracker;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,8 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import nl.wiegman.timetracker.domain.TimeRecord;
-import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
+import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.util.FragmentHelper;
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
@@ -27,8 +26,6 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
  * The timerecords can be deleted or edited (which is actually processed in EditTimeRecordFragemnt)
  */
 public class TimeRecordsInPeriodFragment extends Fragment {
-    private final String LOG_TAG = this.getClass().getName();
-
     private static final String ARG_PERIOD = "period";
 
     private Period period;
@@ -132,7 +129,7 @@ public class TimeRecordsInPeriodFragment extends Fragment {
 
     private class TimeRecordsInPeriodAdapter extends BaseAdapter {
 
-        private List<TimeRecord> timeRecordsInPeriod;
+        private final List<TimeRecord> timeRecordsInPeriod;
 
         /**
          * Constructor

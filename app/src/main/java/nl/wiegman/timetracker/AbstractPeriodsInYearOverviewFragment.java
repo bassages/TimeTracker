@@ -15,13 +15,12 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.OnClick;
 import butterknife.OnItemClick;
 import butterknife.OnItemLongClick;
-import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.period.Period;
+import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.util.FragmentHelper;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
 
@@ -32,10 +31,10 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
     public static final String INSTANCE_STATE_YEAR = "YEAR";
 
-    @InjectView(R.id.title)
+    @Bind(R.id.title)
     public TextView yearTextView;
 
-    @InjectView(R.id.periodsListView)
+    @Bind(R.id.periodsListView)
     public ListView periodsListView;
 
     private SwipeDetector listViewSwipeDetector;
@@ -51,8 +50,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     }
 
     /**
-     * To be overridden by subclasses. Must return the
-     * @return
+     * To be overridden by subclasses.
      */
     protected abstract long getActualPeriodBillableDuration();
 
@@ -76,7 +74,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_period_overview, container, false);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
 
         listViewSwipeDetector = new SwipeDetector();
 
@@ -204,7 +202,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     }
 
     private class TimeRecordsInPeriodAdapter extends BaseAdapter {
-        private List<PeriodOverviewItem> overviewItems;
+        private final List<PeriodOverviewItem> overviewItems;
 
         /**
          * Constructor

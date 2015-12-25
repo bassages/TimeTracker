@@ -31,7 +31,7 @@ public class XmlExport extends AbstractExport {
     }
 
     @Override
-    protected int getResourceIdMessageExportInProgess() {
+    protected int getResourceIdMessageExportInProgress() {
         return R.string.exporting_backup_progress_dialog;
     }
 
@@ -102,7 +102,7 @@ public class XmlExport extends AbstractExport {
     private void addApplicationVersion(XmlSerializer xmlSerializer) throws IOException {
         xmlSerializer.startTag(null, ExportImportXmlElements.APPLICATION_VERSION);
 
-        String version = null;
+        String version;
         try {
             PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             version = pInfo.versionName;
@@ -113,20 +113,10 @@ public class XmlExport extends AbstractExport {
         xmlSerializer.endTag(null, ExportImportXmlElements.APPLICATION_VERSION);
     }
 
-    private void showFileLocationToast(File pdfFile) {
-        int duration = Toast.LENGTH_LONG;
-        try {
-            Toast toast = Toast.makeText(context, context.getString(R.string.export_backup_completed_to_file, pdfFile.getCanonicalPath()), duration);
-            toast.show();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, e.getMessage());
-        }
-    }
-
     private void addTimeRecords(XmlSerializer xmlSerializer) throws IOException {
         xmlSerializer.startTag(null, ExportImportXmlElements.TIME_RECORDS);
 
-        Iterator<TimeRecord> timeRecordIterator = TimeRecord.findAsIterator(TimeRecord.class, null, null);
+        Iterator<TimeRecord> timeRecordIterator = TimeRecord.findAsIterator(TimeRecord.class, null);
         while (timeRecordIterator.hasNext()) {
             TimeRecord timeRecord = timeRecordIterator.next();
             if (!timeRecord.isCheckIn()) {

@@ -46,20 +46,20 @@
     <string name="confirm_delete">Weet u zeker dat u deze gegevens wilt verwijderen?</string>
     <string name="timerecord_note_label">Notitie:</string>
 
-    <string name="loading_data">Gegevens verzamelen...</string>
+    <string name="loading_data">Gegevens verzamelen…</string>
 
     <string name="export_to_pdf">Opslaan als pdf bestand</string>
     <string name="create_backup">Maak een backup</string>
     <string name="restore_backup">Zet een backup terug</string>
 
-    <string name="exporting_backup_progress_dialog">Bezig met het maken van de backup...</string>
+    <string name="exporting_backup_progress_dialog">Bezig met het maken van de backup…</string>
     <string name="export_backup_completed_to_file">Backup bestand opgeslagen: %1$s</string>
 
-    <string name="exporting_pdf_progress_dialog">Bezig met het maken van de pdf...</string>
+    <string name="exporting_pdf_progress_dialog">Bezig met het maken van de pdf…</string>
     <string name="export_pdf_completed_to_file">Pdf bestand opgeslagen: %1$s</string>
 
-    <string name="importing_progress_dialog">Bezig met het terugzetten van de backup...</string>
-    <string name="importing_progress_dialog_nr_of_timerecords">%d urenregels ingelezen uit het backup bestand...</string>
+    <string name="importing_progress_dialog">Bezig met het terugzetten van de backup…</string>
+    <string name="importing_progress_dialog_nr_of_timerecords">%d urenregels ingelezen uit het backup bestand…</string>
     <string name="import_completed">De backup is terug gezet</string>
     <string name="import_failed">Het backup bestand kon niet worden teruggezet</string>
 
@@ -76,5 +76,6 @@
 
     <string name="total">Totaal:</string>
 
-    <string name="crashMessageQuestionEmail">Oeps.. de applicatie is onverwachts gestopt :-(. Wil je de ontwikkelaar van deze app helpen bij het oplossen van het probleem door ze een e-mail te sturen met de relevante informatie?</string>
+    <string name="crashMessageQuestionEmail">Oeps… de applicatie is onverwachts gestopt :-(. Wil je de ontwikkelaar van deze app helpen bij het oplossen van het probleem door ze een e-mail te sturen met de relevante informatie?</string>
+    <string name="add_timerecord">Toevoegen…</string>
 </resources>

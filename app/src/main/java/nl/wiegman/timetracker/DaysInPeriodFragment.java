@@ -24,8 +24,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 import nl.wiegman.timetracker.export_import.PdfExport;
 import nl.wiegman.timetracker.period.Day;
@@ -41,21 +41,19 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
  * The timerecords on a day can be deleted (long press) or edited (on click).
  */
 public class DaysInPeriodFragment extends Fragment {
-    private final String LOG_TAG = this.getClass().getSimpleName();
-
     public static final int MENU_ITEM_EXPORT_TO_PDF_ID = 0;
 
     private static final String ARG_PERIOD = "periodTitle";
 
     private Period period;
 
-    @InjectView(R.id.title)
+    @Bind(R.id.title)
     TextView titleTextView;
 
-    @InjectView(R.id.timeRecordsInPeriodListView)
+    @Bind(R.id.timeRecordsInPeriodListView)
     ListView billableDurationOnDayListView;
 
-    @InjectView(R.id.totalBillableDurationColumn)
+    @Bind(R.id.totalBillableDurationColumn)
     TextView footerTotalTextView;
 
     private SwipeDetector listViewSwipeDetector;
@@ -96,7 +94,7 @@ public class DaysInPeriodFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
 
         listViewSwipeDetector = new SwipeDetector();
 
@@ -239,7 +237,7 @@ public class DaysInPeriodFragment extends Fragment {
     }
 
     private class BillableHoursPerDayAdapter extends BaseAdapter {
-        private List<BillableDurationOnDay> billableHoursOnDays;
+        private final List<BillableDurationOnDay> billableHoursOnDays;
 
         /**
          * Constructor

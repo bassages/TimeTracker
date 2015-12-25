@@ -2,7 +2,7 @@
       xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
 
     <item android:id="@+id/action_add"
-        android:title="Add"
+        android:title="@string/add_timerecord"
         android:icon="@drawable/ic_content_add_circle_outline"
         android:showAsAction="always"/>
 
