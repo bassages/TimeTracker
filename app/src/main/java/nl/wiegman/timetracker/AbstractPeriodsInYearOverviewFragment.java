@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.Bind;
@@ -20,13 +21,13 @@ import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 import butterknife.OnItemLongClick;
 import nl.wiegman.timetracker.period.Period;
+import nl.wiegman.timetracker.period.Year;
 import nl.wiegman.timetracker.util.Formatting;
 import nl.wiegman.timetracker.util.FragmentHelper;
 import nl.wiegman.timetracker.util.PeriodicRunnableExecutor;
+import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
-    private final String LOG_TAG = this.getClass().getSimpleName();
-
     protected static final String ARG_YEAR = "year";
 
     public static final String INSTANCE_STATE_YEAR = "YEAR";
@@ -36,6 +37,9 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
     @Bind(R.id.periodsListView)
     public ListView periodsListView;
+
+    @Bind(R.id.totalBillableDurationColumn)
+    TextView footerTotalTextView;
 
     private SwipeDetector listViewSwipeDetector;
 
@@ -99,7 +103,9 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
     private void refreshData() {
         yearTextView.setText(Integer.toString(year));
-        new RefreshData().execute();
+        new RefreshListViewData().execute();
+        boolean showProgressDialog = true;
+        new RefreshTotal(showProgressDialog).execute();
     }
 
     @Override
@@ -153,20 +159,26 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     private class CheckedInTimeUpdater implements Runnable {
         @Override
         public void run() {
-            new Updater().execute();
+            if (TimeAndDurationService.isCheckedIn()) {
+                new Updater().execute();
+            }
         }
     }
 
-    private class Updater extends AsyncTask<Void, Void, String> {
+    private class Updater extends AsyncTask<Void, Void, String[]> {
 
         @Override
-        protected String doInBackground(Void... voids) {
+        protected String[] doInBackground(Void... voids) {
             long currentPeriodBillableDuration = getActualPeriodBillableDuration();
-            return Formatting.formatDuration(currentPeriodBillableDuration);
+            long totalBillableDuration = getTotalBillableDuration();
+            return new String[] {
+                    Formatting.formatDuration(currentPeriodBillableDuration),
+                    Formatting.formatDuration(totalBillableDuration),
+            };
         }
 
         @Override
-        protected void onPostExecute(String formattedBillableDuration) {
+        protected void onPostExecute(String[] formattedBillableDuration) {
             super.onPostExecute(formattedBillableDuration);
 
             Integer positionOfCurrentItem = getPositionOfCurrentItem(listViewAdapter.getOverviewItems());
@@ -176,10 +188,11 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
                     View periodOverviewItem = periodsListView.getChildAt(index);
                     if (periodOverviewItem != null) {
                         TextView billableDurationColumnTextView = (TextView) periodOverviewItem.findViewById(R.id.totalBillableDurationColumn);
-                        billableDurationColumnTextView.setText(formattedBillableDuration);
+                        billableDurationColumnTextView.setText(formattedBillableDuration[0]);
                     }
                 }
             }
+            footerTotalTextView.setText(formattedBillableDuration[1]);
         }
     }
 
@@ -343,13 +356,13 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
         }
     }
 
-    private class RefreshData extends AsyncTask<Void, Void, List<PeriodOverviewItem>> {
+    private class RefreshListViewData extends AsyncTask<Void, Void, List<PeriodOverviewItem>> {
 
         private ProgressDialog dialog;
 
         @Override
         protected void onPreExecute() {
-            openProgressDialog();
+            dialog = openProgressDialog();
         }
 
         @Override
@@ -366,20 +379,56 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
             if (positionOfCurrentItem != null) {
                 periodsListView.setSelection(positionOfCurrentItem);
             }
-            closeProgressDialog();
+            closeProgressDialog(dialog);
+        }
+    }
+
+    private class RefreshTotal extends AsyncTask<Void, Void, Long> {
+
+        private final boolean showProgressDialog;
+        private ProgressDialog dialog;
+
+        public RefreshTotal(boolean showProgressDialog) {
+            this.showProgressDialog = showProgressDialog;
         }
 
-        private void openProgressDialog() {
-            dialog = new ProgressDialog(getActivity());
-            dialog.setMessage(getActivity().getString(R.string.loading_data));
-            dialog.show();
-        }
-
-        private void closeProgressDialog() {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-                dialog = null;
+        @Override
+        protected void onPreExecute() {
+            if (showProgressDialog) {
+                dialog = openProgressDialog();
             }
+        }
+
+        @Override
+        protected Long doInBackground(Void... voids) {
+            return getTotalBillableDuration();
+        }
+
+        @Override
+        protected void onPostExecute(Long totalBillableDuration) {
+            footerTotalTextView.setText(Formatting.formatDuration(totalBillableDuration));
+            if (showProgressDialog) {
+                closeProgressDialog(dialog);
+            }
+        }
+    }
+
+    private Long getTotalBillableDuration() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        return new Year(calendar).getBillableDuration();
+    }
+
+    private ProgressDialog openProgressDialog() {
+        ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMessage(getActivity().getString(R.string.loading_data));
+        dialog.show();
+        return dialog;
+    }
+
+    private void closeProgressDialog(ProgressDialog dialog) {
+        if (dialog.isShowing()) {
+            dialog.dismiss();
         }
     }
 }

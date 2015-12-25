@@ -5,7 +5,7 @@
 
     <TextView
         android:id="@+id/periodNumberColumn"
-        android:layout_width="55dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:text="jan."
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
@@ -16,7 +16,7 @@
 
     <TextView
         android:id="@+id/totalBillableDurationColumn"
-        android:layout_width="105dp"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:text="999:99:99"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"

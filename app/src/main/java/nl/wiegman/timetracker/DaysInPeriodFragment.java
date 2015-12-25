@@ -161,7 +161,9 @@ public class DaysInPeriodFragment extends Fragment {
     private class CheckedInTimeUpdater implements Runnable {
         @Override
         public void run() {
-            new PeriodicUpdate().execute();
+            if (TimeAndDurationService.isCheckedIn()) {
+                new PeriodicUpdate().execute();
+            }
         }
     }
 

@@ -15,6 +15,10 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnItemClick;
+import butterknife.OnItemLongClick;
 import nl.wiegman.timetracker.domain.TimeRecord;
 import nl.wiegman.timetracker.period.Period;
 import nl.wiegman.timetracker.util.Formatting;
@@ -30,9 +34,14 @@ public class TimeRecordsInPeriodFragment extends Fragment {
 
     private Period period;
 
-    private TextView titleTextView;
-    private ListView timeRecordsListView;
-    private TextView footerTotalTextView;
+    @Bind(R.id.title)
+    TextView titleTextView;
+
+    @Bind(R.id.timeRecordsInPeriodListView)
+    ListView timeRecordsListView;
+
+    @Bind(R.id.totalBillableDurationColumn)
+    TextView footerTotalTextView;
 
     /**
      * Use this factory method to create a new instance of
@@ -63,15 +72,10 @@ public class TimeRecordsInPeriodFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_time_records_in_period, container, false);
+        ButterKnife.bind(this, rootView);
+
         rootView.findViewById(R.id.previousImageView).setVisibility(View.GONE);
         rootView.findViewById(R.id.nextImageView).setVisibility(View.GONE);
-
-        titleTextView = (TextView) rootView.findViewById(R.id.title);
-        footerTotalTextView = (TextView) rootView.findViewById(R.id.totalBillableDurationColumn);
-        timeRecordsListView = (ListView) rootView.findViewById(R.id.timeRecordsInPeriodListView);
-
-        timeRecordsListView.setOnItemClickListener(new ListViewItemClickListener());
-        timeRecordsListView.setOnItemLongClickListener(new ListViewItemLongClickListener());
 
         refreshData();
 
@@ -177,16 +181,14 @@ public class TimeRecordsInPeriodFragment extends Fragment {
         }
     }
 
-    private class ListViewItemClickListener implements AdapterView.OnItemClickListener {
-        public void onItemClick(AdapterView<?> arg0, View view, int position, long timeRecordId) {
-            editTimeRecord(timeRecordId);
-        }
+    @OnItemClick(R.id.timeRecordsInPeriodListView)
+    public void onItemClick(AdapterView<?> arg0, View view, int position, long timeRecordId) {
+        editTimeRecord(timeRecordId);
     }
 
-    private class ListViewItemLongClickListener implements AdapterView.OnItemLongClickListener {
-        public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long id) {
-            deleteTimeRecordWhenConfirmed(id);
-            return true;
-        }
+    @OnItemLongClick(R.id.timeRecordsInPeriodListView)
+    public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long id) {
+        deleteTimeRecordWhenConfirmed(id);
+        return true;
     }
 }

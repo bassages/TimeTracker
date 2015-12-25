@@ -1,8 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="nl.wiegman.timetracker.TimeRecordsInPeriodFragment">
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/header"
@@ -62,7 +60,7 @@
 
         <TextView
             android:id="@+id/totalLabelTextView"
-            android:layout_width="130dp"
+            android:layout_width="123dp"
             android:layout_height="match_parent"
             android:text="@string/total"
             android:textColor="@android:color/white"

@@ -211,7 +211,9 @@ public class CheckInCheckoutFragment extends Fragment {
     private class CheckedInTimeUpdater implements Runnable {
         @Override
         public void run() {
-            new Updater().execute();
+            if (TimeAndDurationService.isCheckedIn()) {
+                new Updater().execute();
+            }
         }
     }
 

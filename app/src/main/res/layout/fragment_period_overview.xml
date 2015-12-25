@@ -1,7 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="nl.wiegman.timetracker.WeeksOverviewFragment">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/header"
@@ -44,15 +43,43 @@
     </RelativeLayout>
 
     <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="233dp"
         android:id="@+id/periodsListView"
-        android:layout_gravity="center_horizontal|top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_below="@+id/header"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_above="@+id/footer" />
+
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
-        android:footerDividersEnabled="false"
-        android:headerDividersEnabled="true" />
+        android:layout_alignParentTop="false"
+        android:background="@android:color/darker_gray">
+
+        <TextView
+            android:id="@+id/totalLabelTextView"
+            android:layout_width="72dp"
+            android:layout_height="match_parent"
+            android:text="@string/total"
+            android:textColor="@android:color/white"
+            android:gravity="center_vertical|right"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/totalBillableDurationColumn"
+            android:layout_width="110dp"
+            android:layout_height="match_parent"
+            android:text="  "
+            android:textColor="@android:color/white"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:gravity="center_vertical|end"
+            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+            android:textStyle="bold" />
+
+    </LinearLayout>
 
 </RelativeLayout>
