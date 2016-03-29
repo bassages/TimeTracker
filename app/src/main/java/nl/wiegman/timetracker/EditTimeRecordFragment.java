@@ -123,7 +123,11 @@ public class EditTimeRecordFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putLong(INSTANCE_STATE_KEY_FROM, from.getTimeInMillis());
         outState.putLong(INSTANCE_STATE_KEY_TO, to.getTimeInMillis());
-        outState.putLong(INSTANCE_STATE_KEY_BREAK, breakInMillis);
+
+        if (breakInMillis != null) {
+            outState.putLong(INSTANCE_STATE_KEY_BREAK, breakInMillis);
+        }
+
         outState.putString(INSTANCE_STATE_KEY_NOTE, note);
         outState.putBoolean(INSTANCE_STATE_KEY_ISCHECKIN, isCheckin);
     }
@@ -199,7 +203,7 @@ public class EditTimeRecordFragment extends Fragment {
         to = Calendar.getInstance();
         to.setTimeInMillis(savedInstanceState.getLong(INSTANCE_STATE_KEY_TO));
 
-        breakInMillis = savedInstanceState.getLong(INSTANCE_STATE_KEY_BREAK);
+        breakInMillis = (Long) savedInstanceState.get(INSTANCE_STATE_KEY_BREAK);
         note = savedInstanceState.getString(INSTANCE_STATE_KEY_NOTE);
         isCheckin = savedInstanceState.getBoolean(INSTANCE_STATE_KEY_ISCHECKIN);
     }
