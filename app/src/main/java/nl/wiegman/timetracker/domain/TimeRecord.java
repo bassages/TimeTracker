@@ -11,17 +11,9 @@ public class TimeRecord extends SugarRecord {
     private static final long DEFAULT_BREAK_DURATION = TimeUnit.MINUTES.toMillis(30);
     private static final long DEFAULT_BREAK_AFTER = TimeUnit.HOURS.toMillis(5) + TimeUnit.MINUTES.toMillis(30);
 
-    public static final long NULL_BREAK = Long.MAX_VALUE;
-    public static final long NULL_DATE_MILLIS = Long.MAX_VALUE;
-    public static final Calendar NULL_DATE;
-    static {
-        NULL_DATE = Calendar.getInstance();
-        NULL_DATE.setTime(new Date(NULL_DATE_MILLIS));
-    }
-
-    private Calendar checkIn = NULL_DATE;
-    private Calendar checkOut = NULL_DATE;
-    private Long breakInMilliseconds = NULL_BREAK;
+    private Calendar checkIn;
+    private Calendar checkOut;
+    private Long breakInMilliseconds;
     private String note;
 
     public String getNote() {
@@ -52,19 +44,11 @@ public class TimeRecord extends SugarRecord {
     }
 
     public Long getBreakInMilliseconds() {
-        Long result = null;
-        if (breakInMilliseconds != NULL_BREAK) {
-            result = breakInMilliseconds;
-        }
-        return result;
+        return breakInMilliseconds;
     }
 
     public TimeRecord setBreakInMilliseconds(Long breakInMilliseconds) {
-        if (breakInMilliseconds == null) {
-            this.breakInMilliseconds = NULL_BREAK;
-        } else {
-            this.breakInMilliseconds = breakInMilliseconds;
-        }
+        this.breakInMilliseconds = breakInMilliseconds;
         return this;
     }
 
@@ -95,7 +79,7 @@ public class TimeRecord extends SugarRecord {
     }
 
     public boolean isCheckIn() {
-        return checkOut.getTimeInMillis() == NULL_DATE_MILLIS;
+        return checkOut == null;
     }
 
     public long getDefaultBreakDuration() {

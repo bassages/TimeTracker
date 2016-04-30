@@ -183,7 +183,9 @@ public class EditTimeRecordFragment extends Fragment {
         if (timeRecordId != null) {
             TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
             from = (Calendar) timeRecord.getCheckIn().clone();
-            to = (Calendar) timeRecord.getCheckOut().clone();
+            if (timeRecord.getCheckOut() != null) {
+                to = (Calendar) timeRecord.getCheckOut().clone();
+            }
             breakInMillis = timeRecord.getBreakInMilliseconds();
             note = timeRecord.getNote();
             isCheckin = timeRecord.isCheckIn();

@@ -14,8 +14,7 @@ public class TimeAndDurationService {
     }
 
     public static TimeRecord getCheckIn() {
-        String nullDateMillis = Long.toString(TimeRecord.NULL_DATE_MILLIS);
-        List<TimeRecord> checkIn = TimeRecord.find(TimeRecord.class, "check_out = ?", nullDateMillis);
+        List<TimeRecord> checkIn = TimeRecord.find(TimeRecord.class, "check_out is null");
         TimeRecord result = null;
         if (!checkIn.isEmpty()) {
             result = checkIn.get(0);
