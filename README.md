@@ -8,11 +8,16 @@ Please note that:
     - Nexus 5X running Andoid api 23 (virtual device)
 - The default language for the app is english, but will be dutch depending on the locale of the device the app is running on
 
-# Home
-<img src="https://raw.githubusercontent.com/bassages/TimeTracker/master/screenshots/home.png" width="300"><br/>
+# Screenshots
 
-# Week overview
-<img src="https://raw.githubusercontent.com/bassages/TimeTracker/master/screenshots/week-view.png" width="300"><br/>
+## Home
+<img src="https://raw.githubusercontent.com/bassages/TimeTracker/master/screenshots/home.png" width="300">
 
-# Week totals
-<img src="https://raw.githubusercontent.com/bassages/TimeTracker/master/screenshots/week-totals.png" width="300"><br/>
+## Timerecord details
+<img src="https://raw.githubusercontent.com/bassages/TimeTracker/master/screenshots/timerecord-details.png" width="300">
+
+## Week overview
+<img src="https://raw.githubusercontent.com/bassages/TimeTracker/master/screenshots/week-view.png" width="300">
+
+## Week totals
+<img src="https://raw.githubusercontent.com/bassages/TimeTracker/master/screenshots/week-totals.png" width="300">
