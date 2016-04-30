@@ -59,7 +59,7 @@
     <string name="export_pdf_completed_to_file">Pdf bestand opgeslagen: %1$s</string>
 
     <string name="importing_progress_dialog">Bezig met het terugzetten van de backup…</string>
-    <string name="importing_progress_dialog_nr_of_timerecords">%d urenregels ingelezen uit het backup bestand…</string>
+    <string name="importing_progress_dialog_nr_of_timerecords">%d urenregels inlezen uit het backup bestand…</string>
     <string name="import_completed">De backup is terug gezet</string>
     <string name="import_failed">Het backup bestand kon niet worden teruggezet</string>
 

@@ -47,10 +47,10 @@
     <string name="loading_data">Loading data…</string>
 
     <string name="export_to_pdf">Save to pdf file</string>
-    <string name="create_backup">Create backup</string>
+    <string name="create_backup">Create a backup file</string>
     <string name="restore_backup">Restore from a backup file</string>
 
-    <string name="exporting_backup_progress_dialog">Creating the backup…</string>
+    <string name="exporting_backup_progress_dialog">Creating the backup file…</string>
     <string name="export_backup_completed_to_file">The backup file was successfully saved here: %1$s</string>
 
     <string name="exporting_pdf_progress_dialog">Creating the pdf…</string>
