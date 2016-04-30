@@ -24,7 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import nl.wiegman.timetracker.export_import.PdfExport;
@@ -47,13 +47,13 @@ public class DaysInPeriodFragment extends Fragment {
 
     private Period period;
 
-    @Bind(R.id.title)
+    @BindView(R.id.title)
     TextView titleTextView;
 
-    @Bind(R.id.timeRecordsInPeriodListView)
+    @BindView(R.id.timeRecordsInPeriodListView)
     ListView billableDurationOnDayListView;
 
-    @Bind(R.id.totalBillableDurationColumn)
+    @BindView(R.id.totalBillableDurationColumn)
     TextView footerTotalTextView;
 
     private SwipeDetector listViewSwipeDetector;

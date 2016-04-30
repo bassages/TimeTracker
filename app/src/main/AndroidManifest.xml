@@ -3,15 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="nl.wiegman.timetracker" >
 
-    <meta-data android:name="DATABASE" android:value="timetracker.db" />
-    <meta-data android:name="VERSION" android:value="1.0.0" />
-    <meta-data android:name="QUERY_LOG" android:value="true" />
-    <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="nl.wiegman.timetracker"/>
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
 
+    <!-- By using application name TimeTrackerApplication, crash log emails are supported. See TimeTrackerApplication -->
     <application
         android:name=".TimeTrackerApplication"
         android:allowBackup="true"
@@ -19,6 +15,11 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         tools:replace="android:icon,android:theme">
+
+        <meta-data android:name="DATABASE" android:value="timetracker.db" />
+        <meta-data android:name="VERSION" android:value="1.0.0" />
+        <meta-data android:name="QUERY_LOG" android:value="true" />
+        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="nl.wiegman.timetracker.domain"/>
 
         <activity
             android:name=".MainActivity"

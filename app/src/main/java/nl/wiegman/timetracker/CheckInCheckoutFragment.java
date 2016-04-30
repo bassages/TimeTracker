@@ -21,7 +21,7 @@ import com.daimajia.androidanimations.library.YoYo;
 
 import java.util.Calendar;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import nl.wiegman.timetracker.export_import.XmlExport;
@@ -45,13 +45,13 @@ public class CheckInCheckoutFragment extends Fragment {
 
     private final String LOG_TAG = this.getClass().getSimpleName();
 
-    @Bind(R.id.todaysTotalTextView)
+    @BindView(R.id.todaysTotalTextView)
     TextView todaysTotalTextView;
 
-    @Bind(R.id.thisWeeksTotalTextView)
+    @BindView(R.id.thisWeeksTotalTextView)
     TextView thisWeeksTotalTextView;
 
-    @Bind(R.id.pausePlayImageView)
+    @BindView(R.id.pausePlayImageView)
     ImageView pausePlayImageView;
 
     private PeriodicRunnableExecutor checkedInTimeUpdaterExecutor;

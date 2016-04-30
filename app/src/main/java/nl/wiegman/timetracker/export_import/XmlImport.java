@@ -142,7 +142,7 @@ public class XmlImport extends AsyncTask<String, String, Void> {
         timeRecord.setCheckOut(getCalendar(checkOut));
 
         if (breakInMillis == null) {
-            timeRecord.setBreakInMilliseconds(0l);
+            timeRecord.setBreakInMilliseconds(0L);
         } else {
             timeRecord.setBreakInMilliseconds(Long.valueOf(breakInMillis));
         }

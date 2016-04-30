@@ -15,7 +15,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 import butterknife.OnItemLongClick;
@@ -34,13 +34,13 @@ public class TimeRecordsInPeriodFragment extends Fragment {
 
     private Period period;
 
-    @Bind(R.id.title)
+    @BindView(R.id.title)
     TextView titleTextView;
 
-    @Bind(R.id.timeRecordsInPeriodListView)
+    @BindView(R.id.timeRecordsInPeriodListView)
     ListView timeRecordsListView;
 
-    @Bind(R.id.totalBillableDurationColumn)
+    @BindView(R.id.totalBillableDurationColumn)
     TextView footerTotalTextView;
 
     /**

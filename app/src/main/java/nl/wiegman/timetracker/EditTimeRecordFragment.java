@@ -190,7 +190,7 @@ public class EditTimeRecordFragment extends Fragment {
         } else {
             from = Calendar.getInstance();
             to = Calendar.getInstance();
-            breakInMillis = 0l;
+            breakInMillis = 0L;
             note = "";
             isCheckin = false;
         }
@@ -290,7 +290,7 @@ public class EditTimeRecordFragment extends Fragment {
 
         if (breakMs == null) {
             textToSet = UNSET;
-            breakInMinutes = 0l;
+            breakInMinutes = 0L;
         } else {
             breakInMinutes = TimeUnit.MILLISECONDS.toMinutes(breakMs);
             textToSet = getString(R.string.break_minutes, breakInMinutes);

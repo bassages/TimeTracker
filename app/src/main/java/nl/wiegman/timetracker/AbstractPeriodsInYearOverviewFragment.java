@@ -16,7 +16,7 @@ import android.widget.TextView;
 import java.util.Calendar;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 import butterknife.OnItemLongClick;
@@ -32,13 +32,13 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
 
     public static final String INSTANCE_STATE_YEAR = "YEAR";
 
-    @Bind(R.id.title)
-    public TextView yearTextView;
+    @BindView(R.id.title)
+    TextView yearTextView;
 
-    @Bind(R.id.periodsListView)
-    public ListView periodsListView;
+    @BindView(R.id.periodsListView)
+    ListView periodsListView;
 
-    @Bind(R.id.totalBillableDurationColumn)
+    @BindView(R.id.totalBillableDurationColumn)
     TextView footerTotalTextView;
 
     private SwipeDetector listViewSwipeDetector;

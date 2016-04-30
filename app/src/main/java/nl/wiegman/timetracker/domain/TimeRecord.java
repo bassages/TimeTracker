@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class TimeRecord extends SugarRecord<TimeRecord> {
+public class TimeRecord extends SugarRecord {
 
     private static final long DEFAULT_BREAK_DURATION = TimeUnit.MINUTES.toMillis(30);
     private static final long DEFAULT_BREAK_AFTER = TimeUnit.HOURS.toMillis(5) + TimeUnit.MINUTES.toMillis(30);
