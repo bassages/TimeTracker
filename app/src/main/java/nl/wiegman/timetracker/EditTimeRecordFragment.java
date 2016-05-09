@@ -498,21 +498,21 @@ public class EditTimeRecordFragment extends Fragment {
         boolean result = true;
 
         long fromTimeInMillis = from.getTimeInMillis();
-        long toTimeInMillis = to.getTimeInMillis();
+        Long toTimeInMillis = to != null ? to.getTimeInMillis() : null;
 
         long breaky = 0;
         if (breakInMillis != null) {
             breaky = breakInMillis;
         }
 
-        if (fromTimeInMillis >= toTimeInMillis) {
+        if (toTimeInMillis != null && fromTimeInMillis >= toTimeInMillis) {
             result = false;
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage(R.string.to_date_must_be_later_than_from_date)
                     .setNeutralButton(android.R.string.ok, new DismissOnClickListener())
                     .show();
-        } else if (((toTimeInMillis - fromTimeInMillis) - breaky) <= 0) {
+        } else if (toTimeInMillis != null && ((toTimeInMillis - fromTimeInMillis) - breaky) <= 0) {
             result = false;
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -520,7 +520,6 @@ public class EditTimeRecordFragment extends Fragment {
                     .setNeutralButton(android.R.string.ok, new DismissOnClickListener())
                     .show();
         }
-
         return result;
     }
 
