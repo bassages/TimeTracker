@@ -173,9 +173,12 @@ public class TimeRecordsInPeriodFragment extends Fragment {
             String formattedDate = simpleDateFormat.format(timeRecord.getCheckIn().getTime());
             dateColumn.setText(formattedDate);
 
-            TextView billableHoursColumn = (TextView) row.findViewById(R.id.totalBillableDurationColumn);
+            TextView billableDurationColumn = (TextView) row.findViewById(R.id.totalBillableDurationColumn);
             String formattedBillableDuration = Formatting.formatDuration(timeRecord.getBillableDuration());
-            billableHoursColumn.setText(formattedBillableDuration);
+            billableDurationColumn.setText(formattedBillableDuration);
+
+            TextView differenceFromBillableDurationColumn = (TextView) row.findViewById(R.id.differenceFromPreferredBillableDurationColumn);
+            differenceFromBillableDurationColumn.setText("");
 
             return row;
         }

@@ -10,14 +10,7 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
 public class Year extends AbstractPeriod {
 
     public Year(Calendar dayInYear) {
-        Calendar start = TimeAndDurationService.getFirstDayOfYear(dayInYear.get(Calendar.YEAR));
-        setFrom(start);
-
-        Calendar end = (Calendar) start.clone();
-        end.set(Calendar.MONTH, Calendar.DECEMBER);
-        end.set(Calendar.DAY_OF_MONTH, 31);
-
-        setTo(end);
+        super(TimeAndDurationService.getFirstDayOfYear(dayInYear.get(Calendar.YEAR)), TimeAndDurationService.getLastDayOfYear(dayInYear.get(Calendar.YEAR)));
     }
 
     @Override

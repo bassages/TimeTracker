@@ -2,6 +2,7 @@ package nl.wiegman.timetracker;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +28,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemClick;
+import butterknife.OnItemLongClick;
 import nl.wiegman.timetracker.export_import.PdfExport;
 import nl.wiegman.timetracker.period.Day;
 import nl.wiegman.timetracker.period.Period;
@@ -36,9 +39,10 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 /**
  * Shows a list of days within a given period.
- * For each dat the billable duration is shown.
+ * For each dat the billable duration and difference with the preferred billable duration is shown.
  *
  * The timerecords on a day can be deleted (long press) or edited (on click).
+ * A swipe to the left or right causes navigation to the previous or next period.
  */
 public class DaysInPeriodFragment extends Fragment {
     public static final int MENU_ITEM_EXPORT_TO_PDF_ID = 0;
@@ -97,9 +101,6 @@ public class DaysInPeriodFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         listViewSwipeDetector = new SwipeDetector();
-
-        billableDurationOnDayListView.setOnItemClickListener(new BillableDurationOnDayItemClickListener());
-        billableDurationOnDayListView.setOnItemLongClickListener(new BillableDurationLongClickListener());
         billableDurationOnDayListView.setOnTouchListener(listViewSwipeDetector);
 
         refreshData();
@@ -172,14 +173,15 @@ public class DaysInPeriodFragment extends Fragment {
         @Override
         protected CurrentItemUpdateData doInBackground(Void... voids) {
             CurrentItemUpdateData data = new CurrentItemUpdateData();
-            long currentPeriodBillableDuration = new Day(Calendar.getInstance()).getBillableDuration();
-            data.current = Formatting.formatDuration(currentPeriodBillableDuration);
-            data.total = Formatting.formatDuration(period.getBillableDuration());
+            Day today = new Day(Calendar.getInstance());
+            data.currentDayFormattedBillableDuration = today.getBillableDuration();
+            data.currentDayFormattedDifferenceFromBillableDuration = today.getBillableDuration() - today.getPreferredBillableDuration();
+            data.total = period.getBillableDuration();
             return data;
         }
 
         @Override
-        protected void onPostExecute(CurrentItemUpdateData updateData) {
+        protected void onPostExecute(CurrentItemUpdateData updatedData) {
             List<BillableDurationOnDay> billableDurationOnDays = listViewAdapter.getBillableDurationOnDays();
             Integer positionOfCurrentItem = getPositionOfCurrentItem(billableDurationOnDays);
             if (positionOfCurrentItem != null) {
@@ -188,17 +190,21 @@ public class DaysInPeriodFragment extends Fragment {
                     View dayItemView = billableDurationOnDayListView.getChildAt(index);
                     if (dayItemView != null) {
                         TextView billableDurationColumnTextView = (TextView) dayItemView.findViewById(R.id.totalBillableDurationColumn);
-                        billableDurationColumnTextView.setText(updateData.current);
+                        billableDurationColumnTextView.setText(Formatting.formatDuration(updatedData.currentDayFormattedBillableDuration));
+
+                        TextView differenceWithBillableDurationColumnTextView = (TextView) dayItemView.findViewById(R.id.differenceFromPreferredBillableDurationColumn);
+                        configureDifferenceFromPreferredBillableDurationTextView(differenceWithBillableDurationColumnTextView, updatedData.currentDayFormattedBillableDuration, updatedData.currentDayFormattedDifferenceFromBillableDuration);
                     }
                 }
             }
-            footerTotalTextView.setText(updateData.total);
+            footerTotalTextView.setText(Formatting.formatDuration(updatedData.total));
         }
     }
 
     private class CurrentItemUpdateData {
-        private String total;
-        private String current;
+        private long total;
+        private long currentDayFormattedBillableDuration;
+        private long currentDayFormattedDifferenceFromBillableDuration;
     }
 
     private Integer getPositionOfCurrentItem(List<BillableDurationOnDay> billableHoursOnDays) {
@@ -226,66 +232,72 @@ public class DaysInPeriodFragment extends Fragment {
     private List<BillableDurationOnDay> getBillableHoursOnDays() {
         List<BillableDurationOnDay> days = new ArrayList<>();
 
-        Calendar day = (Calendar) period.getFrom().clone();
-        while (day.getTimeInMillis() < period.getTo().getTimeInMillis()) {
+        Calendar calendarOfDay = (Calendar) period.getFrom().clone();
+
+        while (calendarOfDay.getTimeInMillis() < period.getTo().getTimeInMillis()) {
             BillableDurationOnDay billableHoursOnDay = new BillableDurationOnDay();
-            billableHoursOnDay.setDay((Calendar)day.clone());
-            long billableDurationOnDay = new Day(day).getBillableDuration();
-            billableHoursOnDay.setBillableDuration(billableDurationOnDay);
+            billableHoursOnDay.setDay((Calendar)calendarOfDay.clone());
+
+            Day day = new Day(calendarOfDay);
+            billableHoursOnDay.setBillableDuration(day.getBillableDuration());
+            billableHoursOnDay.setDifferenceFromPreferredBillableDuration(day.getBillableDuration() - day.getPreferredBillableDuration());
+
             days.add(billableHoursOnDay);
-            day.add(Calendar.DAY_OF_MONTH, 1);
+
+            calendarOfDay.add(Calendar.DAY_OF_MONTH, 1);
         }
         return days;
     }
 
     private class BillableHoursPerDayAdapter extends BaseAdapter {
-        private final List<BillableDurationOnDay> billableHoursOnDays;
+        private final List<BillableDurationOnDay> billableDurationOnDays;
 
         /**
          * Constructor
          */
-        public BillableHoursPerDayAdapter(List<BillableDurationOnDay> billableHoursOnDays) {
-            this.billableHoursOnDays = billableHoursOnDays;
+        public BillableHoursPerDayAdapter(List<BillableDurationOnDay> billableDurationOnDays) {
+            this.billableDurationOnDays = billableDurationOnDays;
         }
 
         @Override
         public int getCount() {
-            return billableHoursOnDays.size();
+            return billableDurationOnDays.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return billableHoursOnDays.get(position);
+            return billableDurationOnDays.get(position);
         }
 
         @Override
         public long getItemId(int position) {
-            return billableHoursOnDays.get(position).getDay().getTimeInMillis();
+            return billableDurationOnDays.get(position).getDay().getTimeInMillis();
         }
 
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
-            BillableDurationOnDay billableHoursOnDay = billableHoursOnDays.get(position);
+            BillableDurationOnDay billableDurationOnDay = billableDurationOnDays.get(position);
 
-            Date day = billableHoursOnDay.getDay().getTime();
-            long billableDuration = billableHoursOnDay.getBillableDuration();
+            Date day = billableDurationOnDay.getDay().getTime();
 
             View row = View.inflate(getActivity(), R.layout.time_records_in_period_item, null);
 
             TextView dayColumn = getDayOfWeekColumnTextView(day, row);
             TextView dateColumn = getDateColumnTextView(day, row);
-            TextView billableDurationColumn = getBillableDurationTextView(row, billableDuration);
+            TextView billableDurationColumn = getBillableDurationTextView(row, billableDurationOnDay.getBillableDuration());
+            TextView differenceColumn = getDifferenceFromPreferredBillableDurationTextView(row, billableDurationOnDay);
 
-            if (isCurrentDay(billableHoursOnDay)) {
+            if (isCurrentDay(billableDurationOnDay)) {
                 dayColumn.setTypeface(Typeface.DEFAULT_BOLD);
                 dateColumn.setTypeface(Typeface.DEFAULT_BOLD);
                 billableDurationColumn.setTypeface(Typeface.DEFAULT_BOLD);
-            } else if (billableDuration == 0) {
+                differenceColumn.setTypeface(Typeface.DEFAULT_BOLD);
+            } else if (billableDurationOnDay.getBillableDuration() == 0) {
                 dayColumn.setEnabled(false);
                 dateColumn.setEnabled(false);
                 billableDurationColumn.setEnabled(false);
+                differenceColumn.setEnabled(false);
             }
-
             return row;
         }
 
@@ -312,14 +324,39 @@ public class DaysInPeriodFragment extends Fragment {
             return billableHoursColumn;
         }
 
+        private TextView getDifferenceFromPreferredBillableDurationTextView(View row, BillableDurationOnDay billableDurationOnDay) {
+            TextView differenceColumn = (TextView) row.findViewById(R.id.differenceFromPreferredBillableDurationColumn);
+            configureDifferenceFromPreferredBillableDurationTextView(differenceColumn, billableDurationOnDay.getBillableDuration(), billableDurationOnDay.getDifferenceFromPreferredBillableDuration());
+            return differenceColumn;
+        }
+
         public List<BillableDurationOnDay> getBillableDurationOnDays() {
-            return billableHoursOnDays;
+            return billableDurationOnDays;
+        }
+    }
+
+    private void configureDifferenceFromPreferredBillableDurationTextView(TextView differenceColumn, long billableDuration, long differenceFromPreferredBillableDuration) {
+        if (billableDuration > 0) {
+            String formattedDifference = Formatting.formatDuration(differenceFromPreferredBillableDuration);
+            if (differenceFromPreferredBillableDuration == 0) {
+                differenceColumn.setTextColor(Color.parseColor("#006400"));
+            } else if (differenceFromPreferredBillableDuration > 0) {
+                formattedDifference = "+" + formattedDifference;
+                differenceColumn.setTextColor(Color.parseColor("#006400"));
+            } else {
+                formattedDifference = "-" + formattedDifference;
+                differenceColumn.setTextColor(Color.RED);
+            }
+            differenceColumn.setText(formattedDifference);
+        } else {
+            differenceColumn.setText("");
         }
     }
 
     private class BillableDurationOnDay {
         private Calendar day;
         private long billableDuration;
+        private long differenceFromPreferredBillableDuration;
 
         public Calendar getDay() {
             return day;
@@ -336,57 +373,60 @@ public class DaysInPeriodFragment extends Fragment {
         public void setBillableDuration(long billableDuration) {
             this.billableDuration = billableDuration;
         }
-    }
 
-    private class BillableDurationOnDayItemClickListener implements AdapterView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> arg0, View view, int position, long timestamp) {
-            if(listViewSwipeDetector.swipeDetected()) {
-                handleSwipe();
-            } else {
-                handleClick(timestamp);
-            }
+        public long getDifferenceFromPreferredBillableDuration() {
+            return differenceFromPreferredBillableDuration;
         }
 
-        private void handleClick(long timestamp) {
-            Calendar day = Calendar.getInstance();
-            day.setTimeInMillis(timestamp);
-            DayDetailsHelper dayDetailsHelper = new DayDetailsHelper(getActivity());
-            dayDetailsHelper.showDetailsOrTimeRecordsOfDay(day);
+        public void setDifferenceFromPreferredBillableDuration(long differenceFromPreferredBillableDuration) {
+            this.differenceFromPreferredBillableDuration = differenceFromPreferredBillableDuration;
         }
     }
 
-    private class BillableDurationLongClickListener implements AdapterView.OnItemLongClickListener {
-        @Override
-        public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long timestamp) {
-            boolean result;
-            if(listViewSwipeDetector.swipeDetected()) {
-                result = false;
-                handleSwipe();
-            } else {
-                result = true;
-                handleLongClick(timestamp);
+    @OnItemClick(R.id.timeRecordsInPeriodListView)
+    public void onItemClick(AdapterView<?> arg0, View view, int position, long timestamp) {
+        if(listViewSwipeDetector.swipeDetected()) {
+            handleSwipe();
+        } else {
+            showDetails(timestamp);
+        }
+    }
+
+    @OnItemLongClick(R.id.timeRecordsInPeriodListView)
+    public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long timestamp) {
+        boolean result;
+        if(listViewSwipeDetector.swipeDetected()) {
+            result = false;
+            handleSwipe();
+        } else {
+            result = true;
+            delete(timestamp);
+        }
+        return result;
+    }
+
+    private void showDetails(long timestamp) {
+        Calendar day = Calendar.getInstance();
+        day.setTimeInMillis(timestamp);
+        DayDetailsHelper dayDetailsHelper = new DayDetailsHelper(getActivity());
+        dayDetailsHelper.showDetailsOrTimeRecordsOfDay(day);
+    }
+
+    private void delete(long timestamp) {
+        Calendar day = Calendar.getInstance();
+        day.setTimeInMillis(timestamp);
+
+        Calendar startOfDay = TimeAndDurationService.getStartOfDay(day);
+        Calendar endOfDay = TimeAndDurationService.getEndOfDay(day);
+
+        DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = new DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener() {
+            @Override
+            public void recordDeleted() {
+                refreshData();
             }
-
-            return result;
-        }
-
-        private void handleLongClick(long timestamp) {
-            Calendar day = Calendar.getInstance();
-            day.setTimeInMillis(timestamp);
-
-            Calendar startOfDay = TimeAndDurationService.getStartOfDay(day);
-            Calendar endOfDay = TimeAndDurationService.getEndOfDay(day);
-
-            DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = new DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener() {
-                @Override
-                public void recordDeleted() {
-                    refreshData();
-                }
-            };
-            DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), startOfDay, endOfDay, timeRecordsDeletedListener);
-            deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
-        }
+        };
+        DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), startOfDay, endOfDay, timeRecordsDeletedListener);
+        deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
     }
 
     private void handleSwipe() {

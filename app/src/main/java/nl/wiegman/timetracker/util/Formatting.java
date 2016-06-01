@@ -5,6 +5,6 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 public class Formatting {
 
     public static String formatDuration(long duration) {
-        return DurationFormatUtils.formatDuration(duration, "H:mm:ss");
+        return DurationFormatUtils.formatDuration(Math.abs(duration), "H:mm:ss");
     }
 }

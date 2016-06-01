@@ -22,16 +22,6 @@ public class TimeAndDurationService {
         return result;
     }
 
-    public static long getBillableDurationInPeriod(Period period) {
-        long result = 0;
-
-        List<TimeRecord> timeRecordsInPeriod = getTimeRecordsBetween(period.getFrom(), period.getTo());
-        for (TimeRecord timeRecord : timeRecordsInPeriod) {
-            result += timeRecord.getBillableDuration();
-        }
-        return result;
-    }
-
     public static List<TimeRecord> getTimeRecordsBetween(Calendar from, Calendar to) {
         String fromTimeInMillis = Long.toString(from.getTimeInMillis());
         String toTimeInMillis = Long.toString(to.getTimeInMillis());
@@ -63,10 +53,31 @@ public class TimeAndDurationService {
         return timeRecord;
     }
 
+    public static Calendar getStartOfWeek(Calendar dayInWeek) {
+        Calendar startOfMonday = DateUtils.iterator(dayInWeek, DateUtils.RANGE_WEEK_MONDAY).next();
+        startOfMonday = TimeAndDurationService.getStartOfDay(startOfMonday);
+        return startOfMonday;
+    }
+
+    public static Calendar getEndOfWeek(Calendar dayInWeek) {
+        Calendar endOfSunday = (Calendar) getStartOfWeek(dayInWeek).clone();
+        endOfSunday.add(Calendar.WEEK_OF_YEAR, 1);
+        endOfSunday.add(Calendar.MILLISECOND, -1);
+        return endOfSunday;
+    }
+
     public static Calendar getStartOfMonth(Calendar dayInMonth) {
         Calendar start = ((Calendar)dayInMonth.clone());
         start = DateUtils.truncate(start, Calendar.MONTH);
         return start;
+    }
+
+    public static Calendar getEndOfMonth(Calendar dayInMonth) {
+        Calendar start = getStartOfMonth(dayInMonth);
+        Calendar end = (Calendar) start.clone();
+        end.add(Calendar.MONTH, 1);
+        end.add(Calendar.MILLISECOND, -1);
+        return end;
     }
 
     public static Calendar getStartOfDay(Calendar day) {
@@ -98,4 +109,12 @@ public class TimeAndDurationService {
         calendar.set(Calendar.YEAR, year);
         return calendar;
     }
+
+    public static Calendar getLastDayOfYear(int year) {
+        Calendar calendar = (Calendar) getFirstDayOfYear(year).clone();
+        calendar.set(Calendar.MONTH, Calendar.DECEMBER);
+        calendar.set(Calendar.DAY_OF_MONTH, 31);
+        return calendar;
+    }
+
 }

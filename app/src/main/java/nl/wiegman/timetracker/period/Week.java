@@ -3,21 +3,14 @@ package nl.wiegman.timetracker.period;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class Week extends AbstractPeriod implements Period {
 
     public Week(Calendar dayInWeek) {
-        Calendar startOfMonday = DateUtils.iterator(dayInWeek, DateUtils.RANGE_WEEK_MONDAY).next();
-        startOfMonday = TimeAndDurationService.getStartOfDay(startOfMonday);
-
-        Calendar endOfSunday = (Calendar) startOfMonday.clone();
-        endOfSunday.add(Calendar.WEEK_OF_YEAR, 1);
-        endOfSunday.add(Calendar.MILLISECOND, -1);
-
-        setFrom(startOfMonday);
-        setTo(endOfSunday);
+        super(TimeAndDurationService.getStartOfWeek(dayInWeek), TimeAndDurationService.getEndOfWeek(dayInWeek));
     }
 
     @Override
@@ -38,4 +31,10 @@ public class Week extends AbstractPeriod implements Period {
         next.add(Calendar.WEEK_OF_YEAR, 1);
         return new Week(next);
     }
+
+    @Override
+    public long getPreferredBillableDuration() {
+        return TimeUnit.HOURS.toMillis(40);
+    }
+
 }

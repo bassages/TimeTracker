@@ -10,14 +10,7 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
 public class Month extends AbstractPeriod {
 
     public Month(Calendar dayInMonth) {
-        Calendar start = TimeAndDurationService.getStartOfMonth(dayInMonth);
-        setFrom(start);
-
-        Calendar end = (Calendar) start.clone();
-        end.add(Calendar.MONTH, 1);
-        end.add(Calendar.MILLISECOND, -1);
-
-        setTo(end);
+        super(TimeAndDurationService.getStartOfMonth(dayInMonth), TimeAndDurationService.getEndOfMonth(dayInMonth));
     }
 
     @Override
