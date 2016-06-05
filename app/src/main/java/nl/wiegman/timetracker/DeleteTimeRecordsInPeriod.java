@@ -17,6 +17,7 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
  * Handles a request from the user to delete time records in a specific period
  */
 public class DeleteTimeRecordsInPeriod {
+    private final String LOG_TAG = this.getClass().getSimpleName();
 
     private final Activity activity;
 
@@ -92,7 +93,7 @@ public class DeleteTimeRecordsInPeriod {
                 case DialogInterface.BUTTON_POSITIVE:
                     List<TimeRecord> timeRecordsOnDay = TimeAndDurationService.getTimeRecordsBetween(from, to);
                     for (TimeRecord recordToDelete : timeRecordsOnDay) {
-                        recordToDelete.delete();
+                        TimeRecordDelete.run(recordToDelete, activity);
                     }
                     dialog.dismiss();
                     if (timeRecordsDeletedListener != null) {

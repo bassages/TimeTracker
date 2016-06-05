@@ -36,14 +36,15 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
 import nl.wiegman.timetracker.widget.CheckInCheckOutWidgetProvider;
 
 public class CheckInCheckoutFragment extends Fragment {
+    private final String LOG_TAG = this.getClass().getSimpleName();
+
     private static final int MENU_ITEM_WEEK_OVERVIEW_ID = 0;
     private static final int MENU_ITEM_MONTH_OVERVIEW_ID = 1;
     private static final int MENU_ITEM_EXPORT_XML = 2;
+
     private static final int MENU_ITEM_IMPORT_XML = 3;
 
     public static final int REQUEST_CODE_SELECT_BACKUP_FILE = 100;
-
-    private final String LOG_TAG = this.getClass().getSimpleName();
 
     @BindView(R.id.todaysTotalTextView)
     TextView todaysTotalTextView;

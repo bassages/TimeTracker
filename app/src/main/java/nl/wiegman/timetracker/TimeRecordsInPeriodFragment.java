@@ -87,7 +87,8 @@ public class TimeRecordsInPeriodFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        TimeRecord.findById(TimeRecord.class, timeRecordId).delete();
+                        TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
+                        TimeRecordDelete.run(timeRecord, getActivity());
                         refreshData();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:

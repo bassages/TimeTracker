@@ -555,7 +555,7 @@ public class EditTimeRecordFragment extends Fragment {
             switch (which) {
                 case DialogInterface.BUTTON_POSITIVE:
                     TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
-                    timeRecord.delete();
+                    TimeRecordDelete.run(timeRecord, getActivity());
                     dialog.dismiss();
                     closeFragment();
                     break;
