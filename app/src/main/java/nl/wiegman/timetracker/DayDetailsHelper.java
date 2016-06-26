@@ -3,6 +3,7 @@ package nl.wiegman.timetracker;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.support.v4.app.FragmentActivity;
 
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -16,12 +17,12 @@ import nl.wiegman.timetracker.util.TimeAndDurationService;
 
 public class DayDetailsHelper {
 
-    private final Activity activity;
+    private final FragmentActivity activity;
 
     /**
      * Constructor
      */
-    public DayDetailsHelper(Activity activity) {
+    public DayDetailsHelper(FragmentActivity activity) {
         this.activity = activity;
     }
 

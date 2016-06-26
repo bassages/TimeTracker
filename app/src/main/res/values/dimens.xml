@@ -7,6 +7,4 @@
     <dimen name="FragmentTitleText">35sp</dimen>
     <dimen name="FragmentHeaderHeight">40dp</dimen>
     <dimen name="editTimeRecordRowTopBottomMargin">10dp</dimen>
-
-    <dimen name="widget_margin">8dp</dimen>
 </resources>

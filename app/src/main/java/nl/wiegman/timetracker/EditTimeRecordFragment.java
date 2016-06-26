@@ -2,10 +2,10 @@ package nl.wiegman.timetracker;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.LayoutInflater;

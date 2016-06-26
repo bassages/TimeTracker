@@ -2,15 +2,17 @@ package nl.wiegman.timetracker.export_import;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.Xml;
 import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -18,12 +20,12 @@ import java.util.List;
 import nl.wiegman.timetracker.R;
 import nl.wiegman.timetracker.domain.TimeRecord;
 
-public class XmlImport extends AsyncTask<String, String, Void> {
+public class XmlImport extends AsyncTask<Uri, String, Boolean> {
+    private final String LOG_TAG = this.getClass().getSimpleName();
+
     protected final Context context;
 
     private ProgressDialog dialog;
-
-    private boolean successfull = false;
 
     public XmlImport(Context context) {
         this.context = context;
@@ -37,9 +39,8 @@ public class XmlImport extends AsyncTask<String, String, Void> {
     }
 
     @Override
-    public Void doInBackground(String ... path) {
-        doImport(path[0]);
-        return null;
+    public Boolean doInBackground(Uri ... path) {
+        return doImport(path[0]);
     }
 
     @Override
@@ -47,11 +48,14 @@ public class XmlImport extends AsyncTask<String, String, Void> {
         dialog.setMessage(progressMessage[0]);
     }
 
-    private void doImport(String filePath) {
-        FileInputStream fileInputStream = null;
+    private boolean doImport(Uri file) {
+        boolean success;
+
+        InputStream inputStream = null;
         try {
-            fileInputStream = new FileInputStream(filePath);
-            List<TimeRecord> timeRecords = readTimeRecordsFromBackup(fileInputStream);
+            inputStream = context.getContentResolver().openInputStream(file);
+
+            List<TimeRecord> timeRecords = readTimeRecordsFromBackup(inputStream);
 
             if (timeRecords.size() > 0) {
                 TimeRecord.deleteAll(TimeRecord.class);
@@ -59,27 +63,28 @@ public class XmlImport extends AsyncTask<String, String, Void> {
                     timeRecord.save();
                 }
             }
-
-            successfull = true;
+            success = true;
         } catch (XmlPullParserException | IOException e) {
-            // Successful is already false
+            Log.e(LOG_TAG, "Failed to import xml", e);
+            success = false;
         } finally {
-            if (fileInputStream != null) {
+            if (inputStream != null) {
                 try {
-                    fileInputStream.close();
+                    inputStream.close();
                 } catch (IOException e) {
                     // Silently ignore
                 }
             }
         }
+        return success;
     }
 
-    private List<TimeRecord> readTimeRecordsFromBackup(FileInputStream fileInputStream) throws XmlPullParserException, IOException {
+    private List<TimeRecord> readTimeRecordsFromBackup(InputStream inputStream) throws XmlPullParserException, IOException {
         List<TimeRecord> timeRecords = new ArrayList<>();
 
         XmlPullParser parser = Xml.newPullParser();
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-        parser.setInput(fileInputStream, null);
+        parser.setInput(inputStream, null);
         parser.nextTag();
 
         parser.require(XmlPullParser.START_TAG, null, ExportImportXmlElements.BACKUP);
@@ -192,16 +197,16 @@ public class XmlImport extends AsyncTask<String, String, Void> {
     }
 
     @Override
-    protected void onPostExecute(Void someVoid) {
+    protected void onPostExecute(Boolean importSucceeded) {
         closeProgressDialog();
-        showResultToast();
+        showResultToast(importSucceeded);
     }
 
-    private void showResultToast() {
+    private void showResultToast(Boolean importSucceeded) {
         int duration = Toast.LENGTH_LONG;
 
         Toast toast;
-        if (successfull) {
+        if (Boolean.TRUE.equals(importSucceeded)) {
             toast = Toast.makeText(context, context.getString(R.string.import_completed), duration);
         } else {
             toast = Toast.makeText(context, context.getString(R.string.import_failed), duration);

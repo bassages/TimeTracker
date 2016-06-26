@@ -1,15 +1,15 @@
 package nl.wiegman.timetracker.util;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 
 import nl.wiegman.timetracker.R;
 
 public class FragmentHelper {
 
-    public static void showFragment(Activity activity, Fragment fragment, boolean addToBackStack) {
-        FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
+    public static void showFragment(FragmentActivity activity, Fragment fragment, boolean addToBackStack) {
+        FragmentTransaction fragmentTransaction = activity.getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         if (addToBackStack) {
@@ -18,7 +18,7 @@ public class FragmentHelper {
         fragmentTransaction.commit();
     }
 
-    public static void showFragment(Activity activity, Fragment fragment) {
+    public static void showFragment(FragmentActivity activity, Fragment fragment) {
         showFragment(activity, fragment, true);
     }
 }

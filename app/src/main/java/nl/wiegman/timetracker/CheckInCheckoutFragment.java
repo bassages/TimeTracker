@@ -1,10 +1,13 @@
 package nl.wiegman.timetracker;
 
-import android.app.Fragment;
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -45,6 +48,7 @@ public class CheckInCheckoutFragment extends Fragment {
     private static final int MENU_ITEM_IMPORT_XML = 3;
 
     public static final int REQUEST_CODE_SELECT_BACKUP_FILE = 100;
+    private static final int REQUEST_CODE_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 200;
 
     @BindView(R.id.todaysTotalTextView)
     TextView todaysTotalTextView;
@@ -107,28 +111,57 @@ public class CheckInCheckoutFragment extends Fragment {
         } else if (id == MENU_ITEM_EXPORT_XML) {
             createBackup();
         } else if (id == MENU_ITEM_IMPORT_XML) {
-            letTheUserSelectABackupFile();
+            startBackupImport();
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void startBackupImport() {
+        askUserForFileaccess();
+    }
+
     private void letTheUserSelectABackupFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("text/xml");
+        intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
         startActivityForResult(intent, REQUEST_CODE_SELECT_BACKUP_FILE);
+    }
+
+    private void askUserForFileaccess() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+             requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+
+        } else {
+            letTheUserSelectABackupFile();
+        }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (REQUEST_CODE_SELECT_BACKUP_FILE == requestCode) {
             if (data != null) {
-                String path = data.getData().getPath();
-                new XmlImport(getActivity()).execute(path);
+                new XmlImport(getActivity()).execute(data.getData());
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    letTheUserSelectABackupFile();
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
         }
     }
 
@@ -212,9 +245,7 @@ public class CheckInCheckoutFragment extends Fragment {
     private class CheckedInTimeUpdater implements Runnable {
         @Override
         public void run() {
-            if (TimeAndDurationService.isCheckedIn()) {
-                new Updater().execute();
-            }
+            new Updater().execute();
         }
     }
 
