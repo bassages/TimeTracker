@@ -117,7 +117,7 @@ public class CheckInCheckoutFragment extends Fragment {
     }
 
     private void startBackupImport() {
-        askUserForFileaccess();
+        askUserForFileAccess();
     }
 
     private void letTheUserSelectABackupFile() {
@@ -127,7 +127,7 @@ public class CheckInCheckoutFragment extends Fragment {
         startActivityForResult(intent, REQUEST_CODE_SELECT_BACKUP_FILE);
     }
 
-    private void askUserForFileaccess() {
+    private void askUserForFileAccess() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
@@ -160,7 +160,6 @@ public class CheckInCheckoutFragment extends Fragment {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
-                return;
             }
         }
     }

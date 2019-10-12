@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import nl.wiegman.timetracker.domain.TimeRecord;
-import nl.wiegman.timetracker.period.Period;
 
 public class TimeAndDurationService {
     public static boolean isCheckedIn() {

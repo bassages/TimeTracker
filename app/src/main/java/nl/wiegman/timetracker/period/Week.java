@@ -1,7 +1,5 @@
 package nl.wiegman.timetracker.period;
 
-import org.apache.commons.lang3.time.DateUtils;
-
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 

@@ -72,7 +72,8 @@
 
     <string name="export_table_minutes">min.</string>
 
-    <string name="export_external_storage_not_available">Kan pdf bestand niet maken omdat externe opslag niet beschikbaar is</string>
+    <string name="export_external_storage_not_available">Kan bestand niet maken omdat externe opslag niet beschikbaar is</string>
+    <string name="export_unable_to_create_directory">Kan bestand niet maken omdat directory niet gecreëerd kon worden</string>
 
     <string name="total">Totaal</string>
 

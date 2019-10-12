@@ -1,6 +1,5 @@
 package nl.wiegman.timetracker;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
@@ -51,13 +50,9 @@ public class DayDetailsHelper {
     }
 
     private void showDialogThatThereIsNothingToDelete() {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        dialog.dismiss();
-                        break;
-                }
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                dialog.dismiss();
             }
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);

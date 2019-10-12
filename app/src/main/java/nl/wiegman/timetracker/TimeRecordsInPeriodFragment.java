@@ -83,18 +83,16 @@ public class TimeRecordsInPeriodFragment extends Fragment {
     }
 
     public void deleteTimeRecordWhenConfirmed(final long timeRecordId) {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
-                        TimeRecordDelete.run(timeRecord, getActivity());
-                        refreshData();
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        dialog.dismiss();
-                        break;
-                }
+        DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    TimeRecord timeRecord = TimeRecord.findById(TimeRecord.class, timeRecordId);
+                    TimeRecordDelete.run(timeRecord, getActivity());
+                    refreshData();
+                    break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    dialog.dismiss();
+                    break;
             }
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

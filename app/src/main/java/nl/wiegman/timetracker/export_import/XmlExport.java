@@ -1,12 +1,11 @@
 package nl.wiegman.timetracker.export_import;
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.util.Xml;
-import android.widget.Toast;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -26,7 +25,7 @@ public class XmlExport extends AbstractExport {
     /**
      * Constructor
      */
-    public XmlExport(Context context) {
+    public XmlExport(FragmentActivity context) {
         super(context);
     }
 
@@ -42,53 +41,61 @@ public class XmlExport extends AbstractExport {
 
     @Override
     protected File doExport() {
-        File xmlFile = null;
         FileWriter writer = null;
 
         Date backupCreationDate = new Date();
 
-        if (isExternalStorageWritable()) {
-            try {
-                File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/TimeTracker");
-                directory.mkdirs();
+        if (!isExternalStorageWritable()) {
+            showError(R.string.export_external_storage_not_available);
+            return null;
+        }
 
-                xmlFile = new File(directory, "Backup-" + COMMENT_DATE_FORMAT.format(backupCreationDate) + ".xml");
-                xmlFile.setReadable(true, false);
-                xmlFile.setWritable(true, false);
+        File xmlFile = null;
+        try {
+            File directory = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/TimeTracker");
 
-                Log.d(LOG_TAG, "XML file: " + xmlFile.getAbsolutePath());
-
-                XmlSerializer xmlSerializer = Xml.newSerializer();
-                writer = new FileWriter(xmlFile);
-
-                xmlSerializer.setOutput(writer);
-
-                xmlSerializer.startDocument("UTF-8", true);
-
-                xmlSerializer.startTag(null, ExportImportXmlElements.BACKUP);
-                addCreationTimestamp(xmlSerializer, backupCreationDate);
-                addApplicationVersion(xmlSerializer);
-                addTimeRecords(xmlSerializer);
-                xmlSerializer.endTag(null, ExportImportXmlElements.BACKUP);
-
-                xmlSerializer.endDocument();
-
-                xmlSerializer.flush();
-
-            } catch (IOException e) {
-                Log.e(LOG_TAG, e.getMessage());
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException e) {
-                        Log.e(LOG_TAG, e.getMessage());
-                    }
+            if (!directory.exists()) {
+                boolean dirsCreated = directory.mkdirs();
+                if (!dirsCreated) {
+                    super.showError(R.string.export_unable_to_create_directory);
                 }
             }
-        } else {
-            Toast.makeText(context, R.string.export_external_storage_not_available, Toast.LENGTH_LONG).show();
+
+            xmlFile = new File(directory, "Backup-" + COMMENT_DATE_FORMAT.format(backupCreationDate) + ".xml");
+            xmlFile.setReadable(true, false);
+            xmlFile.setWritable(true, false);
+
+            Log.d(LOG_TAG, "XML file: " + xmlFile.getAbsolutePath());
+
+            XmlSerializer xmlSerializer = Xml.newSerializer();
+            writer = new FileWriter(xmlFile);
+
+            xmlSerializer.setOutput(writer);
+
+            xmlSerializer.startDocument("UTF-8", true);
+
+            xmlSerializer.startTag(null, ExportImportXmlElements.BACKUP);
+            addCreationTimestamp(xmlSerializer, backupCreationDate);
+            addApplicationVersion(xmlSerializer);
+            addTimeRecords(xmlSerializer);
+            xmlSerializer.endTag(null, ExportImportXmlElements.BACKUP);
+
+            xmlSerializer.endDocument();
+
+            xmlSerializer.flush();
+
+        } catch (IOException e) {
+            Log.e(LOG_TAG, e.getMessage());
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+            }
         }
+
         return xmlFile;
     }
 

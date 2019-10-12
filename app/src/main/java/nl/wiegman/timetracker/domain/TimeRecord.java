@@ -3,7 +3,6 @@ package nl.wiegman.timetracker.domain;
 import com.orm.SugarRecord;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class TimeRecord extends SugarRecord {

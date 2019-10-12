@@ -419,12 +419,7 @@ public class DaysInPeriodFragment extends Fragment {
         Calendar startOfDay = TimeAndDurationService.getStartOfDay(day);
         Calendar endOfDay = TimeAndDurationService.getEndOfDay(day);
 
-        DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = new DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener() {
-            @Override
-            public void recordDeleted() {
-                refreshData();
-            }
-        };
+        DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = this::refreshData;
         DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), startOfDay, endOfDay, timeRecordsDeletedListener);
         deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
     }

@@ -7,12 +7,7 @@ public class TimeTrackerApplication extends com.orm.SugarApp {
     public void onCreate() {
         super.onCreate();
         // Setup handler for uncaught exceptions.
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread thread, Throwable e) {
-                handleUncaughtException(thread, e);
-            }
-        });
+        Thread.setDefaultUncaughtExceptionHandler(this::handleUncaughtException);
     }
 
     public void handleUncaughtException(Thread thread, Throwable e) {

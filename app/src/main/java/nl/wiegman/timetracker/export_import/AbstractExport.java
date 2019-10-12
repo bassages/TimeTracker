@@ -1,9 +1,9 @@
 package nl.wiegman.timetracker.export_import;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,11 +18,11 @@ import java.io.IOException;
 abstract class AbstractExport extends AsyncTask<Void, Void, File> {
     final String LOG_TAG = this.getClass().getSimpleName();
 
-    final Context context;
+    final FragmentActivity context;
 
     private ProgressDialog dialog;
 
-    AbstractExport(Context context) {
+    AbstractExport(FragmentActivity context) {
         this.context = context;
     }
 
@@ -67,6 +67,10 @@ abstract class AbstractExport extends AsyncTask<Void, Void, File> {
         }
     }
 
+    void showError(int msg) {
+        context.runOnUiThread(() -> Toast.makeText(context, msg, Toast.LENGTH_LONG).show());
+    }
+
     private void closeProgressDialog() {
         if (dialog.isShowing()) {
             dialog.dismiss();
@@ -83,5 +87,4 @@ abstract class AbstractExport extends AsyncTask<Void, Void, File> {
         }
         return result;
     }
-
 }

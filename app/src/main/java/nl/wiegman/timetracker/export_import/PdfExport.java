@@ -1,11 +1,11 @@
 package nl.wiegman.timetracker.export_import;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -43,7 +43,7 @@ public class PdfExport extends AbstractExport {
     /**
      * Constructor
      */
-    public PdfExport(Context context, Period period) {
+    public PdfExport(FragmentActivity context, Period period) {
         super(context);
         this.period = period;
     }
@@ -63,45 +63,53 @@ public class PdfExport extends AbstractExport {
         Document document = null;
         FileOutputStream outputStream = null;
 
-        if (isExternalStorageWritable()) {
-            try {
-                File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/TimeTracker");
-                directory.mkdirs();
+        if (!isExternalStorageWritable()) {
+            showError(R.string.export_external_storage_not_available);
+            return null;
+        }
 
-                pdfFile = new File(directory, period.getTitle() + ".pdf");
-                pdfFile.setReadable(true, false);
-                pdfFile.setWritable(true, false);
+        try {
+            File directory = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/TimeTracker");
 
-                Log.d(LOG_TAG, "PDF file: " + pdfFile.getAbsolutePath());
-
-                outputStream = new FileOutputStream(pdfFile);
-
-                document = getDocument(outputStream);
-
-                document.add(getTitle());
-                document.add(Chunk.NEWLINE);
-                document.add(createTable());
-
-                document.close();
-                outputStream.close();
-
-            } catch (DocumentException | IOException e) {
-                Log.e(LOG_TAG, e.getMessage());
-            } finally {
-                if (document != null) {
-                    document.close();
-                }
-                if (outputStream != null) {
-                    try {
-                        outputStream.close();
-                    } catch (IOException e) {
-                        Log.e(LOG_TAG, e.getMessage());
-                    }
+            if (!directory.exists()) {
+                boolean dirsCreated = directory.mkdirs();
+                if (!dirsCreated) {
+                    showError(R.string.export_unable_to_create_directory);
                 }
             }
-        } else {
-            Toast.makeText(context, R.string.export_external_storage_not_available, Toast.LENGTH_LONG).show();
+
+            pdfFile = new File(directory, period.getTitle() + ".pdf");
+            pdfFile.setReadable(true, false);
+            pdfFile.setWritable(true, false);
+
+            Log.d(LOG_TAG, "PDF file: " + pdfFile.getAbsolutePath());
+
+            outputStream = new FileOutputStream(pdfFile);
+
+            document = getDocument(outputStream);
+
+            document.add(getTitle());
+            document.add(Chunk.NEWLINE);
+            document.add(createTable());
+
+            document.close();
+            outputStream.close();
+
+        } catch (DocumentException | IOException e) {
+            Log.e(LOG_TAG, e.getMessage());
+        } finally {
+            if (document != null) {
+                document.close();
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+            }
         }
+
         return pdfFile;
     }
 
@@ -114,9 +122,11 @@ public class PdfExport extends AbstractExport {
     @Override
     protected void openExportedFile(File pdfFile) {
         Intent i = new Intent(Intent.ACTION_VIEW);
-        Uri data = Uri.fromFile(pdfFile);
+        String authority = context.getApplicationContext().getPackageName() + ".fileprovider";
+        Uri data = FileProvider.getUriForFile(context, authority, pdfFile);
         i.setDataAndType(data, "application/pdf");
         i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         context.startActivity(i);
     }
 
@@ -138,7 +148,7 @@ public class PdfExport extends AbstractExport {
         return new Phrase(period.getTitle(), font);
     }
 
-    public Element createTable() throws DocumentException {
+    private Element createTable() throws DocumentException {
         int numColumns = 6;
         PdfPTable table = new PdfPTable(numColumns);
         table.setHeaderRows(1);

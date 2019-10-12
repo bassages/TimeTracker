@@ -338,12 +338,7 @@ public abstract class AbstractPeriodsInYearOverviewFragment extends Fragment {
     private void handleLongCLick(long periodId) {
         Period period = getPeriod(periodId, year);
 
-        DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = new DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener() {
-            @Override
-            public void recordDeleted() {
-                refreshData();
-            }
-        };
+        DeleteTimeRecordsInPeriod.TimeRecordsDeletedListener timeRecordsDeletedListener = this::refreshData;
         DeleteTimeRecordsInPeriod deleteTimeRecordsInPeriod = new DeleteTimeRecordsInPeriod(getActivity(), period.getFrom(), period.getTo(), timeRecordsDeletedListener);
         deleteTimeRecordsInPeriod.handleUserRequestToDeleteRecordsInPeriod();
     }

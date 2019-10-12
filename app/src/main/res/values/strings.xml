@@ -70,7 +70,8 @@
 
     <string name="export_table_minutes">mins.</string>
 
-    <string name="export_external_storage_not_available">Unable to create pdf because external storage is not available</string>
+    <string name="export_external_storage_not_available">Unable to create export because external storage is not available</string>
+    <string name="export_unable_to_create_directory">Unable to create export because directory could not be created</string>
 
     <string name="total">Total</string>
     <string name="crashMessageQuestionEmail">Oops… the application stopped unexpectedly :-(. Do you want to help the developers of this app to fix the problem by sending them an e-mail containing the relevant information?</string>

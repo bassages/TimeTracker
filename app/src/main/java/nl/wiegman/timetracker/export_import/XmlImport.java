@@ -1,5 +1,6 @@
 package nl.wiegman.timetracker.export_import;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
@@ -51,10 +52,7 @@ public class XmlImport extends AsyncTask<Uri, String, Boolean> {
     private boolean doImport(Uri file) {
         boolean success;
 
-        InputStream inputStream = null;
-        try {
-            inputStream = context.getContentResolver().openInputStream(file);
-
+        try (InputStream inputStream = context.getContentResolver().openInputStream(file)) {
             List<TimeRecord> timeRecords = readTimeRecordsFromBackup(inputStream);
 
             if (timeRecords.size() > 0) {
@@ -67,14 +65,6 @@ public class XmlImport extends AsyncTask<Uri, String, Boolean> {
         } catch (XmlPullParserException | IOException e) {
             Log.e(LOG_TAG, "Failed to import xml", e);
             success = false;
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // Silently ignore
-                }
-            }
         }
         return success;
     }
@@ -202,6 +192,7 @@ public class XmlImport extends AsyncTask<Uri, String, Boolean> {
         showResultToast(importSucceeded);
     }
 
+    @SuppressLint("ShowToast")
     private void showResultToast(Boolean importSucceeded) {
         int duration = Toast.LENGTH_LONG;
 

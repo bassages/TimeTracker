@@ -329,12 +329,9 @@ public class EditTimeRecordFragment extends Fragment {
                     .setNegativeButton(getCancelButtonTextResource(), new DismissOnClickListener());
             final AlertDialog alertDialog = alertDialogBuilder.create();
 
-            editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if (hasFocus) {
-                        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-                    }
+            editText.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                 }
             });
             alertDialog.show();
@@ -457,12 +454,9 @@ public class EditTimeRecordFragment extends Fragment {
                 .setNegativeButton(getCancelButtonTextResource(), new DismissOnClickListener());
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
-        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-                }
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
             }
         });
         alertDialog.show();
